@@ -18,7 +18,7 @@ export default function Index({ newsPackages }) {
                 <title>Kopi TIMES</title>
                 <meta name="description" content="Membership Penulis Kopi TIMES adalah program keanggotaan bagi penulis yang ingin terlibat aktif dalam ekosistem gagasan di TIMES Indonesia." />
                 <meta name="keywords" content="Kopi TIMES, TIMES Indonesia, Penulis, Membership, Jurnalisme Positif" />
-                <link rel="canonical" href={domain} />
+                {/* <link rel="canonical" href={domain} /> */}
 
                 {/* Facebook / Open Graph (WhatsApp juga pakai ini) */}
                 <meta property="og:type" content="website" />
