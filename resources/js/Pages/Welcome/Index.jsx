@@ -22,7 +22,6 @@ export default function Index({ newsPackages }) {
 
                 {/* Facebook / Open Graph (WhatsApp juga pakai ini) */}
                 <meta property="og:type" content="website" />
-                <meta property="og:url" content={domain} />
                 <meta property="og:title" content="Beranda - Kopi TIMES" />
                 <meta property="og:description" content="Membership Penulis Kopi TIMES adalah program keanggotaan bagi penulis yang ingin terlibat aktif dalam ekosistem gagasan di TIMES Indonesia." />
                 {/* PENTING: Gunakan URL Absolut agar gambar muncul */}
