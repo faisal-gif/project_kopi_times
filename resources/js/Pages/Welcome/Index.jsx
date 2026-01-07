@@ -31,7 +31,7 @@ export default function Index({ newsPackages }) {
 
                 {/* Twitter / X Meta Tags */}
                 <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:url" content={domain} />
+                {/* <meta name="twitter:url" content={domain} /> */}
                 <meta name="twitter:title" content="Beranda - Kopi TIMES" />
                 <meta name="twitter:description" content="Membership Penulis Kopi TIMES adalah program keanggotaan bagi penulis yang ingin terlibat aktif dalam ekosistem gagasan di TIMES Indonesia." />
                 <meta name="twitter:image" content={"/logo-web.png"} />
