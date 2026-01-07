@@ -1,6 +1,6 @@
 import Card from "@/Components/Card";
 import { formatDuration, formatRupiah } from "@/Utils/formatter";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import { Check, Sparkles } from "lucide-react";
 
 
@@ -88,7 +88,7 @@ const PricingSection = ({ newsPackages }) => {
 
                             {/* CTA */}
 
-                            <Link className="btn btn-primary" href="/register">Pilih</Link>
+                            <Link className="btn btn-primary" href={plan.level === 2 ? "/checkout?package_id=" + plan.id : "/register"}>Pilih</Link>
 
                         </Card>
 

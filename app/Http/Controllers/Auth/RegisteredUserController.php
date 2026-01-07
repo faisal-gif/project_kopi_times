@@ -58,6 +58,7 @@ class RegisteredUserController extends Controller
             'contact' => $request->contact,
             'kategori' => $request->profesi,
             'package_id' => $request->plan_id,
+            'type' => 4,
             'password' => Hash::make($request->password),
             'status' => 0,
         ]);
