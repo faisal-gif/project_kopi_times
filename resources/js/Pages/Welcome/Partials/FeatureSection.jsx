@@ -1,36 +1,36 @@
-import { Edit3, Image, Tags, MessageCircle, BarChart3, Award } from "lucide-react";
+import { Pen, BookOpen, Users, Lightbulb, Clock, FileCheck } from "lucide-react";
 
 const FeaturesSection = () => {
   const features = [
     {
-      icon: Edit3,
-      title: "Editor Intuitif",
-      description: "Tulis artikel dengan editor yang mudah digunakan, mendukung format teks kaya dan pratinjau langsung.",
+      icon: FileCheck,
+      title: "Orisinal",
+      description: "Asli, bukan plagiasi, bukan saduran, bukan terjemahan, bukan sekadar kompilasi, bukan rangkuman pendapat atau buku orang lain.",
     },
     {
-      icon: Image,
-      title: "Gambar Cover",
-      description: "Tambahkan gambar cover yang menarik untuk membuat artikelmu lebih menonjol dan memikat pembaca.",
+      icon: Clock,
+      title: "Eksklusif",
+      description: "Belum pernah dimuat di media atau penerbitan lain termasuk Blog, dan juga tidak dikirim bersamaan ke media atau penerbitan lain.",
     },
     {
-      icon: Tags,
-      title: "Kategori & Tags",
-      description: "Organisir artikelmu dengan kategori dan tags agar mudah ditemukan oleh pembaca yang tepat.",
+      icon: Lightbulb,
+      title: "Aktual & Relevan",
+      description: "Topik yang diuraikan adalah sesuatu yang aktual, relevan, dan menjadi persoalan dalam masyarakat.",
     },
     {
-      icon: MessageCircle,
-      title: "Sistem Komentar",
-      description: "Berinteraksi dengan pembaca melalui kolom komentar yang dimoderasi untuk diskusi yang sehat.",
+      icon: Users,
+      title: "Kepentingan Umum",
+      description: "Substansi yang dibahas menyangkut kepentingan umum, bukan kepentingan komunitas tertentu.",
     },
     {
-      icon: BarChart3,
-      title: "Statistik Artikel",
-      description: "Pantau performa artikelmu dengan data jumlah pembaca, likes, dan engagement.",
+      icon: BookOpen,
+      title: "Perspektif Baru",
+      description: "Artikel mengandung hal baru yang belum pernah dikemukakan penulis lain, baik informasi, pandangan, pencerahan, pendekatan, saran, maupun solusinya.",
     },
     {
-      icon: Award,
-      title: "Badge Penulis",
-      description: "Dapatkan badge eksklusif berdasarkan tier membership dan kontribusimu di platform.",
+      icon: Pen,
+      title: "Bahasa Populer",
+      description: "Penyajian tidak berkepanjangan, menggunakan bahasa populer/luwes yang mudah ditangkap. Maksimal 4.000 karakter atau sekitar 600 kata. Ditulis satu orang.",
     },
   ];
 
@@ -40,14 +40,14 @@ const FeaturesSection = () => {
         {/* Header */}
         <div className="max-w-2xl mx-auto text-center mb-16">
           <span className="text-sm font-medium text-primary uppercase tracking-wider">
-            Fitur Platform
+            Kriteria Tulisan
           </span>
           <h2 className="font-serif text-3xl md:text-4xl font-bold mt-3 mb-6">
-            Semua yang Kamu Butuhkan
+            Kriteria Tulisan yang Kami Cari
           </h2>
           <p className="text-muted-foreground leading-relaxed">
-            Fitur lengkap untuk mendukung perjalanan menulismu, dari pembuatan 
-            artikel hingga interaksi dengan pembaca.
+            Pastikan tulisan Anda memenuhi kriteria berikut untuk dapat dimuat
+            di Kopi TIMES.
           </p>
         </div>
 

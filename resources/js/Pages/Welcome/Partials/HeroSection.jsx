@@ -27,10 +27,8 @@ function HeroSection() {
                         className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-6 animate-fade-in"
                         style={{ animationDelay: "0.1s" }}
                     >
-                        Suarakan Cerita{" "}
-                        <span className="text-primary">Positif</span>
-                        <br />
-                        untuk Indonesia
+                        Menulis untuk {" "}
+                        <span className="text-primary">Indonesia</span>
                     </h1>
 
                     {/* Subheadline */}
@@ -38,8 +36,7 @@ function HeroSection() {
                         className="text-sm md:text-base max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in"
                         style={{ animationDelay: "0.2s" }}
                     >
-                        AJP adalah platform jurnalisme yang mendorong konten positif dan konstruktif.
-                        Bergabunglah bersama ribuan penulis yang berbagi cerita inspiratif.
+                        Membership Penulis Kopi TIMES adalah program keanggotaan bagi penulis yang ingin terlibat aktif dalam ekosistem gagasan di TIMES Indonesia. Program ini dirancang bukan sekadar untuk memuat tulisan, tetapi untuk menumbuhkan penulis, memperkuat kualitas gagasan, dan memperluas dampak pemikiran ke ruang publik.
                     </p>
 
                     {/* CTA Buttons */}

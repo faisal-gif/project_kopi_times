@@ -1,31 +1,31 @@
 import Card from "@/Components/Card";
-import { Heart, Shield, Lightbulb, Globe } from "lucide-react";
+import { Heart, Shield, Lightbulb, Globe, Coffee, Award, Users, Newspaper } from "lucide-react";
 
 const AboutSection = () => {
     const values = [
         {
-            icon: Heart,
-            title: "Jurnalisme Positif",
+            icon: Award,
+            title: "Membangun Reputasi",
             description:
-                "Kami percaya kekuatan kata-kata dapat menginspirasi perubahan. Setiap artikel di AJP harus membawa dampak positif bagi pembaca.",
-        },
-        {
-            icon: Shield,
-            title: "Kredibel & Terpercaya",
-            description:
-                "Setiap artikel melalui proses moderasi untuk memastikan kualitas dan kebenaran informasi yang disampaikan.",
-        },
-        {
-            icon: Lightbulb,
-            title: "Ide Tanpa Batas",
-            description:
-                "Platform terbuka bagi siapa saja yang ingin berbagi ide, cerita, dan pengetahuan yang bermanfaat.",
+                "Tulisan Anda dimuat di media nasional terpercaya, membangun kredibilitas dan reputasi sebagai penulis profesional.",
         },
         {
             icon: Globe,
-            title: "Jangkauan Luas",
+            title: "Jangkauan Nasional",
             description:
-                "Tulisanmu akan dibaca oleh ribuan pembaca dari seluruh Indonesia yang mencari konten berkualitas.",
+                "Gagasan Anda akan dibaca oleh jutaan pembaca dari seluruh Indonesia yang mencari konten berkualitas.",
+        },
+        {
+            icon: Users,
+            title: "Personal Branding",
+            description:
+                "Perkuat personal branding Anda sebagai pemikir dan kontributor dalam diskusi publik nasional.",
+        },
+        {
+            icon: Newspaper,
+            title: "Indeks Google Berita",
+            description:
+                "Artikel Anda terindeks di Google News, memperluas jangkauan dan visibilitas tulisan Anda.",
         },
     ];
 
@@ -38,12 +38,19 @@ const AboutSection = () => {
                         Tentang Kami
                     </span>
                     <h2 className="font-serif text-3xl md:text-4xl font-bold mt-3 mb-6">
-                        Mengapa Memilih AJP?
+                        Apa Itu Kopi TIMES?
                     </h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        AJP hadir sebagai wadah bagi para penulis Indonesia untuk menyuarakan
-                        cerita-cerita positif yang menginspirasi dan membangun bangsa.
+                        Kopi TIMES (Kolom Opini) adalah kanal khusus di TIMES Indonesia yang menjadi ruang bagi pemikiran segar, analisis tajam, dan sudut pandang baru dari masyarakat.
                     </p>
+                </div>
+
+                {/* Why Write Section */}
+                <div className="max-w-3xl mx-auto text-center mb-12">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+                        <Coffee className="w-4 h-4" />
+                        Mengapa Menulis di Kopi TIMES?
+                    </div>
                 </div>
 
                 {/* Values Grid */}
@@ -66,14 +73,20 @@ const AboutSection = () => {
                     <Card className="relative bg-card rounded-2xl p-8 md:p-12 border border-border overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64  bg-gradient-to-br from-primary to-accent opacity-5 rounded-full -translate-y-1/2 translate-x-1/2" />
                         <div className="relative z-10">
+                            <div className="flex items-center justify-center gap-2 mb-6">
+                                <Coffee className="w-6 h-6 text-primary" />
+                                <span className="text-sm font-medium text-primary uppercase tracking-wider">
+                                    Ruang Diskusi Intelektual
+                                </span>
+                            </div>
                             <blockquote className="font-serif text-xl md:text-2xl italic text-center leading-relaxed mb-6">
-                                "Kami percaya bahwa setiap cerita positif memiliki kekuatan untuk
-                                mengubah perspektif dan menginspirasi tindakan nyata."
+                                "Kopi TIMES hadir sebagai wadah bagi para pemikir Indonesia untuk menyuarakan
+                                gagasan segar yang menginspirasi dan membangun bangsa."
                             </blockquote>
                             <div className="text-center">
                                 <div className="w-16 h-1 hero-gradient mx-auto rounded-full mb-4" />
                                 <p className="text-muted-foreground text-sm">
-                                    Tim AJP - Aplikasi Jurnalisme Positif
+                                    Tim Kopi TIMES - TIMES Indonesia
                                 </p>
                             </div>
                         </div>

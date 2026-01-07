@@ -12,15 +12,24 @@ const PricingSection = ({ newsPackages }) => {
                 {/* Header */}
                 <div className="max-w-2xl mx-auto text-center mb-16">
                     <span className="text-sm font-medium text-primary uppercase tracking-wider">
-                        Harga
+                        Langkah Mudah
                     </span>
                     <h2 className="font-serif text-3xl md:text-4xl font-bold mt-3 mb-6">
-                        Pilih Paket yang Tepat
+                        Siap Menyeduh Ide Anda?
                     </h2>
                     <p className="text-muted-foreground leading-relaxed">
-                        Mulai gratis dan upgrade kapan saja sesuai kebutuhanmu.
-                        Semua paket termasuk akses penuh ke platform.
+                        Jangan biarkan gagasan cemerlang Anda menguap begitu saja. Jadilah bagian dari suara perubahan hari ini.
                     </p>
+                </div>
+
+                {/* Steps */}
+                <div className="max-w-2xl mx-auto mb-16">
+                    <div className="bg-card rounded-xl border border-border p-6 text-center">
+                        <h3 className="font-serif text-xl font-semibold mb-3">Langkah Mudah Menjadi Penulis</h3>
+                        <p className="text-muted-foreground">
+                            Siapkan naskah, unggah dengan mendaftar sebagai membership penulis.
+                        </p>
+                    </div>
                 </div>
 
                 {/* Pricing Cards */}
