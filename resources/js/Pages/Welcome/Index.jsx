@@ -15,12 +15,12 @@ export default function Index({ newsPackages }) {
         <>
             <Head>
                 <title>Beranda</title>
-                <meta name="description" content="AJP (Aplikasi Jurnalisme Positif) adalah platform jurnalistik yang mendorong pemberitaan berimbang, solutif, dan inspiratif untuk membangun optimisme publik." />
+                <meta name="description" content="Membership Penulis Kopi TIMES adalah program keanggotaan bagi penulis yang ingin terlibat aktif dalam ekosistem gagasan di TIMES Indonesia." />
 
                 {/* Meta untuk Social Media (Open Graph) */}
-                <meta property="og:title" content="Beranda - AJP" />
-                <meta property="og:description" content="AJP (Aplikasi Jurnalisme Positif) adalah platform jurnalistik yang mendorong pemberitaan berimbang, solutif, dan inspiratif untuk membangun optimisme publik." />
-                <meta property="og:image" content="/logo-web-ajp.png" />
+                <meta property="og:title" content="Beranda - Kopi Times" />
+                <meta property="og:description" content="Membership Penulis Kopi TIMES adalah program keanggotaan bagi penulis yang ingin terlibat aktif dalam ekosistem gagasan di TIMES Indonesia. " />
+                <meta property="og:image" content="/logo-web.png" />
             </Head>
             <LandingLayout>
                 <HeroSection />
