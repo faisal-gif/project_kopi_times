@@ -3,29 +3,30 @@ import { Heart, Shield, Lightbulb, Globe, Coffee, Award, Users, Newspaper } from
 
 const AboutSection = () => {
     const values = [
-        {
-            icon: Award,
-            title: "Membangun Reputasi",
-            description:
-                "Tulisan Anda dimuat di media nasional terpercaya, membangun kredibilitas dan reputasi sebagai penulis profesional.",
-        },
+
         {
             icon: Globe,
             title: "Jangkauan Nasional",
             description:
-                "Gagasan Anda akan dibaca oleh jutaan pembaca dari seluruh Indonesia yang mencari konten berkualitas.",
+                "Tulisan Anda berpotensi dibaca oleh jutaan pengunjung TIMES Indonesia.",
         },
         {
             icon: Users,
-            title: "Personal Branding",
+            title: "Membangun Personal Branding",
             description:
-                "Perkuat personal branding Anda sebagai pemikir dan kontributor dalam diskusi publik nasional.",
+                "Perkuat profil profesional Anda sebagai pakar atau pemikir di bidang spesifik.",
+        },
+        {
+            icon: Award,
+            title: "Ruang Diskusi Intelektual",
+            description:
+                "Wadah bagi pemikiran yang konstruktif, kritis, dan solutif untuk kemajuan bangsa.",
         },
         {
             icon: Newspaper,
-            title: "Indeks Google Berita",
+            title: "Indeks Search Engine",
             description:
-                "Artikel Anda terindeks di Google News, memperluas jangkauan dan visibilitas tulisan Anda.",
+                "Artikel opini terindeks beragam Search Engine seperti Google dan Yahoo.",
         },
     ];
 

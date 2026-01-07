@@ -25,7 +25,7 @@ export default function Index({ newsPackages }) {
                 <meta property="og:title" content="Beranda - Kopi TIMES" />
                 <meta property="og:description" content="Membership Penulis Kopi TIMES adalah program keanggotaan bagi penulis yang ingin terlibat aktif dalam ekosistem gagasan di TIMES Indonesia." />
                 {/* PENTING: Gunakan URL Absolut agar gambar muncul */}
-                <meta property="og:image" content={"/logo-web.png"} />
+                <meta property="og:image" content={"/bg_kopi_times.png"} />
                 <meta property="og:image:width" content="1200" />
                 <meta property="og:image:height" content="630" />
 
@@ -34,7 +34,7 @@ export default function Index({ newsPackages }) {
                 {/* <meta name="twitter:url" content={domain} /> */}
                 <meta name="twitter:title" content="Beranda - Kopi TIMES" />
                 <meta name="twitter:description" content="Membership Penulis Kopi TIMES adalah program keanggotaan bagi penulis yang ingin terlibat aktif dalam ekosistem gagasan di TIMES Indonesia." />
-                <meta name="twitter:image" content={"/logo-web.png"} />
+                <meta name="twitter:image" content={"/bg_kopi_times.png"} />
             </Head>
             <LandingLayout>
                 <HeroSection />
