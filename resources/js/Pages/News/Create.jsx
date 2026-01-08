@@ -71,7 +71,7 @@ function Create({narsum_detail}) {
                                 <Card
                                     title={
                                         <span className="flex flex-row gap-2 items-center text-2xl font-semibold text-foreground ">
-                                            <NotebookPenIcon className='w-6 h-6' /> Konten Berita
+                                            <NotebookPenIcon className='w-6 h-6' /> Kopi TIMES
                                         </span>
                                     }
                                 >
@@ -79,7 +79,7 @@ function Create({narsum_detail}) {
                                         <div className='lg:col-span-6'>
                                             <InputLabel
                                                 htmlFor="title"
-                                                value="Judul Berita"
+                                                value="Judul Opini"
                                                 className='mb-2 label-text font-bold'
                                             />
                                             <TextInput
@@ -96,7 +96,7 @@ function Create({narsum_detail}) {
                                         <div className='lg:col-span-6'>
                                             <InputLabel
                                                 htmlFor="content"
-                                                value="Konten Berita"
+                                                value="Konten Opini"
                                                 className='mb-2 label-text font-bold'
                                             />
                                             <InputEditor
