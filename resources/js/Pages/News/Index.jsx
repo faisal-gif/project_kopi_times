@@ -5,7 +5,7 @@ import PaginationDaisy from '@/Components/PaginationDaisy'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { formatDate, formatDateTime } from '@/Utils/formatter'
 import { Head, Link, router, usePage } from '@inertiajs/react'
-import { Eye, Newspaper, Plus, Search, TrendingUp } from 'lucide-react'
+import { AlertTriangle, Crown, Eye, Newspaper, Plus, Search, TrendingUp } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 
 
@@ -144,24 +144,40 @@ function Index({ news, writers, kanals, filters }) {
                     <Plus size={16} /> Tambah News
                   </Link>
                 ) : (
-                  <button className="btn btn-primary rounded-lg" disabled>
-                    <Plus size={16} /> Tambah News
-                  </button>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-destructive/10">
+                        <AlertTriangle className="w-5 h-5 text-destructive" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-destructive">Kuota artikel Anda sudah habis!</p>
+                        <p className="text-sm text-muted-foreground">Upgrade paket membership untuk menambah kuota.</p>
+                      </div>
+                    </div>
+
+                    <Link className='btn btn-outline btn-primary' href={route('subscription.index')}>
+                      <Crown className="w-4 h-4 mr-2" />
+                      Perpanjang Member
+                    </Link>
+                  </div>
                 )}
               </div>
               {/* End Head */}
 
+
               {/* Quota Card */}
-              <Card className="mb-8 ">
+              {
+                user?.package_id != 10 && (
+                  <Card className="mb-8 ">
 
-                <div className=" flex items-center gap-2 text-lg text-base-content/80 font-semibold">
-                  <Newspaper className="w-5 h-5 text-primary" />
-                  Sisa Kuota: {user?.quota_news} artikel
-                </div>
+                    <div className=" flex items-center gap-2 text-lg text-base-content/80 font-semibold">
+                      <Newspaper className="w-5 h-5 text-primary" />
+                      Sisa Kuota: {user?.quota_news} artikel
+                    </div>
+                  </Card>
+                )
+              }
 
-
-
-              </Card>
 
               {/* Start Filter */}
               <Card>
