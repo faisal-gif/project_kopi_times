@@ -167,7 +167,7 @@ export default function Register({ newsPackages, kategoriKt }) {
                             </div>
                         </div>
                         <div className="space-y-2 floating-label">
-                            <span className='text-lg'>Profesi</span>
+                            <span className='text-lg'>Kategori</span>
                             <InputSelect
                                 value={data.profesi}
                                 onChange={(e) => setData('profesi', e.target.value)}
