@@ -144,22 +144,24 @@ function Index({ news, writers, kanals, filters }) {
                     <Plus size={16} /> Tambah News
                   </Link>
                 ) : (
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-primary/10">
-                        <AlertTriangle className="w-5 h-5 text-destructive" />
+                  <Card className='border-2 border-primary/50 bg-primary/5'>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg bg-primary/10">
+                          <AlertTriangle className="w-5 h-5 text-destructive" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-destructive">Kuota artikel Anda sudah habis!</p>
+                          <p className="text-sm text-muted-foreground">Upgrade paket membership untuk menambah kuota.</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-semibold text-destructive">Kuota artikel Anda sudah habis!</p>
-                        <p className="text-sm text-muted-foreground">Upgrade paket membership untuk menambah kuota.</p>
-                      </div>
-                    </div>
 
-                    <Link className='btn btn-outline btn-primary' href={route('subscription.index')}>
-                      <Crown className="w-4 h-4 mr-2" />
-                      Perpanjang Member
-                    </Link>
-                  </div>
+                      <Link className='btn btn-outline btn-primary' href={route('subscription.index')}>
+                        <Crown className="w-4 h-4 mr-2" />
+                        Perpanjang Member
+                      </Link>
+                    </div>
+                  </Card>
                 )}
               </div>
               {/* End Head */}
