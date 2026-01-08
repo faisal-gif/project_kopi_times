@@ -74,7 +74,7 @@ class NewsController extends Controller
         $user = Auth::user();
 
         if ($user->quota_news == 0) {
-            return redirect('news.index');
+            return redirect()->route('news.index');
         }
 
         $narsum_detail = [];
