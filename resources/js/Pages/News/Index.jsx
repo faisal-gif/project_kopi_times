@@ -146,7 +146,7 @@ function Index({ news, writers, kanals, filters }) {
                 ) : (
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-destructive/10">
+                      <div className="p-2 rounded-lg bg-primary/10">
                         <AlertTriangle className="w-5 h-5 text-destructive" />
                       </div>
                       <div>
