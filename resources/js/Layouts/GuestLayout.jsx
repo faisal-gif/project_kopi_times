@@ -12,13 +12,7 @@ export default function GuestLayout({ children }) {
                 <div className="relative z-10 flex flex-col justify-between p-12 text-primary-content h-full">
                     {/* Logo */}
                     <Link to="/" className="flex items-center gap-2 group">
-                        <div className="w-10 h-10 rounded-lg bg-primary-foreground/20 flex items-center justify-center">
-                            <Newspaper className="w-5 h-5" />
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="font-serif text-xl font-bold">AJP</span>
-                            <span className="text-[10px] opacity-80 -mt-1">Aplikasi Jurnalisme Positif</span>
-                        </div>
+                         <ApplicationLogo className="h-10 w-full mx-auto mb-6" />
                     </Link>
 
                     {/* Quote */}
