@@ -113,7 +113,7 @@ function Index({ news, writers, kanals, filters }) {
       <Head title="News Management" />
       <AuthenticatedLayout >
         <div className="py-12">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl lg:px-8">
 
 
             <div className=" space-y-6">
