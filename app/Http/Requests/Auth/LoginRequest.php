@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -40,14 +41,44 @@ class LoginRequest extends FormRequest
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
-        $credentials = array_merge($this->only('email', 'password'), ['type' => 4]);
+        $email = $this->input('email');
+        $password = $this->input('password');
+
+        $emailExists = User::where('email', $email)->exists();
+
+        // Cek apakah email terdaftar
+        if (!$emailExists) {
+            RateLimiter::hit($this->throttleKey());
+            throw ValidationException::withMessages([
+                'email' => 'Email tidak terdaftar.',
+            ]);
+        }
+
+        $userWithType1 = User::where('email', $email)
+            ->where('type', 4)
+            ->first();
+
+        if (!$userWithType1) {
+            // Email ada, tapi tidak ada yang tipenya 4
+            throw ValidationException::withMessages([
+                'type' => 'Akun anda hanya bisa digunakan di website Kopi TIMES',
+            ]);
+        }
+
+        $credentials = [
+            'email' => $email,
+            'password' => $password,
+            'type' => 4
+        ];
+
         if (! Auth::attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'password' => 'Password yang Anda masukkan salah.',
             ]);
         }
+
 
         RateLimiter::clear($this->throttleKey());
     }
