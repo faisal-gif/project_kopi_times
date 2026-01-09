@@ -25,6 +25,7 @@
     },
     "dependencies": {
         "@tinymce/tinymce-react": "^6.3.0",
+        "html-to-image": "^1.11.13",
         "lucide-react": "^0.562.0"
     }
 }
