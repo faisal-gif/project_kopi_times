@@ -32,7 +32,7 @@ export default function Dashboard({ total_news, paket_terdaftar, pending_news, p
         >
             <Head title="Dashboard" />
 
-            <div className="p-8">
+            <div className="">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Subscription Card */}
                     <Card className=" border-primary/20">
