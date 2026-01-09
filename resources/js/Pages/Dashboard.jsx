@@ -86,15 +86,17 @@ export default function Dashboard({ total_news, paket_terdaftar, pending_news, p
 
                         {/* Kuota Artikel */}
                         <div className="space-y-3">
-                            <div className="flex items-center justify-between">
-                                <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                                    <TrendingUp className={`w-4 h-4 ${isQuotaExhausted ? 'text-destructive' : 'text-primary'}`} />
-                                    Kuota Artikel Bulan Ini
-                                </p>
-                                <span className="font-semibold text-foreground text-sm">
-                                    {user.quota_news} / {paket_terdaftar.quota}
-                                </span>
-                            </div>
+                            {paket_terdaftar.level != 1 && (
+                                <div className="flex items-center justify-between">
+                                    <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                                        <TrendingUp className={`w-4 h-4 ${isQuotaExhausted ? 'text-destructive' : 'text-primary'}`} />
+                                        Kuota Artikel Bulan Ini
+                                    </p>
+                                    <span className="font-semibold text-foreground text-sm">
+                                        {user.quota_news} / {paket_terdaftar.quota}
+                                    </span>
+                                </div>
+                            )}
                             {/* <Progress value={quotaPercentage} className="h-2" /> */}
                             {isQuotaExhausted && (
                                 <div className="space-y-3 mt-10">
@@ -111,11 +113,11 @@ export default function Dashboard({ total_news, paket_terdaftar, pending_news, p
 
                             {paket_terdaftar.level != 1 && (
                                 <p className="text-xs text-muted-foreground">
-                                Sisa {user.quota_news} artikel untuk bulan ini.
-                                {quotaPercentage >= 80 && (
-                                    <span className="text-orange-600 font-medium"> Kuota hampir habis!</span>
-                                )}
-                            </p>)}
+                                    Sisa {user.quota_news} artikel untuk bulan ini.
+                                    {quotaPercentage >= 80 && (
+                                        <span className="text-orange-600 font-medium"> Kuota hampir habis!</span>
+                                    )}
+                                </p>)}
 
                         </div>
 
