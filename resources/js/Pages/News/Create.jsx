@@ -201,19 +201,19 @@ function Create({narsum_detail}) {
                                 <Card
                                     title={
                                         <span className="flex flex-row gap-2 items-center text-2xl font-semibold text-foreground ">
-                                            <ImageIcon className='w-6 h-6' /> Image
+                                            <ImageIcon className='w-6 h-6' /> Foto
                                         </span>
                                     }
                                 >
                                     <div className='grid grid-cols-1 lg:grid-cols-6 gap-4 mt-8'>
                                         <div className='lg:col-span-2'>
                                             <InputImageUpload
-                                                label="Gambar A"
+                                                label="Foto Terbaik Anda"
                                                 value={data.image}
                                                 onChange={(file) => setData("image", file)}
                                             />
                                         </div>
-                                        <div className='lg:col-span-2'>
+                                        {/* <div className='lg:col-span-2'>
                                             <InputImageUpload
                                                 label="Gambar B"
                                                 value={data.image_2}
@@ -226,7 +226,7 @@ function Create({narsum_detail}) {
                                                 value={data.image_3}
                                                 onChange={(file) => setData("image_3", file)}
                                             />
-                                        </div>
+                                        </div> */}
                                         <div className='lg:col-span-6'>
                                             <InputTextarea
                                                 id="caption"
