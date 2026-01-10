@@ -104,6 +104,11 @@ class NewsController extends Controller
         $image_2 = null;
         $image_3 = null;
 
+        
+        do {
+            $is_code = 'KT' . strtoupper(Str::random(8));
+        } while (News::where('is_code', $is_code)->exists());
+
         if ($request->hasFile('image')) {
             $image_1 = $this->storeImage($request->file('image'), $title . '-1');
         }
@@ -121,6 +126,7 @@ class NewsController extends Controller
         DB::beginTransaction();
 
         News::create([
+             'is_code' => $is_code,
             'title' => $request->title,
             'content' => $request->content,
             'city' => $request->city,
