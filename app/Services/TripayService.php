@@ -16,7 +16,7 @@ class TripayService
         $this->apiKey = config('services.tripay.api_key');
         $this->merchantCode = config('services.tripay.merchant_code');
         $this->privateKey = config('services.tripay.private_key');
-        $this->baseUrl = 'https://tripay.co.id/api'; // ganti ke production kalau live
+        $this->baseUrl = 'https://tripay.co.id/api-sandbox'; // ganti ke production kalau live
     }
 
     public function getPaymentChannel()
