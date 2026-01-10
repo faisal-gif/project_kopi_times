@@ -186,6 +186,7 @@ class NewsController extends Controller
         return response()->json([
             'error' => false,
             'data' => [
+                'is_code' => $news->is_code,
                 'datetime' => $news->datetime,
                 'title'    => $news->title,
                 'caption'  => $news->caption,
