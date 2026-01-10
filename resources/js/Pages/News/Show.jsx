@@ -75,11 +75,11 @@ function Show({ news }) {
 
                         <Card title={"Gambar Artikel"} className="mb-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {[news.image, news.image2, news.image3].map((image, index) => (
+                                {[news.image].map((image, index) => (
                                     <div key={index} className="space-y-2">
                                         <div className="aspect-video rounded-lg overflow-hidden bg-muted">
                                             <img
-                                                src={image ? `/storage/${image}` : '/placeholder.svg'}
+                                                src={image ? `${image}` : '/placeholder.svg'}
                                                 alt={news.title + ' Image ' + (index + 1)}
                                                 className="w-full h-full object-cover"
                                             />
