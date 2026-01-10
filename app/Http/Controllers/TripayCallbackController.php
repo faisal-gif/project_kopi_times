@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PaymentSuccessfulMail;
 use App\Models\NewsPackage;
 use App\Models\Payments;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class TripayCallbackController extends Controller
 {
@@ -17,7 +19,7 @@ class TripayCallbackController extends Controller
             $request->getContent(),
             config('services.tripay.private_key')
         );
-      
+
         abort_if(
             $signature !== $request->header('X-Callback-Signature'),
             403
@@ -32,7 +34,7 @@ class TripayCallbackController extends Controller
                 $payment->update([
                     'status' => 'paid',
                     'paid_at' => now(),
-                  
+
                 ]);
 
 
@@ -49,6 +51,10 @@ class TripayCallbackController extends Controller
                 $user->status = 1;
                 $user->type = $newsPackage->type;
                 $user->save();
+
+                DB::afterCommit(function () use ($user, $payment, $newsPackage) {
+                    Mail::to($user->email)->send(new PaymentSuccessfulMail($payment, $user, $newsPackage));
+                });
             });
         }
 
