@@ -174,7 +174,7 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
 
                     </Card>
                     {
-                        profilePhoto && (<MemberCard user={user} paket_terdaftar={paket_terdaftar} />)
+                        auth_user.avatar && (<MemberCard user={user} paket_terdaftar={paket_terdaftar} />)
                     }
 
 
