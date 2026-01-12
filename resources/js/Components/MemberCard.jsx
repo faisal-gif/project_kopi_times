@@ -34,23 +34,8 @@ export default function MemberCard({ user, paket_terdaftar }) {
                     Dapatkan kartu identitas resmi sebagai penulis Kopi TIMES. Kartu ini bisa digunakan sebagai bukti keanggotaan dan akses ke berbagai keuntungan eksklusif.
                 </p>
                 {/* Bagian yang akan di-capture */}
-                <div ref={cardRef} className="">
-                    <div className="p-4 rounded-lg bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-xl md:w-[350px] w-full h-[200px] flex flex-col justify-between">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <p className="text-[10px] opacity-80 uppercase tracking-widest">KOPI TIMES</p>
-                                <p className="font-bold text-lg">Member Card</p>
-                            </div>
-                            <div className="px-2 py-1 text-[10px] border border-white/50 rounded uppercase">
-                                LEVEL {paket_terdaftar.level}
-                            </div>
-                        </div>
-
-                        <div>
-                            <p className="font-semibold text-xl leading-tight">{user.nama}</p>
-                            <p className="text-xs opacity-80">Penulis Aktif</p>
-                        </div>
-                    </div>
+                <div ref={cardRef} className="flex flex-col items-center">
+                    <img src={'storage/' + user.member_card} className='w-[20rem] h-auto rounded-2xl' alt="" />
                 </div>
 
                 <button

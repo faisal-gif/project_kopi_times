@@ -37,6 +37,8 @@ class User extends Authenticatable
         'dateexp',
         'quota_news',
         'instansi',
+        'avatar',
+        'avatar_raw',
         'password',
         'passwd',
         'status',

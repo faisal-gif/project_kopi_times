@@ -1,14 +1,18 @@
+import AvatarCrop from '@/Components/AvatarCrop';
 import Card from '@/Components/Card';
 import MemberCard from '@/Components/MemberCard';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatDate } from '@/Utils/formatter';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { AlertTriangle, Badge, Calendar, CheckCircle, CreditCard, Crown, TrendingUp } from 'lucide-react';
+import { useState } from 'react';
 
-export default function Dashboard({ total_news, paket_terdaftar, pending_news, publish_news }) {
+export default function Dashboard({ auth_user, total_news, paket_terdaftar, pending_news, publish_news }) {
 
     const { auth } = usePage().props;
     const user = auth.user;
+
+    const [profilePhoto, setProfilePhoto] = useState(auth_user.avatar);
 
     // Calculate days remaining
     const today = new Date();
@@ -22,6 +26,16 @@ export default function Dashboard({ total_news, paket_terdaftar, pending_news, p
     const isQuotaExhausted = user.quota_news <= 0;
 
 
+    const handleAvatarComplete = (blob) => {
+        const formData = new FormData();
+        formData.append("avatar", blob, "avatar.png");
+
+        router.post("/profile/avatar", formData, {
+            forceFormData: true,
+        });
+    };
+
+
     return (
         <AuthenticatedLayout
             header={
@@ -33,7 +47,41 @@ export default function Dashboard({ total_news, paket_terdaftar, pending_news, p
             <Head title="Dashboard" />
 
             <div className="">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
+                <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-4 ">
+
+                    <Card className={`md:col-span-2 border-2 ${profilePhoto ? 'border-green-500/50 bg-green-50/50 ' : 'border-orange-500/50 bg-orange-50/50 '}`}>
+                        <div className="pb-3">
+                            <div className={`flex items-center gap-2 text-lg ${profilePhoto ? 'text-green-700 ' : 'text-orange-700 '}`}>
+                                {profilePhoto ? <CheckCircle className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
+                                {profilePhoto ? 'Foto Profil Anda' : 'Lengkapi Foto Profil Anda'}
+                            </div>
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-6">
+                                <div className="avatar">
+                                    {auth_user.avatar ? (
+                                        <div className="w-24 rounded-full">
+                                            <img src={'storage/' + auth_user.avatar} />
+                                        </div>
+                                    ) : (
+                                        <div className="w-24 rounded-full">
+                                            <img src={'placeholder.svg'} />
+                                        </div>
+                                    )}
+
+                                </div>
+                                <div className="flex-1 space-y-3">
+                                    <p className="text-sm text-muted-foreground">
+                                        {profilePhoto
+                                            ? 'Foto profil Anda sudah terpasang. Klik tombol di bawah jika ingin menggantinya.'
+                                            : 'Tambahkan foto profil untuk melengkapi identitas Anda sebagai penulis Kopi TIMES. Foto akan ditampilkan di artikel dan kartu member Anda.'
+                                        }
+                                    </p>
+                                    <AvatarCrop />
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
                     {/* Subscription Card */}
                     <Card className=" border-primary/20">
 
@@ -125,8 +173,10 @@ export default function Dashboard({ total_news, paket_terdaftar, pending_news, p
 
 
                     </Card>
+                    {
+                        profilePhoto && (<MemberCard user={user} paket_terdaftar={paket_terdaftar} />)
+                    }
 
-                    <MemberCard user={user} paket_terdaftar={paket_terdaftar} />
 
                     {/* Quota Card */}
 
