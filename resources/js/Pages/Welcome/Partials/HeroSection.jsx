@@ -1,3 +1,4 @@
+import Alert from '@/Components/Alert';
 import { Link } from '@inertiajs/react'
 import { ArrowRight, PenLine, Users, TrendingUp } from "lucide-react";
 import React from 'react'
@@ -5,6 +6,7 @@ import React from 'react'
 function HeroSection() {
     return (
         <section className="relative min-h-screen flex items-center pt-6 overflow-hidden">
+
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent opacity-10" />
             <div
@@ -15,7 +17,11 @@ function HeroSection() {
             />
 
             <div className="container mx-auto px-4 py-20 relative z-10">
+              
+                  
+               
                 <div className="max-w-4xl mx-auto text-center">
+                      <Alert className='mb-8' type='warning' title={'Pengumuman'} message={'Pengumuman sistem pembayaran sedang maintenance mohon maaf atas ketidaknyamanannya'} />
                     {/* Badge */}
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-base-200 text-primary text-sm font-medium mb-8 animate-fade-in">
                         <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
