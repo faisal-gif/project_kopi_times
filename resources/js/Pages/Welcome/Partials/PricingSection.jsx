@@ -64,8 +64,9 @@ const PricingSection = ({ newsPackages }) => {
                             <div className="text-center mb-6">
                                 <h3 className="font-serif text-2xl font-bold mb-2">{plan.name}</h3>
                                 <div className="mb-2">
-                                    <span className="font-serif text-2xl font-bold">{formatRupiah(plan.price)}</span>
-                                    <span className="text-muted-foreground text-sm ml-1">/ {formatDuration(plan.period)}</span>
+                                    <span className="font-serif text-xl font-bold">{formatRupiah(plan.price)}</span>
+                                    <br />
+                                    <span className="text-muted-foreground text-sm ml-1">/ {plan.period} {plan.jenis_periode}</span>
                                 </div>
                                 <p className="text-muted-foreground text-sm">{plan.description}</p>
                             </div>

@@ -42,10 +42,25 @@ class TripayCallbackController extends Controller
 
                 $user = User::find($payment->user_id);
                 $user->quota_news += $newsPackage->quota;
+                // 2. Tentukan Start Date berdasarkan kondisi Anda
                 if ($user->dateexp == null) {
-                    $user->dateexp = now()->addMonth($newsPackage->period);
+                    // Jika null, mulai dari hari ini
+                    $startDate = now();
+                } elseif ($user->dateexp->isFuture()) {
+                    // Jika melebihi hari ini (masih aktif), mulai dari hari ini (Reset)
+                    $startDate = now();
                 } else {
-                    $user->dateexp = $user->dateexp->addMonth($newsPackage->period);
+                    // Jika tidak melebihi hari ini (sudah expired), tambah dari dateexp lama
+                    $startDate = $user->dateexp;
+                }
+
+                // 3. Tambahkan durasi ke $startDate
+                if ($newsPackage->jenis_periode == 'hari') {
+                    $user->dateexp = $startDate->addDays($newsPackage->period);
+                } elseif ($newsPackage->jenis_periode == 'bulan') {
+                    $user->dateexp = $startDate->addMonths($newsPackage->period);
+                } elseif ($newsPackage->jenis_periode == 'tahun') {
+                    $user->dateexp = $startDate->addYears($newsPackage->period);
                 }
                 $user->package_id = $newsPackage->id;
                 $user->status = 1;
