@@ -26,7 +26,7 @@ class PaymentController extends Controller
             ->latest()
             ->first();
 
-        if ($payment) {
+        if ($payment->status == 'pending') {
             return redirect($payment->checkout_url);
         }
 
