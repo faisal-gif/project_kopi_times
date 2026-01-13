@@ -25,8 +25,8 @@ class PaymentController extends Controller
             ->where('expired_at', '>', now())
             ->latest()
             ->first();
-        dd($payment);
-        if ($payment->status == 'pending') {
+
+        if ($payment) {
             return redirect($payment->checkout_url);
         }
 
