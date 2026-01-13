@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
+use function Symfony\Component\Clock\now;
+
 class TripayCallbackController extends Controller
 {
     public function handle(Request $request)
@@ -47,7 +49,7 @@ class TripayCallbackController extends Controller
                 if ($user->dateexp == null) {
                     // Jika null, mulai dari hari ini
                     $startDate = now();
-                } elseif ($user->dateexp->isFuture()) {
+                } elseif (now() > $user->dateexp) {
                     dd($user->dateexp->isFuture());
                     // Jika melebihi hari ini (masih aktif), mulai dari hari ini (Reset)
                     $startDate = now();
