@@ -6,6 +6,7 @@ use App\Mail\PaymentSuccessfulMail;
 use App\Models\NewsPackage;
 use App\Models\Payments;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -41,11 +42,26 @@ class TripayCallbackController extends Controller
                 $newsPackage = NewsPackage::find($payment->package_id);
 
                 $user = User::find($payment->user_id);
-                $user->quota_news += $newsPackage->quota;
+                $user->quota_news += (int) $newsPackage->quota;
+                // 2. Tentukan Start Date berdasarkan kondisi Anda
                 if ($user->dateexp == null) {
-                    $user->dateexp = now()->addMonth($newsPackage->period);
+                    // Jika null, mulai dari hari ini
+                    $startDate = now();
+                } elseif ($user->dateexp->isFuture()) {
+                    // Jika melebihi hari ini (masih aktif), mulai dari hari ini (Reset)
+                    $startDate = now();
                 } else {
-                    $user->dateexp = $user->dateexp->addMonth($newsPackage->period);
+                    // Jika tidak melebihi hari ini (sudah expired), tambah dari dateexp lama
+                    $startDate = Carbon::parse($user->dateexp);
+                }
+
+                // 3. Tambahkan durasi ke $startDate
+                if ($newsPackage->jenis_periode == 'hari') {
+                    $user->dateexp = $startDate->addDays($newsPackage->period);
+                } elseif ($newsPackage->jenis_periode == 'bulan') {
+                    $user->dateexp = $startDate->addMonths($newsPackage->period);
+                } elseif ($newsPackage->jenis_periode == 'tahun') {
+                    $user->dateexp = $startDate->addYears($newsPackage->period);
                 }
                 $user->package_id = $newsPackage->id;
                 $user->status = 1;
