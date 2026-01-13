@@ -5,7 +5,7 @@ import MemberCard from '@/Components/MemberCard';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatDate } from '@/Utils/formatter';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { AlertTriangle, Badge, Calendar, CheckCircle, CreditCard, Crown, TrendingUp } from 'lucide-react';
+import { AlertTriangle, Badge, BookOpen, Calendar, CheckCircle, CreditCard, Crown, MousePointer, PenTool, Plus, Send, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Dashboard({ auth_user, total_news, paket_terdaftar, pending_news, publish_news }) {
