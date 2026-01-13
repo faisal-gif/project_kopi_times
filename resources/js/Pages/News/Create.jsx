@@ -56,8 +56,8 @@ function Create({narsum_detail}) {
                                 <div className="breadcrumbs text-sm">
                                     <ul>
                                         <li><a>Home</a></li>
-                                        <li>News</li>
-                                        <li>Add News</li>
+                                        <li>Opini</li>
+                                        <li>Tambah Opini</li>
                                     </ul>
                                 </div>
                                 {/* end breadcrumbs */}

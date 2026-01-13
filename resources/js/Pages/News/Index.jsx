@@ -141,7 +141,7 @@ function Index({ news, writers, kanals, filters }) {
                 {/* Button Tambah User */}
                 {user?.quota_news > 0 ? (
                   <Link href={route('news.create')} className="btn btn-primary rounded-lg">
-                    <Plus size={16} /> Tambah News
+                    <Plus size={16} /> Tambah Opini
                   </Link>
                 ) : (
                   <Card className='border-2 border-primary/50 bg-primary/5'>
