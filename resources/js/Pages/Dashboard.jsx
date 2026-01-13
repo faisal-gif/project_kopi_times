@@ -147,7 +147,7 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
                                             <Send className="w-4 h-4 text-blue-600" />
                                             Kirim untuk Direview
                                         </p>
-                                        <p className="text-xs text-muted-foreground mt-1">Kalau sudah selesai, tekan tombol "Kirim untuk Review". Tim redaksi akan cek artikel Anda dalam 1-3 hari kerja.</p>
+                                        <p className="text-xs text-muted-foreground mt-1">Kalau sudah selesai, tekan tombol "Kirim untuk Review". Tim redaksi akan cek Opini Anda dalam 1-3 hari kerja.</p>
                                     </div>
                                 </div>
                             </div>

@@ -253,7 +253,7 @@ function Create({narsum_detail}) {
                                         className="btn btn-primary"
                                         disabled={processing}
                                     >
-                                        Simpan
+                                        Kirim untuk Review
                                     </button>
                                 </div>
 
