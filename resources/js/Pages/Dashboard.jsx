@@ -83,6 +83,78 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
                             </div>
                         </div>
                     </Card>
+
+                      {/* Tutorial Card */}
+                    <Card className="border-primary/20 bg-gradient-to-br from-blue-50 to-indigo-50">
+
+                        <div className="flex items-center gap-2 text-lg">
+                            <BookOpen className="w-5 h-5 text-blue-600" />
+                            Tutorial Menulis Opini
+                        </div>
+
+                        <div className="space-y-4">
+                            <p className="text-sm text-muted-foreground">
+                                Yuk ikuti langkah mudah ini untuk mengirim artikel ke Kopi TIMES!
+                            </p>
+                            <div className="space-y-3">
+                                <div className="flex items-start gap-3 p-3 rounded-lg bg-white/60">
+                                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">1</div>
+                                    <div>
+                                        <p className="font-medium text-foreground flex items-center gap-2">
+                                            <MousePointer className="w-4 h-4 text-blue-600" />
+                                            Klik Menu "Opini Saya"
+                                        </p>
+                                        <p className="text-xs text-muted-foreground mt-1">Di menu sebelah kiri, cari dan klik menu "Artikel Saya" untuk masuk ke halaman daftar artikel.</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3 p-3 rounded-lg bg-white/60 ">
+                                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">2</div>
+                                    <div>
+                                        <p className="font-medium text-foreground flex items-center gap-2">
+                                            <Plus className="w-4 h-4 text-blue-600" />
+                                            Klik Tombol "Tambah Opini"
+                                        </p>
+                                        <p className="text-xs text-muted-foreground mt-1">Tekan tombol "Tambah Artikel" di pojok kanan atas untuk mulai menulis artikel baru.</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3 p-3 rounded-lg bg-white/60 ">
+                                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">3</div>
+                                    <div>
+                                        <p className="font-medium text-foreground flex items-center gap-2">
+                                            <PenTool className="w-4 h-4 text-blue-600" />
+                                            Tulis Judul dan Isi Artikel
+                                        </p>
+                                        <p className="text-xs text-muted-foreground mt-1">Buat judul yang menarik dan tulis isi artikel Anda. Maksimal 4.000 karakter (sekitar 600 kata).</p>
+                                    </div>
+                                </div>
+                               
+                                <div className="flex items-start gap-3 p-3 rounded-lg bg-white/60 ">
+                                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">4</div>
+                                    <div>
+                                        <p className="font-medium text-foreground flex items-center gap-2">
+                                            <Image className="w-4 h-4 text-blue-600" />
+                                            Tambah Gambar
+                                        </p>
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                            <span className="text-red-600 font-semibold">Tambahkan Foto Terbaik anda</span> sebagai gambar utama artikel.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3 p-3 rounded-lg bg-white/60 ">
+                                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">5</div>
+                                    <div>
+                                        <p className="font-medium text-foreground flex items-center gap-2">
+                                            <Send className="w-4 h-4 text-blue-600" />
+                                            Kirim untuk Direview
+                                        </p>
+                                        <p className="text-xs text-muted-foreground mt-1">Kalau sudah selesai, tekan tombol "Kirim untuk Review". Tim redaksi akan cek artikel Anda dalam 1-3 hari kerja.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </Card>
+
                     {/* Subscription Card */}
                     <Card className=" border-primary/20">
 

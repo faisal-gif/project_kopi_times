@@ -24,7 +24,7 @@ class RegisterUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:15',
+            'name' => 'required|string|max:30',
             'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'prov' => 'required|string|max:100',
             'city' => 'required|string|max:100',
@@ -40,7 +40,7 @@ class RegisterUserRequest extends FormRequest
     {
         return [
             'name.required' => 'Nama lengkap wajib diisi.',
-            'name.max' => 'Nama Lengkap tidak boleh lebih 15',
+            'name.max' => 'Nama Lengkap tidak boleh lebih 30 karakter',
             'email.required' => 'Alamat email tidak boleh kosong.',
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email ini sudah terdaftar, silakan gunakan email lain.',
