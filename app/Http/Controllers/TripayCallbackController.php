@@ -62,7 +62,6 @@ class TripayCallbackController extends Controller
                 if ($newsPackage->jenis_periode == 'hari') {
                     $user->dateexp = $startDate->addDays($newsPackage->period);
                 } elseif ($newsPackage->jenis_periode == 'bulan') {
-                    dd($startDate->addMonths($newsPackage->period));
                     $user->dateexp = $startDate->addMonths($newsPackage->period);
                 } elseif ($newsPackage->jenis_periode == 'tahun') {
                     $user->dateexp = $startDate->addYears($newsPackage->period);
