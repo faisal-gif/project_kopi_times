@@ -47,13 +47,10 @@ class TripayCallbackController extends Controller
                 $user->quota_news += (int) $newsPackage->quota;
 
                 if ($user->dateexp == null) {
-                    // Jika null, mulai dari hari ini
                     $startDate = now();
                 } elseif (now() > $user->dateexp) {
-                 
                     $startDate = now();
                 } else {
-                    // Jika tidak melebihi hari ini (sudah expired), tambah dari dateexp lama
                     $startDate = $user->dateexp;
                 }
 
