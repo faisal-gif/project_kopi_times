@@ -109,7 +109,7 @@ export default function AuthenticatedLayout({ header, children }) {
                             className={linkClass(isActive('news.*'))}
                         >
                             <NewspaperIcon size={16} />
-                            News
+                            Opini
                         </Link>
                     </li>
                     <li>
