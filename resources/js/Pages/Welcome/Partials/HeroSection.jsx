@@ -17,11 +17,11 @@ function HeroSection() {
             />
 
             <div className="container mx-auto px-4 py-20 relative z-10">
-              
-                  
-               
+
+
+
                 <div className="max-w-4xl mx-auto text-center">
-                      <Alert className='mb-8' type='warning' title={'Pengumuman'} message={'Pengumuman sistem pembayaran sedang maintenance mohon maaf atas ketidaknyamanannya'} />
+                    {/* <Alert className='mb-8' type='warning' title={'Pengumuman'} message={'Pengumuman sistem pembayaran sedang maintenance mohon maaf atas ketidaknyamanannya'} /> */}
                     {/* Badge */}
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-base-200 text-primary text-sm font-medium mb-8 animate-fade-in">
                         <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />

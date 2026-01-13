@@ -46,7 +46,7 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
             }
         >
             <Head title="Dashboard" />
-            <Alert type='warning' title={'Pengumuman sistem pembayaran sedang maintenance'} />
+            {/* <Alert type='warning' title={'Pengumuman sistem pembayaran sedang maintenance'} /> */}
             <div className="">
                 <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-4 ">
 
