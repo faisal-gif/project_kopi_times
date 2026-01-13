@@ -139,7 +139,7 @@ class ProfileController extends Controller
         // Teks Nama (Tengah)
         $image->text($user->nama, $centerX, 1150, function ($font) {
             $font->filename(public_path('fonts/Montserrat-SemiBold.ttf'));
-            $font->size(60);
+            $font->size(50);
             $font->color('a80000'); // Merah gelap
             $font->align('center');
         });

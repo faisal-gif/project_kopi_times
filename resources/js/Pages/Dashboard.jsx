@@ -122,7 +122,7 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
                                     <div>
                                         <p className="font-medium text-foreground flex items-center gap-2">
                                             <PenTool className="w-4 h-4 text-blue-600" />
-                                            Tulis Judul dan Isi Artikel
+                                            Tulis Judul dan Isi Opini
                                         </p>
                                         <p className="text-xs text-muted-foreground mt-1">Buat judul yang menarik dan tulis isi artikel Anda. Maksimal 4.000 karakter (sekitar 600 kata).</p>
                                     </div>
