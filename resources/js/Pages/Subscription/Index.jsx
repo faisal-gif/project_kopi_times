@@ -59,12 +59,7 @@ function Index({ newsPackages, newsSatuan, userPackage }) {
                             <h2 className='text-2xl font-bold'>Add Ons</h2>
                             {/* Pricing Cards */}
                             <div
-                                className={`grid gap-8 max-w-5xl mx-auto
-                            ${newsSatuan.length === 1
-                                        ? "grid-cols-1 justify-items-center"
-                                        : "grid-cols-1 md:grid-cols-3"
-                                    }
-                `}>
+                                className={`grid gap-8 max-w-5xl mx-auto grid-cols-1 md:grid-cols-3`}>
                                 {newsSatuan.map((plan) => (
                                     <Card
                                         key={plan.name}
@@ -127,7 +122,12 @@ function Index({ newsPackages, newsSatuan, userPackage }) {
                         <div className='flex flex-col gap-4'>
                             <h2 className='text-2xl font-bold'>Paket</h2>
                             <div
-                                className={`grid gap-8 max-w-5xl mx-auto grid-cols-1 md:grid-cols-3`}>
+                                className={`grid gap-8 max-w-5xl mx-auto
+                            ${newsPackages.length === 1
+                                        ? "grid-cols-1 justify-items-center"
+                                        : "grid-cols-1 md:grid-cols-3"
+                                    }
+                `}>
                                 {newsPackages.map((plan) => (
                                     <Card
                                         key={plan.name}
