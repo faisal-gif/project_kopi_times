@@ -48,6 +48,7 @@ class TripayCallbackController extends Controller
                     // Jika null, mulai dari hari ini
                     $startDate = now();
                 } elseif ($user->dateexp->isFuture()) {
+                    dd($user->dateexp->isFuture());
                     // Jika melebihi hari ini (masih aktif), mulai dari hari ini (Reset)
                     $startDate = now();
                 } else {
