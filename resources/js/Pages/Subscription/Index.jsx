@@ -55,7 +55,7 @@ function Index({ newsPackages, newsSatuan, userPackage }) {
                             </div>
 
                         </Card>
-                        <div className='flex flex-col max-w-5xl mx-auto gap-4'>
+                        <div className='flex flex-col max-w-5xl mx-auto gap-8'>
                             <h2 className='text-2xl font-bold'>Add Ons</h2>
                             {/* Pricing Cards */}
                             <div
@@ -119,7 +119,7 @@ function Index({ newsPackages, newsSatuan, userPackage }) {
                         </div>
 
                         {/* Pricing Cards */}
-                        <div className='flex flex-col gap-4  max-w-5xl mx-auto'>
+                        <div className='flex flex-col gap-8 mt-8  max-w-5xl mx-auto'>
                             <h2 className='text-2xl font-bold'>Paket</h2>
                             <div
                                 className={`grid gap-8 
