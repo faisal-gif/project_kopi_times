@@ -55,11 +55,11 @@ function Index({ newsPackages, newsSatuan, userPackage }) {
                             </div>
 
                         </Card>
-                        <div className='flex flex-col gap-4'>
+                        <div className='flex flex-col max-w-5xl mx-auto gap-4'>
                             <h2 className='text-2xl font-bold'>Add Ons</h2>
                             {/* Pricing Cards */}
                             <div
-                                className={`grid gap-8 max-w-5xl mx-auto grid-cols-1 md:grid-cols-3`}>
+                                className={`grid gap-8 grid-cols-1 md:grid-cols-3`}>
                                 {newsSatuan.map((plan) => (
                                     <Card
                                         key={plan.name}
@@ -119,10 +119,10 @@ function Index({ newsPackages, newsSatuan, userPackage }) {
                         </div>
 
                         {/* Pricing Cards */}
-                        <div className='flex flex-col gap-4'>
+                        <div className='flex flex-col gap-4  max-w-5xl mx-auto'>
                             <h2 className='text-2xl font-bold'>Paket</h2>
                             <div
-                                className={`grid gap-8 max-w-5xl mx-auto
+                                className={`grid gap-8 
                             ${newsPackages.length === 1
                                         ? "grid-cols-1 justify-items-center"
                                         : "grid-cols-1 md:grid-cols-3"
