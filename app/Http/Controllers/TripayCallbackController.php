@@ -52,7 +52,7 @@ class TripayCallbackController extends Controller
                     $startDate = now();
                 } else {
                     // Jika tidak melebihi hari ini (sudah expired), tambah dari dateexp lama
-                    $startDate = Carbon::parse($user->dateexp);
+                    $startDate = $user->dateexp;
                 }
 
                 // 3. Tambahkan durasi ke $startDate
