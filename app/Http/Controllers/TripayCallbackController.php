@@ -63,9 +63,8 @@ class TripayCallbackController extends Controller
                     $user->dateexp = $startDate->addYears($newsPackage->period);
                 }
 
-                if ($newsPackage->kategori_produk == 'paket') {
-                    $user->package_id = $newsPackage->id;
-                }
+
+                $user->package_id = $newsPackage->id;
                 $user->status = 1;
                 $user->type = $newsPackage->type;
                 $user->save();
