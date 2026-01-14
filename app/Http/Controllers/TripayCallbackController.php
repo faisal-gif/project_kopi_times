@@ -48,10 +48,10 @@ class TripayCallbackController extends Controller
 
                 if ($user->dateexp == null) {
                     $startDate = Carbon::now();
-                } elseif (Carbon::now() > $user->dateexp) {
+                } elseif (Carbon::now() > Carbon::parse($user->dateexp)) {
                     $startDate = Carbon::now();
                 } else {
-                    $startDate = $user->dateexp;
+                    $startDate = Carbon::parse($user->dateexp);
                 }
 
                 // 3. Tambahkan durasi ke $startDate
