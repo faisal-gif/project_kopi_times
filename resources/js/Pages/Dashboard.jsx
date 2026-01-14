@@ -5,7 +5,7 @@ import MemberCard from '@/Components/MemberCard';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatDate } from '@/Utils/formatter';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { AlertTriangle, Badge, BookOpen, Calendar, CheckCircle, CreditCard, Crown, Image, MousePointer, PenTool, Plus, Send, TrendingUp } from 'lucide-react';
+import { AlertTriangle, Badge, BookOpen, Calendar, CheckCircle, CreditCard, Crown, Image, Menu, MousePointer, PenTool, Phone, Plus, Send, Smartphone, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Dashboard({ auth_user, total_news, paket_terdaftar, pending_news, publish_news }) {
@@ -84,7 +84,7 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
                         </div>
                     </Card>
 
-                      {/* Tutorial Card */}
+                    {/* Tutorial Card */}
                     <Card className="border-primary/20 bg-gradient-to-br from-blue-50 to-indigo-50">
 
                         <div className="flex items-center gap-2 text-lg">
@@ -97,6 +97,16 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
                                 Yuk ikuti langkah mudah ini untuk mengirim artikel ke Kopi TIMES!
                             </p>
                             <div className="space-y-3">
+                                <div className="lg:hidden flex items-start gap-3 p-3 rounded-lg bg-white/60">
+                                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold"><Smartphone className='w-4 h-4' /> </div>
+                                    <div>
+                                        <p className="font-medium text-foreground flex items-center gap-2">
+                                            <Menu className="w-4 h-4 text-blue-600" />
+                                            Klik <Menu className="w-3 h-3" />
+                                        </p>
+                                        <p className="text-xs text-muted-foreground mt-1 flex gap-1">Klik button <span><Menu className="w-3 h-3" /></span> di pojok kiri atas untuk memunculkan list menu.</p>
+                                    </div>
+                                </div>
                                 <div className="flex items-start gap-3 p-3 rounded-lg bg-white/60">
                                     <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">1</div>
                                     <div>
@@ -127,7 +137,7 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
                                         <p className="text-xs text-muted-foreground mt-1">Buat judul yang menarik dan tulis isi artikel Anda. Maksimal 4.000 karakter (sekitar 600 kata).</p>
                                     </div>
                                 </div>
-                               
+
                                 <div className="flex items-start gap-3 p-3 rounded-lg bg-white/60 ">
                                     <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">4</div>
                                     <div>
