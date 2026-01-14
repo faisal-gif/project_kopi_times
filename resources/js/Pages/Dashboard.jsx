@@ -104,7 +104,7 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
                                             <Menu className="w-4 h-4 text-blue-600" />
                                             Klik <Menu className="w-3 h-3" />
                                         </p>
-                                        <p className="text-xs text-muted-foreground mt-1 flex">Klik button <Menu className="w-3 h-3" /> di pojok kiri atas untuk memunculkan list menu.</p>
+                                        <p className="text-xs text-muted-foreground mt-1 ">Klik button <Menu className="inline w-3 h-3" /> di pojok kiri atas untuk memunculkan list menu.</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-3 p-3 rounded-lg bg-white/60">
