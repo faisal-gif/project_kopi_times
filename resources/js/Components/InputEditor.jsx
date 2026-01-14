@@ -4,11 +4,9 @@ import { Editor } from '@tinymce/tinymce-react';
 export default function InputEditor({ value, onChange }) {
     return (
         <Editor
-            // 1. GUNAKAN API KEY (Daftar di tiny.cloud untuk dapat gratis)
-            // Atau kosongkan jika ingin pakai mode warning/self-hosted
+
             tinymceScriptSrc="/vendor/tinymce/tinymce.min.js"
             referrerPolicy='origin'
-            // 2. Binding Data
             value={value}
             onEditorChange={(content, editor) => {
                 onChange(content);
@@ -21,6 +19,13 @@ export default function InputEditor({ value, onChange }) {
                 forced_root_block: 'p',
                 noneditable_class: 'instagram-media',
                 extended_valid_elements: '+script[language|type|src]',
+                contextmenu: false,
+                quickbars_insert_toolbar: false,
+                quickbars_selection_toolbar: false,
+                mobile: {
+                    menubar: false,
+                    toolbar_mode: 'wrap',
+                },
 
                 plugins: [
                     'searchreplace', 'lists', 'advlist', 'link',
@@ -45,7 +50,12 @@ export default function InputEditor({ value, onChange }) {
                 branding: false,
                 promotion: false,
 
-                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                content_style: `
+                    body { 
+                        body { font-family:Helvetica,Arial,sans-serif; font-size:16px; }
+                        .instagram-media { margin: 10px auto !important; }
+                    }
+                `,
             }}
         />
     );
