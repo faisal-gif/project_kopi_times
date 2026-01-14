@@ -51,10 +51,14 @@ export default function InputEditor({ value, onChange }) {
                 promotion: false,
 
                 content_style: `
+                    html, body { height: 100%; margin: 0; } 
                     body { 
-                        body { font-family:Helvetica,Arial,sans-serif; font-size:16px; }
-                        .instagram-media { margin: 10px auto !important; }
+                        font-family:Helvetica,Arial,sans-serif; 
+                        font-size:16px; 
+                        padding: 10px; /* Memberi ruang napas di pinggir */
+                        box-sizing: border-box; 
                     }
+                    .instagram-media { margin: 10px auto !important; }
                 `,
             }}
         />
