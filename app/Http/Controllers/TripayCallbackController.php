@@ -55,7 +55,7 @@ class TripayCallbackController extends Controller
                 }
 
                 // 3. Tambahkan durasi ke $startDate
-                $user->dateexp = $startDate->copy->addMonths($newsPackage->period);
+                $user->dateexp = $startDate->copy()->addMonths($newsPackage->period);
 
 
                 $user->package_id = $newsPackage->id;
