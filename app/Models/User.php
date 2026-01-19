@@ -35,6 +35,7 @@ class User extends Authenticatable
         'address',
         'package_id',
         'dateexp',
+        'type',
         'quota_news',
         'instansi',
         'avatar',
