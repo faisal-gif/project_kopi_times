@@ -73,8 +73,13 @@ class NewsController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->quota_news == 0 || $user->dateexp < now()) {
+        if ($user->quota_news == 0) {
             return redirect()->route('news.index');
+        }
+
+
+        if ($user->dateexp < now()) {
+            return redirect()->route('news.index')->with('error', 'Masa aktif akun Anda telah berakhir. Silakan perbarui langganan Anda.');
         }
 
         $narsum_detail = [];
