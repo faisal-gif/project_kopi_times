@@ -73,7 +73,7 @@ class NewsController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->quota_news == 0) {
+        if ($user->quota_news == 0 || $user->dateexp < now()) {
             return redirect()->route('news.index');
         }
 

@@ -2,7 +2,7 @@ import Card from '@/Components/Card';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatDate } from '@/Utils/formatter'
 import { Head, Link } from '@inertiajs/react'
-import { ArrowLeft, Briefcase, Calendar, Clock, MapPin, Phone, User } from 'lucide-react';
+import { ArrowLeft, Briefcase, Calendar, Clock, Link2Icon, MapPin, Phone, User } from 'lucide-react';
 import React from 'react'
 
 function Show({ news }) {
@@ -72,15 +72,15 @@ function Show({ news }) {
                                 </div>
                             </div>
                         </div>
-
-                        <Card className="mb-6">
-                            <Link2Icon className="w-5 h-5 text-primary mb-4" />
-                            <p>Link Artikel: </p>
-                            <a href={news.url} target="_blank" className="text-blue-600 underline">
-                                {news.url}
-                            </a>
-                        </Card>
-
+                        {news.url && (
+                            <Card className="mb-6">
+                                <Link2Icon className="w-5 h-5 text-primary mb-4" />
+                                <p>Link Artikel: </p>
+                                <a href={news.url} target="_blank" className="text-blue-600 underline">
+                                    {news.url}
+                                </a>
+                            </Card>
+                        )}
                         <Card title={"Gambar Artikel"} className="mb-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {[news.image].map((image, index) => (

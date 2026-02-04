@@ -139,7 +139,7 @@ function Index({ news, writers, kanals, filters }) {
 
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 {/* Button Tambah User */}
-                {user?.quota_news > 0 ? (
+                {user?.quota_news > 0 && new Date(user?.dateexp) > new Date() ? (
                   <Link href={route('news.create')} className="btn btn-primary rounded-lg">
                     <Plus size={16} /> Tambah Opini
                   </Link>
@@ -151,7 +151,7 @@ function Index({ news, writers, kanals, filters }) {
                           <AlertTriangle className="w-5 h-5 text-destructive" />
                         </div>
                         <div>
-                          <p className="font-semibold text-destructive">Kuota artikel Anda sudah habis!</p>
+                          <p className="font-semibold text-destructive">Kuota artikel atau masa berlaku Anda sudah habis!</p>
                           <p className="text-sm text-muted-foreground">Upgrade paket membership untuk menambah kuota.</p>
                         </div>
                       </div>
