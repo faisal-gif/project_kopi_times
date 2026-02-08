@@ -1,34 +1,34 @@
 import Card from "@/Components/Card";
 import LandingLayout from "@/Layouts/LandingLayout";
 import { Head } from "@inertiajs/react";
-import { Heart, Shield, Lightbulb, Globe, Users, Target, Award, TrendingUp } from "lucide-react";
+import { Globe, Users, Target, Award, TrendingUp, Newspaper } from "lucide-react";
 
 
 const Tentang = () => {
     const values = [
         {
-            icon: Heart,
-            title: "Jurnalisme Positif",
-            description:
-                "Kami percaya kekuatan kata-kata dapat menginspirasi perubahan. Setiap artikel di AJP harus membawa dampak positif bagi pembaca.",
-        },
-        {
-            icon: Shield,
-            title: "Kredibel & Terpercaya",
-            description:
-                "Setiap artikel melalui proses moderasi untuk memastikan kualitas dan kebenaran informasi yang disampaikan.",
-        },
-        {
-            icon: Lightbulb,
-            title: "Ide Tanpa Batas",
-            description:
-                "Platform terbuka bagi siapa saja yang ingin berbagi ide, cerita, dan pengetahuan yang bermanfaat.",
-        },
-        {
             icon: Globe,
-            title: "Jangkauan Luas",
+            title: "Jangkauan Nasional",
             description:
-                "Tulisanmu akan dibaca oleh ribuan pembaca dari seluruh Indonesia yang mencari konten berkualitas.",
+                "Tulisan Anda berpotensi dibaca oleh jutaan pengunjung TIMES Indonesia.",
+        },
+        {
+            icon: Users,
+            title: "Membangun Personal Branding",
+            description:
+                "Perkuat profil profesional Anda sebagai pakar atau pemikir di bidang spesifik.",
+        },
+        {
+            icon: Award,
+            title: "Ruang Diskusi Intelektual",
+            description:
+                "Wadah bagi pemikiran yang konstruktif, kritis, dan solutif untuk kemajuan bangsa.",
+        },
+        {
+            icon: Newspaper,
+            title: "Indeks Search Engine",
+            description:
+                "Artikel opini terindeks beragam Search Engine seperti Google dan Yahoo.",
         },
     ];
 
@@ -57,8 +57,7 @@ const Tentang = () => {
                                     Platform Jurnalisme Positif Indonesia
                                 </h1>
                                 <p className="text-lg text-muted-foreground leading-relaxed">
-                                    AJP hadir sebagai wadah bagi para penulis Indonesia untuk menyuarakan
-                                    cerita-cerita positif yang menginspirasi dan membangun bangsa.
+                                    Membership Penulis Kopi TIMES adalah program keanggotaan bagi penulis yang ingin terlibat aktif dalam ekosistem gagasan di TIMES Indonesia. Program ini dirancang bukan sekadar untuk memuat tulisan, tetapi untuk menumbuhkan penulis, memperkuat kualitas gagasan, dan memperluas dampak pemikiran ke ruang publik.
                                 </p>
                             </div>
                         </div>
