@@ -41,7 +41,7 @@ const Tentang = () => {
 
     return (
         <>
-            <Head title="Tentang Kamu" />
+            <Head title="Tentang Kami" />
 
 
             <LandingLayout>
@@ -51,7 +51,7 @@ const Tentang = () => {
                         <div className="max-w-7xl mx-auto px-4">
                             <div className="max-w-3xl mx-auto text-center">
                                 <span className="text-sm font-medium text-primary uppercase tracking-wider">
-                                    Tentang AJP
+                                    Tentang Kopi TIMES
                                 </span>
                                 <h1 className="font-serif text-4xl md:text-5xl font-bold mt-3 mb-6">
                                     Platform Klub opini Nasional
