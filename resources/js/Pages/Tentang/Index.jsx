@@ -54,7 +54,7 @@ const Tentang = () => {
                                     Tentang AJP
                                 </span>
                                 <h1 className="font-serif text-4xl md:text-5xl font-bold mt-3 mb-6">
-                                    Platform Jurnalisme Positif Indonesia
+                                    Platform Klub opini Nasional
                                 </h1>
                                 <p className="text-lg text-muted-foreground leading-relaxed">
                                     Membership Penulis Kopi TIMES adalah program keanggotaan bagi penulis yang ingin terlibat aktif dalam ekosistem gagasan di TIMES Indonesia. Program ini dirancang bukan sekadar untuk memuat tulisan, tetapi untuk menumbuhkan penulis, memperkuat kualitas gagasan, dan memperluas dampak pemikiran ke ruang publik.

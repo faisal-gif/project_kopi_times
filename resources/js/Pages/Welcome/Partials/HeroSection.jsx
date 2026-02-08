@@ -25,7 +25,7 @@ function HeroSection() {
                     {/* Badge */}
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-base-200 text-primary text-sm font-medium mb-8 animate-fade-in">
                         <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                        Platform Jurnalisme Terdepan di Indonesia
+                        Platform Klub opini Nasional
                     </div>
 
                     {/* Headline */}
