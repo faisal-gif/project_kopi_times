@@ -55,6 +55,11 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    public function kategori()
+    {
+        return $this->belongsTo(KategoriKt::class, 'kategori');
+    }
+
     /**
      * Get the attributes that should be cast.
      *
