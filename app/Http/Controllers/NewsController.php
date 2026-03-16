@@ -191,6 +191,7 @@ class NewsController extends Controller
         if (!$news) {
             return response()->json([
                 'error' => true
+                'data' => null,
             ], 404);
         }
 
