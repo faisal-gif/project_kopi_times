@@ -185,9 +185,8 @@ class NewsController extends Controller
 
     public function apiShow($id)
     {
-        $news = News::with(['writer:id,nama,avatar,kategori', 'writer.kategori'])->where('is_code', $id)->first();
+        $news = News::with(['writer:id,nama,avatar,kategori', 'writer.kategoriKt'])->where('is_code', $id)->first();
 
-        dd($news);
 
         if (!$news) {
             return response()->json([
@@ -200,8 +199,8 @@ class NewsController extends Controller
             'data' => [
                 'is_code' => $news->is_code,
                 'writer_name'   => $news->writer->nama,
-                'writer_profesi' => $news->writer->kategori->name,
-                'writer_avatar' => $news->writer->avatar ? url(Storage::url($news->writer->avatar)) : null,         
+                'writer_profesi' => $news->writer?->kategoriKt?->name,
+                'writer_avatar'  => $news->writer?->avatar ? url(Storage::url($news->writer->avatar)) : null,
             ]
         ]);
     }

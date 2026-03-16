@@ -55,9 +55,9 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    public function kategori()
+    public function kategoriKt()
     {
-        return $this->belongsTo(KategoriKt::class, 'kategori');
+        return $this->belongsTo(KategoriKt::class, 'kategori', 'kategori_id');
     }
 
     /**
