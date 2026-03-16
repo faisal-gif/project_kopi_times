@@ -187,6 +187,8 @@ class NewsController extends Controller
     {
         $news = News::with(['writer:id,nama,avatar,kategori', 'writer.kategori'])->where('is_code', $id)->first();
 
+        dd($news);
+
         if (!$news) {
             return response()->json([
                 'error' => true
