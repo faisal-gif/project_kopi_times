@@ -185,7 +185,7 @@ class NewsController extends Controller
 
     public function apiShow($id)
     {
-        $news = News::with('writer:id,nama')->find($id);
+        $news = News::with('writer:id,nama')->where('is_code', $id)->first();
 
         if (!$news) {
             return response()->json([

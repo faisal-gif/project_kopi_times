@@ -57,7 +57,7 @@ const Tentang = () => {
                                     Platform Klub opini Nasional
                                 </h1>
                                 <p className="text-lg text-muted-foreground leading-relaxed">
-                                    Membership Penulis Kopi TIMES adalah program keanggotaan bagi penulis yang ingin terlibat aktif dalam ekosistem gagasan di TIMES Indonesia. Program ini dirancang bukan sekadar untuk memuat tulisan, tetapi untuk menumbuhkan penulis, memperkuat kualitas gagasan, dan memperluas dampak pemikiran ke ruang publik.
+                                  Kopi TIMES adalah program keanggotaan eksklusif bagi penulis yang ingin terlibat aktif dalam ekosistem gagasan di TIMES Indonesia. Program ini dirancang bukan sekadar untuk memuat tulisan, tetapi sebagai kawah candradimuka bagi para intelektual untuk mengawal diskursus publik di skala nasional.
                                 </p>
                             </div>
                         </div>
