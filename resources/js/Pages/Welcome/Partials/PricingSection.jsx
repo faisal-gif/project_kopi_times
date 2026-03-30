@@ -102,7 +102,7 @@ const PricingSection = ({ newsPackages }) => {
                 <p className="text-center text-muted-foreground text-sm mt-12">
                     Punya pertanyaan? Hubungi tim kami di{" "}
                     <a href="mailto:hello@ajp.id" className="text-primary hover:underline">
-                        hello@ajp.id
+                     redaksi@timesindonesia.co.id
                     </a>
                 </p>
             </div>
