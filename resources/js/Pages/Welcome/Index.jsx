@@ -7,6 +7,7 @@ import HeroSection from './Partials/HeroSection';
 import PricingSection from './Partials/PricingSection';
 import { Head, usePage } from '@inertiajs/react';
 import Alert from '@/Components/Alert';
+import TestimonialsSection from './Partials/TestimonialsSection';
 
 
 export default function Index({ newsPackages }) {
@@ -42,6 +43,7 @@ export default function Index({ newsPackages }) {
                 <HeroSection />
                 <AboutSection />
                 <FeaturesSection />
+                <TestimonialsSection />
                 <PricingSection newsPackages={newsPackages} />
             </LandingLayout>
         </>
