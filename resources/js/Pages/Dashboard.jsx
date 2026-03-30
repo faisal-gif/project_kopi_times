@@ -2,10 +2,11 @@ import Alert from '@/Components/Alert';
 import AvatarCrop from '@/Components/AvatarCrop';
 import Card from '@/Components/Card';
 import MemberCard from '@/Components/MemberCard';
+import { Button } from '@/Components/ui/button';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatDate } from '@/Utils/formatter';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { AlertTriangle, Badge, BookOpen, Calendar, CheckCircle, CreditCard, Crown, Image, Menu, MousePointer, PenTool, Phone, Plus, Send, Smartphone, TrendingUp } from 'lucide-react';
+import { AlertTriangle, Badge, BookOpen, Calendar, CheckCircle, CreditCard, Crown, ExternalLink, Image, Menu, MessageCircle, MousePointer, PenTool, Phone, Plus, Send, Smartphone, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Dashboard({ auth_user, total_news, paket_terdaftar, pending_news, publish_news }) {
@@ -85,7 +86,7 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
                     </Card>
 
                     {/* Tutorial Card */}
-                    <Card className="border-primary/20 bg-gradient-to-br from-blue-50 to-indigo-50">
+                    {/* <Card className="border-primary/20 bg-gradient-to-br from-blue-50 to-indigo-50">
 
                         <div className="flex items-center gap-2 text-lg">
                             <BookOpen className="w-5 h-5 text-blue-600" />
@@ -163,105 +164,136 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
                             </div>
                         </div>
 
-                    </Card>
+                    </Card> */}
 
                     {/* Subscription Card */}
-                    <Card className=" border-primary/20">
 
-                        <div className="flex items-center justify-between text-lg">
-                            <div className="flex items-center gap-2">
-                                <Calendar className="w-5 h-5 text-primary" />
-                                Status Membership
-                            </div>
-                            <div className='badge badge-outline badge-primary'>
-                                Level {paket_terdaftar.level}
-                            </div>
-                        </div>
-
-                        <div className="space-y-4 mt-4">
-                            <p className="text-sm font-medium text-muted-foreground mb-6">Masa Berlaku Paket</p>
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="text-muted-foreground">Mulai</span>
-                                <span className="font-medium text-foreground">
-                                    {formatDate(user.created)}
-                                </span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <span className="text-muted-foreground">Berakhir</span>
-                                <span className="font-medium text-foreground">
-                                    {formatDate(user.dateexp)}
-                                </span>
-                            </div>
-                            <div>
-                                {isExpired ? (
-                                    <div className="flex items-center gap-2 text-primary">
-                                        <AlertTriangle className="w-4 h-4" />
-                                        <span className="font-semibold text-sm">Paket sudah berakhir!</span>
-                                    </div>
-                                ) : isExpiringSoon ? (
-                                    <div className="flex items-center gap-2 text-orange-600">
-                                        <AlertTriangle className="w-4 h-4" />
-                                        <span className="font-semibold text-sm">Sisa {daysRemaining} hari lagi</span>
-                                    </div>
-                                ) : (
-                                    <div className="flex items-center gap-2 text-green-600">
-                                        <CheckCircle className="w-4 h-4" />
-                                        <span className="font-semibold text-sm">Aktif - Sisa {daysRemaining} hari</span>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-
-                        <div className="border-t border-border" />
-
-                        {/* Kuota Artikel */}
-                        <div className="space-y-3">
-                            {paket_terdaftar.level != 1 && (
-                                <div className="flex items-center justify-between">
-                                    <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                                        <TrendingUp className={`w-4 h-4 ${isQuotaExhausted ? 'text-destructive' : 'text-primary'}`} />
-                                        Kuota Artikel Bulan Ini
-                                    </p>
-                                    <span className="font-semibold text-foreground text-sm">
-                                        {user.quota_news} / {paket_terdaftar.quota}
-                                    </span>
-                                </div>
-                            )}
-                            {/* <Progress value={quotaPercentage} className="h-2" /> */}
-                            {isQuotaExhausted && (
-                                <div className="space-y-3 mt-10">
-                                    <div className="flex items-center gap-2 text-destructive">
-                                        <AlertTriangle className="w-4 h-4" />
-                                        <span className="font-semibold text-sm">Kuota artikel sudah habis!</span>
-                                    </div>
-                                    <Link className="btn btn-outline btn-primary w-full" href={route('subscription.index')} >
-                                        <Crown className="w-4 h-4 mr-2" />
-                                        Perpanjang / Upgrade Member
-                                    </Link>
-                                </div>
-                            )}
-
-                            {paket_terdaftar.level != 1 && (
-                                <p className="text-xs text-muted-foreground">
-                                    Sisa {user.quota_news} artikel untuk bulan ini.
-                                    {quotaPercentage >= 80 && (
-                                        <span className="text-orange-600 font-medium"> Kuota hampir habis!</span>
-                                    )}
-                                </p>)}
-
-                        </div>
-
-
-
-
-                    </Card>
                     {
                         auth_user.avatar && (<MemberCard user={user} paket_terdaftar={paket_terdaftar} />)
                     }
+                    <div className='flex flex-col gap-2'>
+
+                        <Card className=" border-primary/20">
+
+                            <div className="flex items-center justify-between text-lg">
+                                <div className="flex items-center gap-2">
+                                    <Calendar className="w-5 h-5 text-primary" />
+                                    Status Membership
+                                </div>
+                                <div className='badge badge-outline badge-primary'>
+                                    Level {paket_terdaftar.level}
+                                </div>
+                            </div>
+
+                            <div className="space-y-4 mt-4">
+                                <p className="text-sm font-medium text-muted-foreground mb-6">Masa Berlaku Paket</p>
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-muted-foreground">Mulai</span>
+                                    <span className="font-medium text-foreground">
+                                        {formatDate(user.created)}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-muted-foreground">Berakhir</span>
+                                    <span className="font-medium text-foreground">
+                                        {formatDate(user.dateexp)}
+                                    </span>
+                                </div>
+                                <div>
+                                    {isExpired ? (
+                                        <div className="flex items-center gap-2 text-primary">
+                                            <AlertTriangle className="w-4 h-4" />
+                                            <span className="font-semibold text-sm">Paket sudah berakhir!</span>
+                                        </div>
+                                    ) : isExpiringSoon ? (
+                                        <div className="flex items-center gap-2 text-orange-600">
+                                            <AlertTriangle className="w-4 h-4" />
+                                            <span className="font-semibold text-sm">Sisa {daysRemaining} hari lagi</span>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-2 text-green-600">
+                                            <CheckCircle className="w-4 h-4" />
+                                            <span className="font-semibold text-sm">Aktif - Sisa {daysRemaining} hari</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
 
 
-                    {/* Quota Card */}
+                            <div className="border-t border-border" />
+
+                            {/* Kuota Artikel */}
+                            <div className="space-y-3">
+                                {paket_terdaftar.level != 1 && (
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                                            <TrendingUp className={`w-4 h-4 ${isQuotaExhausted ? 'text-destructive' : 'text-primary'}`} />
+                                            Kuota Artikel Bulan Ini
+                                        </p>
+                                        <span className="font-semibold text-foreground text-sm">
+                                            {user.quota_news} / {paket_terdaftar.quota}
+                                        </span>
+                                    </div>
+                                )}
+                                {/* <Progress value={quotaPercentage} className="h-2" /> */}
+                                {isQuotaExhausted && (
+                                    <div className="space-y-3 mt-10">
+                                        <div className="flex items-center gap-2 text-destructive">
+                                            <AlertTriangle className="w-4 h-4" />
+                                            <span className="font-semibold text-sm">Kuota artikel sudah habis!</span>
+                                        </div>
+                                        <Link className="btn btn-outline btn-primary w-full" href={route('subscription.index')} >
+                                            <Crown className="w-4 h-4 mr-2" />
+                                            Perpanjang / Upgrade Member
+                                        </Link>
+                                    </div>
+                                )}
+
+                                {paket_terdaftar.level != 1 && (
+                                    <p className="text-xs text-muted-foreground">
+                                        Sisa {user.quota_news} artikel untuk bulan ini.
+                                        {quotaPercentage >= 80 && (
+                                            <span className="text-orange-600 font-medium"> Kuota hampir habis!</span>
+                                        )}
+                                    </p>)}
+
+                            </div>
+
+
+
+
+                        </Card>
+
+
+                        {/* Quota Card */}
+
+                        {/* Join WhatsApp Community */}
+                        <Card className=" border-green-500/30 bg-gradient-to-r from-green-500/10 to-green-600/5">
+                            <div className="pt-6">
+                                <div className="flex flex-col md:flex-row items-center gap-6">
+                                    <div className="p-4 rounded-full bg-green-500/15">
+                                        <MessageCircle className="w-10 h-10 text-green-600" />
+                                    </div>
+                                    <div className="flex-1 text-center md:text-left">
+                                        <h3 className="text-xl font-bold text-foreground mb-1">Join Komunitas WhatsApp</h3>
+                                        <p className="text-muted-foreground">
+                                            Bergabung dengan komunitas penulis AJP untuk berdiskusi, berbagi tips, dan mendapatkan update terbaru seputar penulisan artikel.
+                                        </p>
+                                    </div>
+                                    <Button
+                                        asChild
+                                        className="bg-green-600 hover:bg-green-700 text-white gap-2"
+                                    >
+                                        <a className='btn bg-green-600 hover:bg-green-700 text-white gap-2' href="https://chat.whatsapp.com/Lgq2lmuD9wHH7Rh2Udj2M0" target="_blank" rel="noopener noreferrer">
+                                            <MessageCircle className="w-4 h-4" />
+                                            Gabung Sekarang
+                                            <ExternalLink className="w-4 h-4" />
+                                        </a>
+                                    </Button>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
 
                 </div>
             </div>
