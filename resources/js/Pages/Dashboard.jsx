@@ -1,4 +1,5 @@
 import Alert from '@/Components/Alert';
+import ApplicationLogo from '@/Components/ApplicationLogo';
 import AvatarCrop from '@/Components/AvatarCrop';
 import Card from '@/Components/Card';
 import MemberCard from '@/Components/MemberCard';
@@ -270,14 +271,12 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
                         {/* Join WhatsApp Community */}
                         <Card className=" border-green-500/30 bg-gradient-to-r from-green-500/10 to-green-600/5">
                             <div className="pt-6">
-                                <div className="flex flex-col md:flex-row items-center gap-6">
-                                    <div className="p-4 rounded-full bg-green-500/15">
-                                        <MessageCircle className="w-10 h-10 text-green-600" />
-                                    </div>
+                                <div className="flex flex-col  items-center gap-6">
+                                   <ApplicationLogo className="w-28 h-auto" />
                                     <div className="flex-1 text-center md:text-left">
-                                        <h3 className="text-xl font-bold text-foreground mb-1">Join Komunitas WhatsApp</h3>
+                                        <h3 className="text-xl font-bold text-foreground mb-1">Join Komunitas WhatsApp </h3>
                                         <p className="text-muted-foreground">
-                                            Bergabung dengan komunitas penulis AJP untuk berdiskusi, berbagi tips, dan mendapatkan update terbaru seputar penulisan artikel.
+                                           Bergabung dengan komunitas penulis Kopi TIMES untuk berdiskusi dan mendapatkan update terbaru seputar karya penulis lainnya.
                                         </p>
                                     </div>
                                     <Button
