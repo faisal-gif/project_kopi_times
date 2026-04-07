@@ -186,7 +186,7 @@ class NewsController extends Controller
     public function apiShow($id)
     {
         $news = News::with(['writer:id,nama,avatar,kategori,package_id', 'writer.kategoriKt','writer.paket'])->where('is_code', $id)->first();
-dd($news);
+
         if (!$news) {
             return response()->json([
                 'error' => true,
