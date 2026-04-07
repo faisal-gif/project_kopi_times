@@ -59,6 +59,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(KategoriKt::class, 'kategori', 'kategori_id');
     }
+    public function paket()
+    {
+        return $this->belongsTo(NewsPackage::class, 'package_id', 'id');
+    }
 
     /**
      * Get the attributes that should be cast.
