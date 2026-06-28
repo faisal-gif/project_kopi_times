@@ -102,7 +102,6 @@ class NewsController extends Controller
      */
     public function store(NewsFormRequest $request)
     {
-
         $auth = Auth::user();
         $title = $request->title;
 
@@ -111,28 +110,18 @@ class NewsController extends Controller
         $cleanCaption = preg_replace('/[^\x00-\x{FFFF}]/u', '', $request->caption);
 
         $image_1 = null;
-        $image_2 = null;
-        $image_3 = null;
-
+      
 
         do {
             $is_code = 'KT' . strtoupper(Str::random(8));
         } while (News::where('is_code', $is_code)->exists());
 
+        // Menyimpan file secara langsung
         if ($request->hasFile('image')) {
             $image_1 = $this->storeImage($request->file('image'), $title . '-1');
         }
 
-        if ($request->hasFile('image_2')) {
-            $image_2 = $this->storeImage($request->file('image_2'), $title . '-2');
-        }
-
-        if ($request->hasFile('image_3')) {
-            $image_3 = $this->storeImage($request->file('image_3'), $title . '-3');
-        }
-
-
-
+      
         DB::beginTransaction();
 
         News::create([
@@ -144,9 +133,7 @@ class NewsController extends Controller
             'profesi' => $request->profesi,
             'contact' => $request->contact,
             'datetime' => now(),
-            'image' => url(Storage::url($image_1)),
-            'image2' => url(Storage::url($image_2)),
-            'image3' => url(Storage::url($image_3)),
+            'image' => $image_1 ? url(Storage::url($image_1)) : null,
             'caption' =>  $cleanCaption,
             'pewarta_id' => $auth->id,
             'type' => $auth->type,
@@ -158,18 +145,17 @@ class NewsController extends Controller
         $user->save();
 
         DB::commit();
+
         return redirect()->route('news.index')->with('success', 'Berita berhasil ditambahkan.');
     }
 
     private function storeImage($image, $title)
     {
         $slug = Str::slug($title);
-        $manager = new ImageManager(new Driver());
-        $image = $manager->read($image);
-        $encode = $image->toWebp();
-        $path = 'images/berita/' . $slug . '-' . time() . '.webp';
-        Storage::disk('public')->put($path, $encode);
-        return $path;
+        $extension = $image->getClientOriginalExtension() ?: 'webp';
+        $filename = $slug . '-' . time() . '.' . $extension;
+
+        return $image->storeAs('images/berita', $filename, 'public');
     }
 
     /**
@@ -185,7 +171,7 @@ class NewsController extends Controller
 
     public function apiShow($id)
     {
-        $news = News::with(['writer:id,nama,avatar,kategori,package_id', 'writer.kategoriKt','writer.paket'])->where('is_code', $id)->first();
+        $news = News::with(['writer:id,nama,avatar,kategori,package_id', 'writer.kategoriKt', 'writer.paket'])->where('is_code', $id)->first();
 
         if (!$news) {
             return response()->json([
