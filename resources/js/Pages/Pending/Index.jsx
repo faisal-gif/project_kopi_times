@@ -5,7 +5,6 @@ import { Check, Clock, Mail, MessageCircle, Phone } from 'lucide-react'
 import React from 'react'
 
 export default function Index({ channel, newsPackage }) {
-
     const { auth } = usePage().props;
     const user = auth.user;
 
@@ -14,15 +13,22 @@ export default function Index({ channel, newsPackage }) {
         package_id: newsPackage.id,
     });
 
-    // const handleSubmit = (e) => {
-    //     e.preventDefault();
-    //     post(route('account.pending.payment'));
-    // }
+    // 1. Cari data metode pembayaran yang sedang dipilih
+    const selectedChannel = channel.find(c => c.code === data.paymentMethod);
+    
+    // 2. Hitung total fee customer (flat + (harga * persentase))
+    const feeCustomerFlat = selectedChannel?.fee_customer?.flat || 0;
+    // Persentase dibagi 100 karena format dari API biasanya murni angka persen (misal 0.7 untuk 0.7%)
+    const feeCustomerPercent = selectedChannel?.fee_customer?.percent || 0;
+    const totalFeeCustomer = feeCustomerFlat + (newsPackage.price * (feeCustomerPercent / 100));
+
+    // 3. Hitung Grand Total (Harga Paket + Fee Customer)
+    const grandTotal = newsPackage.price + totalFeeCustomer;
+
     return (
         <>
             <Head title='Konfirmasi Akun' />
             <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
-
                 <div className='max-w-3xl mx-auto space-y-6'>
                     {/* Success message */}
                     <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-6">
@@ -42,7 +48,6 @@ export default function Index({ channel, newsPackage }) {
 
                     {/* Payment Card */}
                     <Card className="w-full">
-
                         <div className="space-y-6">
                             {/* Order Summary */}
                             <div className="p-6 border-b border-border">
@@ -51,7 +56,6 @@ export default function Index({ channel, newsPackage }) {
                                 <div className="flex items-center justify-between p-4 bg-base-300/50 rounded-xl">
                                     <div>
                                         <span className="font-semibold">Paket {newsPackage.name}</span>
-                                        {/* <p className="text-sm text-muted-foreground">{plan.description}</p> */}
                                     </div>
                                     <div className="text-right">
                                         <span className=" text-xl font-bold">{formatRupiah(newsPackage.price)}</span>
@@ -59,12 +63,18 @@ export default function Index({ channel, newsPackage }) {
                                     </div>
                                 </div>
 
+                                {/* Menambahkan baris untuk menampilkan Fee Customer */}
+                                <div className="flex items-center justify-between mt-4 px-2">
+                                    <span className="text-muted-foreground">Biaya Admin (Fee Customer)</span>
+                                    <span className="font-semibold">{formatRupiah(totalFeeCustomer)}</span>
+                                </div>
+
                                 <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
                                     <span className="font-semibold">Total Pembayaran</span>
-                                    <span className="text-2xl font-bold text-primary">{formatRupiah(newsPackage.price)}</span>
+                                    {/* Mengubah nilai total pembayaran menjadi grandTotal */}
+                                    <span className="text-2xl font-bold text-primary">{formatRupiah(grandTotal)}</span>
                                 </div>
                             </div>
-
 
                             <div className="bg-base-100">
                                 <div className="card-body">
@@ -81,9 +91,9 @@ export default function Index({ channel, newsPackage }) {
                                                     checked={data.paymentMethod === method.code}
                                                 />
                                                 <div className={`border-2 rounded-lg p-4 transition-colors ${data.paymentMethod === method.code ? 'border-primary bg-primary/10' : 'border-base-300 hover:border-primary/50'}`}>
-                                                    <div className="flex flex-col items-center gap-2">
-                                                        <img src={method.icon_url} className="w-16" alt={method.name} />
-                                                        <span className="text-sm text-primary">{method.name}</span>
+                                                    <div className="flex flex-col items-center gap-2 text-center">
+                                                        <img src={method.icon_url} className="h-10 object-contain mb-2" alt={method.name} />
+                                                        <span className="text-sm font-medium text-foreground">{method.name}</span>
                                                     </div>
                                                 </div>
                                             </label>
@@ -91,6 +101,7 @@ export default function Index({ channel, newsPackage }) {
                                     </div>
                                 </div>
                             </div>
+                            
                             <form
                                 method="POST"
                                 action={route('checkout.payment')}
@@ -98,9 +109,7 @@ export default function Index({ channel, newsPackage }) {
                                 <input
                                     type="hidden"
                                     name="_token"
-                                    value={document
-                                        .querySelector('meta[name="csrf-token"]')
-                                        .getAttribute('content')}
+                                    value={document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')}
                                 />
                                 <input type="hidden" name="paymentMethod" value={data.paymentMethod} />
                                 <input type="hidden" name="package_id" value={data.package_id} />
@@ -108,34 +117,21 @@ export default function Index({ channel, newsPackage }) {
                                     Bayar Sekarang
                                 </button>
                             </form>
+
                             <div className="bg-base-300 rounded-lg p-4 text-left space-y-3">
                                 <p className="text-sm font-medium text-foreground">
                                     Hubungi admin untuk pertanyaan lebih lanjut mengenai pembayaran atau paket berlangganan.
                                 </p>
-
                                 <div className="space-y-2">
-                                    <a
-                                        href="mailto:admin@portalberita.com"
-                                        className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors"
-                                    >
+                                    <a href="mailto:admin@portalberita.com" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors">
                                         <Mail className="h-4 w-4" />
                                         admin@portalberita.com
                                     </a>
-
-                                    <a
-                                        href="tel:+6281234567890"
-                                        className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors"
-                                    >
+                                    <a href="tel:+6281234567890" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors">
                                         <Phone className="h-4 w-4" />
                                         +62 812-3456-7890
                                     </a>
-
-                                    <a
-                                        href="https://wa.me/6281234567890"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors"
-                                    >
+                                    <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors">
                                         <MessageCircle className="h-4 w-4" />
                                         WhatsApp: +62 812-3456-7890
                                     </a>
@@ -152,7 +148,6 @@ export default function Index({ channel, newsPackage }) {
                         </div>
                     </Card>
                 </div>
-
             </div>
         </>
     )
