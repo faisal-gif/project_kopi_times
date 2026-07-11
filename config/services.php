@@ -22,13 +22,18 @@ return [
         'key' => env('RESEND_API_KEY'),
     ],
 
+    'tin_cdn' => [
+        'url' => env('TIN_CDN_URL'),
+        'api_key' => env('TIN_CDN_API_KEY'),
+    ],
+
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
-    
-     'tripay' => [
+
+    'tripay' => [
         'api_key' => env('TRIPAY_API_KEY'),
         'merchant_code' => env('TRIPAY_MERCHANT_CODE'),
         'private_key' => env('TRIPAY_PRIVATE_KEY'),

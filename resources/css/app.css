@@ -119,4 +119,11 @@
 
 }
 
+.custom-cropper .cropper-crop-box,
+.custom-cropper .cropper-view-box,
+.custom-cropper .cropper-face {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
 

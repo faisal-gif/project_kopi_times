@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\ImagesThumbnail;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class NewsFormRequest extends FormRequest
 {
@@ -14,6 +16,9 @@ class NewsFormRequest extends FormRequest
      */
     public function rules(): array
     {
+        // Foto wajib hanya jika user BELUM punya thumbnail jadi di images_thumbnail
+        $hasThumbnail = ImagesThumbnail::where('user_id', $this->user()->id)->exists();
+
         return [
             'title' => 'required|string|max:255',
             'content' => 'required|string',
@@ -21,10 +26,25 @@ class NewsFormRequest extends FormRequest
             'narsum' => 'required|string|max:255',
             'profesi' => 'required|string|max:255',
             'contact' => 'required|string|max:100',
-            'image' => 'required|image|max:4096',
+            'image' => [
+                Rule::requiredIf(!$hasThumbnail),
+                'nullable',
+                'image',
+                'max:4096',
+            ],
             'image_2' => 'nullable|image|max:4096',
             'image_3' => 'nullable|image|max:4096',
             'caption' => 'nullable|string|max:255',
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     */
+    public function messages(): array
+    {
+        return [
+            'image.required' => 'Foto wajib diunggah untuk opini pertama Anda.',
         ];
     }
 }

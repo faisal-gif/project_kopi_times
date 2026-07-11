@@ -8,13 +8,16 @@ import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head, useForm, usePage } from '@inertiajs/react'
 import { NotebookPenIcon, Settings2, ImageIcon } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 
 // Import React Cropper
 import { Cropper } from 'react-cropper';
 import 'react-cropper/node_modules/cropperjs/dist/cropper.css';
 
-function Create({ narsum_detail }) {
+const FRAME_SRC = '/images/frame-kopitimes.png';
+
+function Create({ narsum_detail, thumbnail }) {
+    // thumbnail = URL foto jadi dari images_thumbnail (null jika user belum pernah upload)
     const { auth } = usePage().props;
     const user = auth.user;
 
@@ -31,69 +34,87 @@ function Create({ narsum_detail }) {
 
     // State untuk Cropper
     const [imageToCrop, setImageToCrop] = useState(null);
-    const [cropper, setCropper] = useState(null);
+    const cropperRef = useRef(null);
+
+    // Ukuran asli frame PNG (dipakai sebagai acuan rasio & resolusi output)
+    const [frameSize, setFrameSize] = useState(null);
+
+    useEffect(() => {
+        const img = new window.Image();
+        img.src = FRAME_SRC;
+        img.onload = () => setFrameSize({ width: img.naturalWidth, height: img.naturalHeight });
+        img.onerror = () => alert('Gagal memuat frame. Pastikan path file benar.');
+    }, []);
+
+    // Rasio mengikuti frame asli, BUKAN hardcode 16:9
+    const frameRatio = frameSize ? frameSize.width / frameSize.height : 16 / 9;
 
     // Fungsi untuk mencegat file gambar yang diupload
     const handleImageSelect = (file) => {
         if (file) {
             const reader = new FileReader();
-            reader.onload = () => {
-                setImageToCrop(reader.result); // Set base64 gambar ke cropper
-            };
+            reader.onload = () => setImageToCrop(reader.result);
             reader.readAsDataURL(file);
         }
     };
 
-    // Fungsi untuk mengeksekusi Crop & Compress
+    // KUNCI PERBAIKAN #1:
+    // Paksa crop box menutupi SELURUH container, sehingga area yang di-crop
+    // = persis area yang terlihat user di bawah frame (WYSIWYG).
+    const handleCropperReady = () => {
+        const cropper = cropperRef.current;
+        if (!cropper) return;
+        const container = cropper.getContainerData();
+        cropper.setCropBoxData({
+            left: 0,
+            top: 0,
+            width: container.width,
+            height: container.height,
+        });
+    };
+
+    // KUNCI PERBAIKAN #2:
+    // getCroppedCanvas diberi width/height sesuai resolusi frame + fillColor,
+    // jadi hasil yang dikirim ke BE identik dengan preview.
     const handleSaveCrop = () => {
-        if (cropper) {
-            // 1. Dapatkan kanvas asli dari cropper
-            const canvas = cropper.getCroppedCanvas();
+        const cropper = cropperRef.current;
+        if (!cropper || !frameSize) return;
 
-            // 2. Hitung rasio untuk membatasi ukuran (maksimal 1200px)
-            let width = canvas.width;
-            let height = canvas.height;
-            const maxSize = 1200;
+        const croppedCanvas = cropper.getCroppedCanvas({
+            width: frameSize.width,
+            height: frameSize.height,
+            fillColor: '#FFFFFF', // area kosong (foto tidak menutupi frame) jadi putih
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high',
+        });
 
-            if (width > maxSize || height > maxSize) {
-                if (width > height) {
-                    height = Math.round((height * maxSize) / width);
-                    width = maxSize;
-                } else {
-                    width = Math.round((width * maxSize) / height);
-                    height = maxSize;
-                }
-            }
+        const frameImage = new window.Image();
+        frameImage.src = FRAME_SRC;
 
-            // 3. Buat kanvas baru yang ukurannya sudah diperkecil
-            const resizedCanvas = document.createElement("canvas");
-            resizedCanvas.width = width;
-            resizedCanvas.height = height;
-            const ctx = resizedCanvas.getContext("2d");
+        frameImage.onload = () => {
+            const finalCanvas = document.createElement('canvas');
+            finalCanvas.width = frameSize.width;
+            finalCanvas.height = frameSize.height;
+            const ctx = finalCanvas.getContext('2d');
 
-            // (Opsional) Beri background putih agar gambar transparan (PNG asli) tidak jadi hitam di JPEG
-            ctx.fillStyle = "#FFFFFF";
-            ctx.fillRect(0, 0, width, height);
+            // Foto user (sudah 1:1 dengan resolusi frame, tanpa stretch/distorsi)
+            ctx.drawImage(croppedCanvas, 0, 0);
+            // Frame di atasnya
+            ctx.drawImage(frameImage, 0, 0, finalCanvas.width, finalCanvas.height);
 
-            // Gambar ulang hasil crop ke kanvas yang lebih kecil
-            ctx.drawImage(canvas, 0, 0, width, height);
-
-            // 4. Ubah ke format JPEG (Dijamin terkompresi di semua browser)
-            resizedCanvas.toBlob((blob) => {
-
-                // Cek ukuran file di console browser Anda (Tekan F12 -> Console)
-                console.log("Ukuran file siap kirim:", (blob.size / 1024).toFixed(2), "KB");
-
-                const croppedFile = new File([blob], "image_cropped.jpg", {
-                    type: "image/jpeg",
-                    lastModified: Date.now()
+            finalCanvas.toBlob((blob) => {
+                const finalDataFile = new File([blob], 'thumbnail_kopitimes.jpg', {
+                    type: 'image/jpeg',
+                    lastModified: Date.now(),
                 });
+                setData('image', finalDataFile);
+                setImageToCrop(null);
+            }, 'image/jpeg', 0.85);
+        };
 
-                setData("image", croppedFile); // Masukkan ke form Inertia
-                setImageToCrop(null); // Tutup modal
-
-            }, 'image/jpeg', 0.8); // 0.8 = Kualitas JPEG 80%
-        }
+        frameImage.onerror = () => {
+            alert('Gagal memuat frame. Pastikan path file benar.');
+        };
     };
 
     const submit = (e) => {
@@ -264,15 +285,28 @@ function Create({ narsum_detail }) {
                                 >
                                     <div className='grid grid-cols-1 lg:grid-cols-6 gap-4 mt-8'>
                                         <div className='lg:col-span-2'>
-                                            <InputImageUpload
-                                                label="Foto Terbaik Anda"
-                                                value={data.image}
-                                                // Mencegat file yang dipilih untuk ditampilkan di Cropper terlebih dahulu
-                                                onChange={(file) => handleImageSelect(file)}
-                                            />
+                                            {thumbnail ? (
+                                                // Sudah punya thumbnail: tidak bisa upload lagi, pakai foto jadi
+                                                <div>
+                                                    <span className='label-text font-bold'>Foto Anda</span>
+                                                    <img
+                                                        src={thumbnail}
+                                                        alt="Thumbnail"
+                                                        className="mt-2 w-full rounded-lg border"
+                                                    />
+                                                    <p className="text-sm text-gray-500 mt-2">
+                                                        Foto ini otomatis digunakan untuk setiap opini Anda.
+                                                    </p>
+                                                </div>
+                                            ) : (
+                                                <InputImageUpload
+                                                    label="Foto Terbaik Anda (hanya bisa diunggah sekali)"
+                                                    value={data.image}
+                                                    onChange={(file) => handleImageSelect(file)}
+                                                />
+                                            )}
+                                            <InputError message={errors.image} className="mt-2" />
                                         </div>
-
-                                        {/* Jika butuh Image 2 dan 3, Anda bisa menambahkan fungsi handleImageSelect yang dinamis untuk state yang berbeda, namun di contoh ini saya hide sesuai aslinya */}
 
                                         <div className='lg:col-span-6'>
                                             <InputTextarea
@@ -307,23 +341,58 @@ function Create({ narsum_detail }) {
             </AuthenticatedLayout>
 
             {/* Modal / Tampilan Cropper */}
-            {imageToCrop && (
+            {imageToCrop && frameSize && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4">
-                    <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-2xl">
-                        <h2 className="text-xl font-bold mb-4">Crop Gambar (Portrait)</h2>
+                    {/* CSS untuk menyembunyikan garis/titik crop box (prop cropBox={false} tidak ada di cropperjs) */}
+                    <style>{`
+                        .custom-cropper .cropper-point,
+                        .custom-cropper .cropper-line,
+                        .custom-cropper .cropper-center,
+                        .custom-cropper .cropper-dashed { display: none !important; }
+                        .custom-cropper .cropper-view-box { outline: none !important; }
+                    `}</style>
 
-                        <div className="w-full h-[60vh] md:h-[400px]">
+                    <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-4xl">
+                        <h2 className="text-xl font-bold mb-4">Sesuaikan Posisi Foto</h2>
+
+                        {/* KUNCI PERBAIKAN #3:
+                            Container dipaksa punya rasio PERSIS sama dengan frame,
+                            sehingga preview frame tidak terpotong/terdistorsi (bukan object-cover) */}
+                        <div
+                            className="relative mx-auto bg-gray-200 overflow-hidden"
+                            style={{
+                                aspectRatio: `${frameSize.width} / ${frameSize.height}`,
+                                width: `min(100%, calc(60vh * ${frameRatio}))`,
+                            }}
+                        >
                             <Cropper
+                                className="custom-cropper"
                                 src={imageToCrop}
-                                style={{ height: "100%", width: "100%" }}
-                                // Rasio 3:4 untuk portrait
-                                initialAspectRatio={3 / 4}
-                                // Mengunci aspek rasio agar user tidak bisa mengubah kotaknya menjadi landscape
-                                aspectRatio={3 / 4}
-                                guides={true}
+                                style={{ height: "100%", width: "100%", position: "absolute" }}
+                                aspectRatio={frameRatio}
+                                viewMode={0}
+                                autoCropArea={1}
+                                dragMode="move"
+                                cropBoxMovable={false}
+                                cropBoxResizable={false}
+                                toggleDragModeOnDblclick={false}
+                                modal={false}
+                                highlight={false}
+                                guides={false}
+                                center={false}
+                                background={false}
+                                checkOrientation={true}
+                                ready={handleCropperReady}
                                 onInitialized={(instance) => {
-                                    setCropper(instance);
+                                    cropperRef.current = instance;
                                 }}
+                            />
+
+                            {/* Layer Frame PNG — object-fill karena rasio container sudah = rasio frame */}
+                            <img
+                                src={FRAME_SRC}
+                                alt="Frame Overlay"
+                                className="absolute inset-0 w-full h-full pointer-events-none z-50"
                             />
                         </div>
 

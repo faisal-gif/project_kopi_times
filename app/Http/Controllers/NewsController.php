@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\NewsFormRequest;
+use App\Models\ImagesThumbnail;
 use App\Models\KategoriKt;
 use App\Models\News;
 use App\Models\User;
+use App\Services\CdnService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +19,9 @@ use Intervention\Image\ImageManager;
 
 class NewsController extends Controller
 {
+    public function __construct(
+        protected CdnService $cdnService,
+    ) {}
     /**
      * Display a listing of the resource.
      */
@@ -77,7 +82,6 @@ class NewsController extends Controller
             return redirect()->route('news.index');
         }
 
-
         if ($user->dateexp < now()) {
             return redirect()->route('news.index')->with('error', 'Masa aktif akun Anda telah berakhir. Silakan perbarui langganan Anda.');
         }
@@ -92,8 +96,12 @@ class NewsController extends Controller
             ];
         }
 
+        // Cek apakah user sudah pernah upload foto (sudah punya thumbnail jadi)
+        $thumbnail = ImagesThumbnail::where('user_id', $user->id)->latest()->first();
+
         return Inertia::render('News/Create', [
             'narsum_detail' => $narsum_detail,
+            'thumbnail' => $thumbnail?->image_path, // null jika belum pernah upload
         ]);
     }
 
@@ -103,60 +111,86 @@ class NewsController extends Controller
     public function store(NewsFormRequest $request)
     {
         $auth = Auth::user();
-        $title = $request->title;
 
         $cleanTitle = preg_replace('/[^\x00-\x{FFFF}]/u', '', $request->title);
         $cleanContent = preg_replace('/[^\x00-\x{FFFF}]/u', '', $request->content);
         $cleanCaption = preg_replace('/[^\x00-\x{FFFF}]/u', '', $request->caption);
 
-        $image_1 = null;
-      
-
         do {
             $is_code = 'KT' . strtoupper(Str::random(8));
         } while (News::where('is_code', $is_code)->exists());
 
-        // Menyimpan file secara langsung
-        if ($request->hasFile('image')) {
-            $image_1 = $this->storeImage($request->file('image'), $title . '-1');
+        // ==== LOGIKA UPLOAD SEKALI ====
+        $existingThumbnail = ImagesThumbnail::where('user_id', $auth->id)->latest()->first();
+        $thumbnailUrl = null;
+        $newThumbnail = false;
+
+        if ($existingThumbnail) {
+            // Sudah pernah upload: pakai foto jadi, abaikan file baru
+            $thumbnailUrl = $existingThumbnail->image_path;
+        } elseif ($request->hasFile('image')) {
+            // Upload pertama kali: kirim ke CDN
+            try {
+                $file = $request->file('image');
+                $nameThumbnail = Str::slug(Str::limit($request->title, 100, '')) . '-thumbnail';
+
+                $thumbnailUrl = $this->cdnService->uploadImage($file, $nameThumbnail, 3, 'raw', 0) ?? null;
+                $newThumbnail = (bool) $thumbnailUrl;
+            } catch (\Exception $e) {
+                return back()->withInput()->withErrors(['error' => 'Gagal mengunggah gambar ke CDN: ' . $e->getMessage()]);
+            }
+        } else {
+            // Belum punya thumbnail dan tidak upload
+            return back()->withInput()->withErrors(['image' => 'Foto wajib diunggah untuk opini pertama Anda.']);
         }
 
-      
         DB::beginTransaction();
+        try {
+            // Simpan foto jadi ke images_thumbnail agar dipakai selamanya
+            if ($newThumbnail) {
+                ImagesThumbnail::create([
+                    'user_id' => $auth->id,
+                    'template_id' => 1,
+                    'image_path' => $thumbnailUrl,
+                ]);
+            }
 
-        News::create([
-            'is_code' => $is_code,
-            'title' => $cleanTitle,
-            'content' => $cleanContent,
-            'city' => $request->city,
-            'narsum' => $request->narsum,
-            'profesi' => $request->profesi,
-            'contact' => $request->contact,
-            'datetime' => now(),
-            'image' => $image_1 ? url(Storage::url($image_1)) : null,
-            'caption' =>  $cleanCaption,
-            'pewarta_id' => $auth->id,
-            'type' => $auth->type,
-            'status' => 0
-        ]);
+            News::create([
+                'is_code' => $is_code,
+                'title' => $cleanTitle,
+                'content' => $cleanContent,
+                'city' => $request->city,
+                'narsum' => $request->narsum,
+                'profesi' => $request->profesi,
+                'contact' => $request->contact,
+                'datetime' => now(),
+                'image' => $thumbnailUrl,
+                'caption' => $cleanCaption,
+                'pewarta_id' => $auth->id,
+                'type' => $auth->type,
+                'status' => 0,
+            ]);
 
-        $user = User::find($auth->id);
-        $user->quota_news = $user->quota_news - 1;
-        $user->save();
+            User::where('id', $auth->id)->decrement('quota_news');
 
-        DB::commit();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->withErrors(['error' => 'Gagal menyimpan berita: ' . $e->getMessage()]);
+        }
 
         return redirect()->route('news.index')->with('success', 'Berita berhasil ditambahkan.');
     }
 
-    private function storeImage($image, $title)
-    {
-        $slug = Str::slug($title);
-        $extension = $image->getClientOriginalExtension() ?: 'webp';
-        $filename = $slug . '-' . time() . '.' . $extension;
+    
+    // private function storeImage($image, $title)
+    // {
+    //     $slug = Str::slug($title);
+    //     $extension = $image->getClientOriginalExtension() ?: 'webp';
+    //     $filename = $slug . '-' . time() . '.' . $extension;
 
-        return $image->storeAs('images/berita', $filename, 'public');
-    }
+    //     return $image->storeAs('images/berita', $filename, 'public');
+    // }
 
     /**
      * Display the specified resource.
