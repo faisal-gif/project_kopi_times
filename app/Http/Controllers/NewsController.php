@@ -132,7 +132,7 @@ class NewsController extends Controller
             // Upload pertama kali: kirim ke CDN
             try {
                 $file = $request->file('image');
-                $nameThumbnail = Str::slug(Str::limit($request->title, 100, '')) . '-thumbnail';
+                $nameThumbnail = 'kopi-times-' . Str::slug(Str::limit($auth->nama, 100, '')) . '-thumbnail-1';
 
                 $thumbnailUrl = $this->cdnService->uploadImage($file, $nameThumbnail, 3, 'raw', 0) ?? null;
                 $newThumbnail = (bool) $thumbnailUrl;
