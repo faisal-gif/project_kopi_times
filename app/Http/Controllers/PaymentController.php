@@ -34,6 +34,7 @@ class PaymentController extends Controller
         $payment = Payments::create([
             'user_id' =>  $user->id,
             'method' => $request->paymentMethod,
+            'type' => $newsPackage->type,
             'package_id' => $newsPackage->id,
             'merchant_ref' => $merchant_ref,
             'amount' => $newsPackage->price,
