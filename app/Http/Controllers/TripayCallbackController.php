@@ -11,8 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
-use function Symfony\Component\Clock\now;
-
 class TripayCallbackController extends Controller
 {
     public function handle(Request $request)
@@ -50,7 +48,7 @@ class TripayCallbackController extends Controller
                 $newsPackage = NewsPackage::find($payment->package_id);
                 $user = User::find($payment->user_id);
 
-                $baseDate = $user->dateexp ? Carbon::parse($user->dateexp) : now();
+                $baseDate = $user->dateexp ? Carbon::parse($user->dateexp) : Carbon::now();
 
                 switch ($newsPackage->jenis_periode) {
                     case 'hari':
