@@ -32,38 +32,44 @@ class TripayCallbackController extends Controller
 
         $payment = Payments::where('reference', $request->reference)->firstOrFail();
 
-        if ($data['status'] === 'PAID') {
-            DB::transaction(function () use ($payment, $data) {
-                $payment->update([
-                    'status' => 'paid',
-                    'paid_at' => now(),
+        $statusDariTripay = strtolower($data['status']);
 
+        if ($statusDariTripay === 'unpaid') {
+            $statusDariTripay = 'pending';
+        } elseif ($statusDariTripay === 'refund') {
+            $statusDariTripay = 'refunded'; // Jika Tripay pakai 'refund' tapi DB kamu 'refunded'
+        }
+
+        if ($statusDariTripay === 'paid') {
+            DB::transaction(function () use ($payment, $statusDariTripay) {
+                $payment->update([
+                    'status' => $statusDariTripay,
+                    'paid_at' => now(),
                 ]);
 
-
                 $newsPackage = NewsPackage::find($payment->package_id);
-
                 $user = User::find($payment->user_id);
-                $user->quota_news += (int) $newsPackage->quota;
 
-                if ($user->dateexp == null) {
-                    $startDate = Carbon::now();
-                } elseif (Carbon::now() > Carbon::parse($user->dateexp)) {
-                    $startDate = Carbon::now();
-                } else {
-                    $startDate = Carbon::parse($user->dateexp);
+                $baseDate = $user->dateexp ? Carbon::parse($user->dateexp) : now();
+
+                switch ($newsPackage->jenis_periode) {
+                    case 'hari':
+                        $baseDate->addDays($newsPackage->period);
+                        break;
+                    case 'minggu':
+                        $baseDate->addWeeks($newsPackage->period);
+                        break;
+                    case 'tahun':
+                        $baseDate->addYears($newsPackage->period);
+                        break;
+                    case 'bulan':
+                    default:
+                        $baseDate->addMonths($newsPackage->period);
+                        break;
                 }
 
-                // 3. Tambahkan durasi ke $startDate
-                if ($newsPackage->jenis_periode == 'hari') {
-                    $user->dateexp = $startDate->addDays($newsPackage->period);
-                } elseif ($newsPackage->jenis_periode == 'bulan') {
-                    $user->dateexp = $startDate->addMonths($newsPackage->period);
-                } elseif ($newsPackage->jenis_periode == 'tahun') {
-                    $user->dateexp = $startDate->addYears($newsPackage->period);
-                }
-
-
+                $user->quota_news += $newsPackage->quota;
+                $user->dateexp = $baseDate;
                 $user->package_id = $newsPackage->id;
                 $user->status = 1;
                 $user->type = $newsPackage->type;
@@ -73,6 +79,11 @@ class TripayCallbackController extends Controller
                     Mail::to($user->email)->send(new PaymentSuccessfulMail($payment, $user, $newsPackage));
                 });
             });
+        } elseif (in_array($statusDariTripay, ['pending', 'failed', 'expired', 'refunded'])) {
+            // Handle semua status selain paid di sini
+            $payment->update([
+                'status' => $statusDariTripay,
+            ]);
         }
 
         return response()->json(['success' => true]);
