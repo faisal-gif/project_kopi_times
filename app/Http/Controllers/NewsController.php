@@ -165,7 +165,7 @@ class NewsController extends Controller
                 'contact' => $request->contact,
                 'datetime' => now(),
                 'image' => $thumbnailUrl,
-                'image2' => Storage::url($auth->avatar_raw),
+                'image2' => url(Storage::url($auth->avatar_raw)),
                 'caption' => $cleanCaption,
                 'pewarta_id' => $auth->id,
                 'type' => $auth->type,
