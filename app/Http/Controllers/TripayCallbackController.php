@@ -44,7 +44,8 @@ class TripayCallbackController extends Controller
                     'status' => $statusDariTripay,
                     'fee_merchant' => $data['fee_merchant'],
                     'fee_customer' => $data['fee_customer'],
-                    'amount_user_pay' => $data['amount'],
+                    'total_fee' => $data['total_fee'],
+                    'total_amount' => $data['total_amount'],
                     'amount_recived' => $data['amount_received'],
                     'paid_at' => now(),
                 ]);
