@@ -39,9 +39,13 @@ class TripayCallbackController extends Controller
         }
 
         if ($statusDariTripay === 'paid') {
-            DB::transaction(function () use ($payment, $statusDariTripay) {
+            DB::transaction(function () use ($payment, $statusDariTripay, $data) {
                 $payment->update([
                     'status' => $statusDariTripay,
+                    'fee_merchant' => $data['fee_merchant'],
+                    'fee_customer' => $data['fee_customer'],
+                    'amount_user_pay' => $data['amount'],
+                    'amount_recived' => $data['amount_received'],
                     'paid_at' => now(),
                 ]);
 
