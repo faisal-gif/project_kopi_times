@@ -1,8 +1,7 @@
 import Card from "@/Components/Card";
 import { formatDuration, formatRupiah } from "@/Utils/formatter";
 import { Link, usePage } from "@inertiajs/react";
-// Tambahkan icon Gift untuk mempresentasikan item tambahan
-import { Check, Sparkles, Gift } from "lucide-react"; 
+import { Check, Sparkles, Gift } from "lucide-react";
 
 const PricingSection = ({ newsPackages }) => {
 
@@ -51,14 +50,14 @@ const PricingSection = ({ newsPackages }) => {
                                 }`}
                         >
                             {/* Popular Badge */}
-                            {plan.popular ? (
+                            {plan.popular === 1 && (
                                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                                     <div className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full bg-gradient-to-br from-primary to-accent text-primary-content text-sm font-medium">
                                         <Sparkles className="w-3 h-3" />
                                         Paling Populer
                                     </div>
                                 </div>
-                            ) : null}
+                            )}
 
                             {/* Plan Header */}
                             <div className="text-center mb-6">
@@ -68,48 +67,58 @@ const PricingSection = ({ newsPackages }) => {
                                     <br />
                                     <span className="text-muted-foreground text-sm ml-1">/ {plan.period} {plan.jenis_periode}</span>
                                 </div>
-                                {/* Pastikan plan.feature.description ada, kalau tidak gunakan property lain */}
-                                <p className="text-muted-foreground text-sm">{plan.description}</p>
                             </div>
 
-                            {/* Features */}
+                            {/* Features List */}
                             <div className="flex-1 space-y-3 mb-8">
-                                {/* Menampilkan Fasilitas Utama */}
-                                {plan.feature && plan.feature.keunggulan && plan.feature.keunggulan.map((feature) => (
-                                    <div key={feature} className="flex items-start gap-3">
+                                
+                                {/* Menampilkan Fasilitas Utama dari Kolom Master */}
+                                {plan.quota > 0 && (
+                                    <div className="flex items-start gap-3">
                                         <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                                        <span className="text-sm">{feature}</span>
+                                        <span className="text-sm">Quota: {plan.quota}</span>
                                     </div>
-                                ))}
-
-                                {/* Menampilkan Items Lainnya (Bonus/Merchandise/Layanan Digital) */}
-                                {plan.items_lainnya && plan.items_lainnya.length > 0 && (
-                                    <>
-                                        <div className="my-4 border-t border-border pt-4">
-                                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                                                Bonus & Ekstra
-                                            </p>
-                                            <div className="space-y-3">
-                                                {plan.items_lainnya.map((item) => (
-                                                    <div key={item.id} className="flex items-start gap-3">
-                                                        {/* Menggunakan icon Gift untuk item tambahan */}
-                                                        <Gift className="w-5 h-5 text-accent shrink-0 mt-0.5" />
-                                                        <span className="text-sm">
-                                                            {/* Tampilkan qty jika lebih dari 1, contoh: 2x Tumbler */}
-                                                            {item.qty > 1 ? <span className="font-semibold">{item.qty}x </span> : ""}
-                                                            {item.nama_item}
-                                                        </span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </>
                                 )}
+
+                                {plan.feed_instagram > 0 && (
+                                    <div className="flex items-start gap-3">
+                                        <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                                        <span className="text-sm">Feed Instagram: {plan.feed_instagram}x</span>
+                                    </div>
+                                )}
+
+                                {plan.ekoran > 0 && (
+                                    <div className="flex items-start gap-3">
+                                        <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                                        <span className="text-sm">Ekoran: {plan.ekoran}</span>
+                                    </div>
+                                )}
+
+                                {/* Menampilkan Items Lainnya (Relasi Table) */}
+                                {plan.items_lainnya && plan.items_lainnya.length > 0 && (
+                                    <div className="my-4 border-t border-border pt-4">
+                                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                                            Bonus & Tambahan
+                                        </p>
+                                        <div className="space-y-3">
+                                            {plan.items_lainnya.map((item) => (
+                                                <div key={item.id} className="flex items-start gap-3">
+                                                    <Gift className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                                                    <span className="text-sm">
+                                                        {item.qty > 1 ? <span className="font-semibold">{item.qty}x </span> : ""}
+                                                        {item.nama_item}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
                             </div>
 
                             {/* CTA */}
                             <Link 
-                                className="btn btn-primary w-full" 
+                                className="btn btn-primary w-full mt-auto" 
                                 href={plan.level === 2 ? `/checkout?package_id=${plan.id}` : "/register"}
                             >
                                 Pilih
