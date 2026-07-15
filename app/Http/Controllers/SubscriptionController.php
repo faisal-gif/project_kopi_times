@@ -11,8 +11,9 @@ class SubscriptionController extends Controller
 {
     public function index()
     {
-        // 1. Ambil semua data sekaligus menggunakan whereIn (Hanya 1x query ke database)
-        $allNews = NewsPackage::where('type', '4')
+        // 1. Ambil semua data sekaligus beserta relasinya (Hanya 1x query ke database)
+        $allNews = NewsPackage::with('itemsLainnya')
+            ->where('type', '4')
             ->where('level', 2)
             ->where('status', 1)
             ->whereIn('kategori_produk', ['paket', 'satuan'])
@@ -21,12 +22,10 @@ class SubscriptionController extends Controller
         // 2. Pisahkan data menggunakan fungsi bawaan Laravel Collection
         $newsPackages = $allNews->where('kategori_produk', 'paket')->values();
         $newsSatuan   = $allNews->where('kategori_produk', 'satuan')->values();
-        
+
         $user = Auth::user();
 
         $userPackage = NewsPackage::find($user->package_id);
-
-
 
         return Inertia::render('Subscription/Index', [
             'newsPackages' => $newsPackages,

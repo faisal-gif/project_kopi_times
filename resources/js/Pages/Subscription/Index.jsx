@@ -2,12 +2,13 @@ import Card from '@/Components/Card'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { formatDuration, formatRupiah } from '@/Utils/formatter'
 import { Head, Link, usePage } from '@inertiajs/react'
-import { Check, Sparkles } from 'lucide-react'
+import { Check, Sparkles, Gift } from 'lucide-react' // Tambahkan import Gift
 import React from 'react'
 
 function Index({ newsPackages, newsSatuan, userPackage }) {
     const { auth } = usePage().props;
     const user = auth.user;
+    
     return (
         <>
             <Head title='Membership' />
@@ -43,7 +44,7 @@ function Index({ newsPackages, newsSatuan, userPackage }) {
                                         <div className="font-extralight text-base-content/60">
                                             Paket Anda Saat Ini
                                         </div>
-                                        <span className="text-lg font-bold">{userPackage.name}</span>
+                                        <span className="text-lg font-bold">{userPackage?.name}</span>
                                     </div>
 
                                     <span className="font-semibold text-primary">
@@ -53,13 +54,13 @@ function Index({ newsPackages, newsSatuan, userPackage }) {
                                     </span>
                                 </div>
                             </div>
-
                         </Card>
+
+                        {/* ======================= ADD ONS SECTION ======================= */}
                         <div className='flex flex-col max-w-5xl mx-auto gap-8'>
                             <h2 className='text-2xl font-bold'>Add Ons</h2>
                             {/* Pricing Cards */}
-                            <div
-                                className={`grid gap-8 grid-cols-1 md:grid-cols-3`}>
+                            <div className={`grid gap-8 grid-cols-1 md:grid-cols-3`}>
                                 {newsSatuan.map((plan) => (
                                     <Card
                                         key={plan.name}
@@ -71,7 +72,7 @@ function Index({ newsPackages, newsSatuan, userPackage }) {
                                             }`}
                                     >
                                         {/* Popular Badge */}
-                                        {plan.popular && (
+                                        {plan.popular === 1 && (
                                             <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                                                 <div className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full  bg-gradient-to-br from-primary to-accent text-primary-content text-sm font-medium">
                                                     <Sparkles className="w-3 h-3" />
@@ -87,39 +88,63 @@ function Index({ newsPackages, newsSatuan, userPackage }) {
                                                 <span className="font-serif text-xl font-bold">{formatRupiah(plan.price)}</span>
                                                 <span className="text-muted-foreground text-sm ml-1">/ {plan.period} {plan.jenis_periode}</span>
                                             </div>
-                                            <p className="text-muted-foreground text-sm">{plan.description}</p>
+                                            {plan.description && (
+                                                <p className="text-muted-foreground text-sm">{plan.description}</p>
+                                            )}
                                         </div>
 
                                         {/* Features */}
                                         <div className="flex-1 space-y-3 mb-8">
-                                            {plan.feature.keunggulan.map((feature) => (
-                                                <div key={feature} className="flex items-start gap-3">
+                                            {plan.quota > 0 && (
+                                                <div className="flex items-start gap-3">
                                                     <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                                                    <span className="text-sm">{feature}</span>
+                                                    <span className="text-sm">Quota: {plan.quota}</span>
                                                 </div>
-                                            ))}
-                                            {/* {plan.limitations.map((limitation) => (
-                                    <div key={limitation} className="flex items-start gap-3 opacity-50">
-                                        <Check className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
-                                        <span className="text-sm">{limitation}</span>
-                                    </div>
-                                ))} */}
+                                            )}
+
+                                            {plan.feed_instagram > 0 && (
+                                                <div className="flex items-start gap-3">
+                                                    <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                                                    <span className="text-sm">Feed Instagram: {plan.feed_instagram}x</span>
+                                                </div>
+                                            )}
+
+                                            {plan.ekoran > 0 && (
+                                                <div className="flex items-start gap-3">
+                                                    <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                                                    <span className="text-sm">Ekoran: {plan.ekoran}</span>
+                                                </div>
+                                            )}
+
+                                            {plan.items_lainnya && plan.items_lainnya.length > 0 && (
+                                                <div className="my-4 border-t border-border pt-4">
+                                                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                                                        Bonus & Tambahan
+                                                    </p>
+                                                    <div className="space-y-3">
+                                                        {plan.items_lainnya.map((item) => (
+                                                            <div key={item.id} className="flex items-start gap-3">
+                                                                <Gift className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                                                                <span className="text-sm">
+                                                                    {item.qty > 1 ? <span className="font-semibold">{item.qty}x </span> : ""}
+                                                                    {item.nama_item}
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* CTA */}
-
-                                        <Link className="btn btn-primary" href={"/checkout?package_id=" + plan.id}>Pilih</Link>
-
+                                        <Link className="btn btn-primary mt-auto w-full" href={"/checkout?package_id=" + plan.id}>Pilih</Link>
                                     </Card>
-
-
-
                                 ))}
                             </div>
                         </div>
 
-                        {/* Pricing Cards */}
-                        <div className='flex flex-col gap-8 mt-8  max-w-5xl mx-auto'>
+                        {/* ======================= PAKET SECTION ======================= */}
+                        <div className='flex flex-col gap-8 mt-16 max-w-5xl mx-auto'>
                             <h2 className='text-2xl font-bold'>Paket</h2>
                             <div
                                 className={`grid gap-8 
@@ -139,7 +164,7 @@ function Index({ newsPackages, newsSatuan, userPackage }) {
                                             }`}
                                     >
                                         {/* Popular Badge */}
-                                        {plan.popular && (
+                                        {plan.popular === 1 && (
                                             <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                                                 <div className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full  bg-gradient-to-br from-primary to-accent text-primary-content text-sm font-medium">
                                                     <Sparkles className="w-3 h-3" />
@@ -155,33 +180,57 @@ function Index({ newsPackages, newsSatuan, userPackage }) {
                                                 <span className="font-serif text-xl font-bold">{formatRupiah(plan.price)}</span>
                                                 <span className="text-muted-foreground text-sm ml-1">/ {plan.period} {plan.jenis_periode}</span>
                                             </div>
-                                            <p className="text-muted-foreground text-sm">{plan.description}</p>
+                                            {plan.description && (
+                                                <p className="text-muted-foreground text-sm">{plan.description}</p>
+                                            )}
                                         </div>
 
                                         {/* Features */}
                                         <div className="flex-1 space-y-3 mb-8">
-                                            {plan.feature.keunggulan.map((feature) => (
-                                                <div key={feature} className="flex items-start gap-3">
+                                            {plan.quota > 0 && (
+                                                <div className="flex items-start gap-3">
                                                     <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                                                    <span className="text-sm">{feature}</span>
+                                                    <span className="text-sm">Quota: {plan.quota}</span>
                                                 </div>
-                                            ))}
-                                            {/* {plan.limitations.map((limitation) => (
-                                    <div key={limitation} className="flex items-start gap-3 opacity-50">
-                                        <Check className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
-                                        <span className="text-sm">{limitation}</span>
-                                    </div>
-                                ))} */}
+                                            )}
+
+                                            {plan.feed_instagram > 0 && (
+                                                <div className="flex items-start gap-3">
+                                                    <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                                                    <span className="text-sm">Feed Instagram: {plan.feed_instagram}x</span>
+                                                </div>
+                                            )}
+
+                                            {plan.ekoran > 0 && (
+                                                <div className="flex items-start gap-3">
+                                                    <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                                                    <span className="text-sm">Ekoran: {plan.ekoran}</span>
+                                                </div>
+                                            )}
+
+                                            {plan.items_lainnya && plan.items_lainnya.length > 0 && (
+                                                <div className="my-4 border-t border-border pt-4">
+                                                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                                                        Bonus & Tambahan
+                                                    </p>
+                                                    <div className="space-y-3">
+                                                        {plan.items_lainnya.map((item) => (
+                                                            <div key={item.id} className="flex items-start gap-3">
+                                                                <Gift className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                                                                <span className="text-sm">
+                                                                    {item.qty > 1 ? <span className="font-semibold">{item.qty}x </span> : ""}
+                                                                    {item.nama_item}
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* CTA */}
-
-                                        <Link className="btn btn-primary" href={"/checkout?package_id=" + plan.id}>Pilih</Link>
-
+                                        <Link className="btn btn-primary mt-auto w-full" href={"/checkout?package_id=" + plan.id}>Pilih</Link>
                                     </Card>
-
-
-
                                 ))}
                             </div>
                         </div>
@@ -189,7 +238,6 @@ function Index({ newsPackages, newsSatuan, userPackage }) {
                 </section>
             </AuthenticatedLayout>
         </>
-
     )
 }
 
