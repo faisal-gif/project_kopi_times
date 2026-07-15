@@ -11,4 +11,9 @@ class NewsPackage extends Model
     protected $casts = [
         'feature' => 'array',
     ];
+
+    public function itemsLainnya()
+    {
+        return $this->hasMany(ItemsLainnya::class, 'news_package_id');
+    }
 }

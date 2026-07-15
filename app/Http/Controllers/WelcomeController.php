@@ -12,11 +12,14 @@ class WelcomeController extends Controller
 {
     public function index()
     {
-        $user =  Auth::user();
-        $newsPackages = NewsPackage::where('type', '4')->where('level', 1)->get();
+        $user = Auth::user();
+
+        $query = NewsPackage::with('itemsLainnya')->where('type', '4')->where('status', 1);
 
         if ($user && $user->status == 1) {
-            $newsPackages = NewsPackage::where('type', '4')->where('level', 2)->get();
+            $newsPackages = $query->where('level', 2)->get();
+        } else {
+            $newsPackages = $query->where('level', 1)->get();
         }
 
         return Inertia::render('Welcome/Index', [

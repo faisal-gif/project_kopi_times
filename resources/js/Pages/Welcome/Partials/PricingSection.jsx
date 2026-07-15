@@ -1,8 +1,8 @@
 import Card from "@/Components/Card";
 import { formatDuration, formatRupiah } from "@/Utils/formatter";
 import { Link, usePage } from "@inertiajs/react";
-import { Check, Sparkles } from "lucide-react";
-
+// Tambahkan icon Gift untuk mempresentasikan item tambahan
+import { Check, Sparkles, Gift } from "lucide-react"; 
 
 const PricingSection = ({ newsPackages }) => {
 
@@ -51,14 +51,14 @@ const PricingSection = ({ newsPackages }) => {
                                 }`}
                         >
                             {/* Popular Badge */}
-                            {plan.popular && (
+                            {plan.popular ? (
                                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                                    <div className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full  bg-gradient-to-br from-primary to-accent text-primary-content text-sm font-medium">
+                                    <div className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full bg-gradient-to-br from-primary to-accent text-primary-content text-sm font-medium">
                                         <Sparkles className="w-3 h-3" />
                                         Paling Populer
                                     </div>
                                 </div>
-                            )}
+                            ) : null}
 
                             {/* Plan Header */}
                             <div className="text-center mb-6">
@@ -68,41 +68,61 @@ const PricingSection = ({ newsPackages }) => {
                                     <br />
                                     <span className="text-muted-foreground text-sm ml-1">/ {plan.period} {plan.jenis_periode}</span>
                                 </div>
+                                {/* Pastikan plan.feature.description ada, kalau tidak gunakan property lain */}
                                 <p className="text-muted-foreground text-sm">{plan.description}</p>
                             </div>
 
                             {/* Features */}
                             <div className="flex-1 space-y-3 mb-8">
-                                {plan.feature.keunggulan.map((feature) => (
+                                {/* Menampilkan Fasilitas Utama */}
+                                {plan.feature && plan.feature.keunggulan && plan.feature.keunggulan.map((feature) => (
                                     <div key={feature} className="flex items-start gap-3">
                                         <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                                         <span className="text-sm">{feature}</span>
                                     </div>
                                 ))}
-                                {/* {plan.limitations.map((limitation) => (
-                                    <div key={limitation} className="flex items-start gap-3 opacity-50">
-                                        <Check className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
-                                        <span className="text-sm">{limitation}</span>
-                                    </div>
-                                ))} */}
+
+                                {/* Menampilkan Items Lainnya (Bonus/Merchandise/Layanan Digital) */}
+                                {plan.items_lainnya && plan.items_lainnya.length > 0 && (
+                                    <>
+                                        <div className="my-4 border-t border-border pt-4">
+                                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                                                Bonus & Ekstra
+                                            </p>
+                                            <div className="space-y-3">
+                                                {plan.items_lainnya.map((item) => (
+                                                    <div key={item.id} className="flex items-start gap-3">
+                                                        {/* Menggunakan icon Gift untuk item tambahan */}
+                                                        <Gift className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                                                        <span className="text-sm">
+                                                            {/* Tampilkan qty jika lebih dari 1, contoh: 2x Tumbler */}
+                                                            {item.qty > 1 ? <span className="font-semibold">{item.qty}x </span> : ""}
+                                                            {item.nama_item}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
                             </div>
 
                             {/* CTA */}
-
-                            <Link className="btn btn-primary" href={plan.level === 2 ? "/checkout?package_id=" + plan.id : "/register"}>Pilih</Link>
-
+                            <Link 
+                                className="btn btn-primary w-full" 
+                                href={plan.level === 2 ? `/checkout?package_id=${plan.id}` : "/register"}
+                            >
+                                Pilih
+                            </Link>
                         </Card>
-
-
-
                     ))}
                 </div>
 
                 {/* FAQ Hint */}
                 <p className="text-center text-muted-foreground text-sm mt-12">
                     Punya pertanyaan? Hubungi tim kami di{" "}
-                    <a href="mailto:hello@ajp.id" className="text-primary hover:underline">
-                     redaksi@timesindonesia.co.id
+                    <a href="mailto:redaksi@timesindonesia.co.id" className="text-primary hover:underline">
+                        redaksi@timesindonesia.co.id
                     </a>
                 </p>
             </div>
