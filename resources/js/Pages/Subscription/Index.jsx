@@ -8,7 +8,7 @@ import React from 'react'
 function Index({ newsPackages, newsSatuan, userPackage }) {
     const { auth } = usePage().props;
     const user = auth.user;
-    
+
     return (
         <>
             <Head title='Membership' />

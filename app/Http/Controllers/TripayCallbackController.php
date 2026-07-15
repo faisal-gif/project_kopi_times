@@ -53,7 +53,9 @@ class TripayCallbackController extends Controller
                 $newsPackage = NewsPackage::find($payment->package_id);
                 $user = User::find($payment->user_id);
 
-                $baseDate = $user->dateexp ? Carbon::parse($user->dateexp) : Carbon::now();
+                $baseDate = ($user->dateexp && Carbon::parse($user->dateexp)->isFuture())
+                    ? Carbon::parse($user->dateexp)
+                    : Carbon::now();
 
                 switch ($newsPackage->jenis_periode) {
                     case 'hari':
