@@ -26,14 +26,18 @@ class WelcomeController extends Controller
             'newsPackages' => $newsPackages,
         ]);
     }
+
     public function harga()
     {
-        $user =  Auth::user();
-        $newsPackages = NewsPackage::where('type', '4')->where('level', 1)->get();
+        $user = Auth::user();
 
+        // Gunakan eager loading 'itemsLainnya' agar relasi dari tabel baru ikut dimuat
+        $query = NewsPackage::with('itemsLainnya')->where('type', '4')->where('status', 1);
 
         if ($user && $user->status == 1) {
-            $newsPackages = NewsPackage::where('type', '4')->where('level', 2)->get();
+            $newsPackages = $query->where('level', 2)->get();
+        } else {
+            $newsPackages = $query->where('level', 1)->get();
         }
 
         return Inertia::render('Harga/Index', [

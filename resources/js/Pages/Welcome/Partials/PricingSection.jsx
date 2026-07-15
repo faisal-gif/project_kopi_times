@@ -5,11 +5,7 @@ import { Check, Sparkles, Gift } from "lucide-react";
 
 const PricingSection = ({ newsPackages }) => {
 
-    // Jika data feature dari backend masih berbentuk string JSON, 
-    // pastikan di Model Laravel (NewsPackage.php) kamu sudah menambahkan:
-    // protected $casts = ['feature' => 'array'];
-
-    // Fallback data untuk Level 1 jika feature di database kosong
+    
     const defaultLevel1Features = [
         "Dapat member card penulis",
         "Dapat Akun CMS akses",
@@ -75,6 +71,8 @@ const PricingSection = ({ newsPackages }) => {
                                         </div>
                                     </div>
                                 )}
+
+                                
 
                                 {/* Plan Header */}
                                 <div className="text-center mb-6">
