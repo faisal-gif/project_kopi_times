@@ -72,6 +72,8 @@ class TripayCallbackController extends Controller
                 }
 
                 $user->quota_news += $newsPackage->quota;
+                $user->feed_instagram += $newsPackage->feed_instagram;
+                $user->ekoran += $newsPackage->ekoran;
                 $user->dateexp = $baseDate;
                 $user->package_id = $newsPackage->id;
                 $user->status = 1;
