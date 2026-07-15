@@ -5,6 +5,18 @@ import { Check, Sparkles, Gift } from "lucide-react";
 
 const PricingSection = ({ newsPackages }) => {
 
+    // Jika data feature dari backend masih berbentuk string JSON, 
+    // pastikan di Model Laravel (NewsPackage.php) kamu sudah menambahkan:
+    // protected $casts = ['feature' => 'array'];
+
+    // Fallback data untuk Level 1 jika feature di database kosong
+    const defaultLevel1Features = [
+        "Dapat member card penulis",
+        "Dapat Akun CMS akses",
+        "Mendapatkan Kouta menulis",
+        "Jangkauan audience luas"
+    ];
+
     return (
         <section id="pricing" className="py-24 bg-muted/50">
             <div className="container mx-auto px-4">
@@ -39,92 +51,111 @@ const PricingSection = ({ newsPackages }) => {
                             : "grid-cols-1 md:grid-cols-4"
                         }
                 `}>
-                    {newsPackages.map((plan) => (
-                        <Card
-                            key={plan.name}
-                            className={`relative bg-base-100 rounded-2xl border p-8 flex flex-col
-                                    ${newsPackages.length === 1 ? "w-full max-w-md" : ""}
-                                    ${plan.popular
-                                    ? "border-primary shadow-lg scale-105 z-10"
-                                    : "border-border"
-                                }`}
-                        >
-                            {/* Popular Badge */}
-                            {plan.popular === 1 && (
-                                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                                    <div className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full bg-gradient-to-br from-primary to-accent text-primary-content text-sm font-medium">
-                                        <Sparkles className="w-3 h-3" />
-                                        Paling Populer
-                                    </div>
-                                </div>
-                            )}
+                    {newsPackages.map((plan) => {
+                        // Menyiapkan array keunggulan untuk level 1
+                        // Prioritaskan dari plan.feature.keunggulan (jika ada), jika tidak gunakan defaultLevel1Features
+                        const level1Features = plan.feature?.keunggulan || defaultLevel1Features;
 
-                            {/* Plan Header */}
-                            <div className="text-center mb-6">
-                                <h3 className="font-serif text-2xl font-bold mb-2">{plan.name}</h3>
-                                <div className="mb-2">
-                                    <span className="font-serif text-xl font-bold">{formatRupiah(plan.price)}</span>
-                                    <br />
-                                    <span className="text-muted-foreground text-sm ml-1">/ {plan.period} {plan.jenis_periode}</span>
-                                </div>
-                            </div>
-
-                            {/* Features List */}
-                            <div className="flex-1 space-y-3 mb-8">
-                                
-                                {/* Menampilkan Fasilitas Utama dari Kolom Master */}
-                                {plan.quota > 0 && (
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                                        <span className="text-sm">Quota: {plan.quota}</span>
-                                    </div>
-                                )}
-
-                                {plan.feed_instagram > 0 && (
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                                        <span className="text-sm">Feed Instagram: {plan.feed_instagram}x</span>
-                                    </div>
-                                )}
-
-                                {plan.ekoran > 0 && (
-                                    <div className="flex items-start gap-3">
-                                        <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                                        <span className="text-sm">Ekoran: {plan.ekoran}</span>
-                                    </div>
-                                )}
-
-                                {/* Menampilkan Items Lainnya (Relasi Table) */}
-                                {plan.items_lainnya && plan.items_lainnya.length > 0 && (
-                                    <div className="my-4 border-t border-border pt-4">
-                                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                                            Bonus & Tambahan
-                                        </p>
-                                        <div className="space-y-3">
-                                            {plan.items_lainnya.map((item) => (
-                                                <div key={item.id} className="flex items-start gap-3">
-                                                    <Gift className="w-5 h-5 text-accent shrink-0 mt-0.5" />
-                                                    <span className="text-sm">
-                                                        {item.qty > 1 ? <span className="font-semibold">{item.qty}x </span> : ""}
-                                                        {item.nama_item}
-                                                    </span>
-                                                </div>
-                                            ))}
+                        return (
+                            <Card
+                                key={plan.name}
+                                className={`relative bg-base-100 rounded-2xl border p-8 flex flex-col
+                                        ${newsPackages.length === 1 ? "w-full max-w-md" : ""}
+                                        ${plan.popular === 1
+                                        ? "border-primary shadow-lg scale-105 z-10"
+                                        : "border-border"
+                                    }`}
+                            >
+                                {/* Popular Badge */}
+                                {plan.popular === 1 && (
+                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                                        <div className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full bg-gradient-to-br from-primary to-accent text-primary-content text-sm font-medium">
+                                            <Sparkles className="w-3 h-3" />
+                                            Paling Populer
                                         </div>
                                     </div>
                                 )}
 
-                            </div>
+                                {/* Plan Header */}
+                                <div className="text-center mb-6">
+                                    <h3 className="font-serif text-2xl font-bold mb-2">{plan.name}</h3>
+                                    <div className="mb-2">
+                                        <span className="font-serif text-xl font-bold">{formatRupiah(plan.price)}</span>
+                                        <br />
+                                        <span className="text-muted-foreground text-sm ml-1">/ {plan.period} {plan.jenis_periode}</span>
+                                    </div>
+                                </div>
 
-                            {/* CTA */}
-                            <Link 
-                                className="btn btn-primary w-full mt-auto" 
-                                href={plan.level === 2 ? `/checkout?package_id=${plan.id}` : "/register"}
-                            >
-                                Pilih
-                            </Link>
-                        </Card>
-                    ))}
+                                {/* Features List */}
+                                <div className="flex-1 space-y-3 mb-8">
+                                    
+                                    {plan.level === 1 ? (
+                                        // TAMPILAN KHUSUS LEVEL 1
+                                        <>
+                                            {level1Features.map((feature, idx) => (
+                                                <div key={idx} className="flex items-start gap-3">
+                                                    <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                                                    <span className="text-sm">{feature}</span>
+                                                </div>
+                                            ))}
+                                        </>
+                                    ) : (
+                                        // TAMPILAN UNTUK LEVEL 2 DAN SETERUSNYA
+                                        <>
+                                            {plan.quota > 0 && (
+                                                <div className="flex items-start gap-3">
+                                                    <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                                                    <span className="text-sm">Quota: {plan.quota}</span>
+                                                </div>
+                                            )}
+
+                                            {plan.feed_instagram > 0 && (
+                                                <div className="flex items-start gap-3">
+                                                    <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                                                    <span className="text-sm">Feed Instagram: {plan.feed_instagram}x</span>
+                                                </div>
+                                            )}
+
+                                            {plan.ekoran > 0 && (
+                                                <div className="flex items-start gap-3">
+                                                    <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                                                    <span className="text-sm">Ekoran: {plan.ekoran}</span>
+                                                </div>
+                                            )}
+
+                                            {plan.items_lainnya && plan.items_lainnya.length > 0 && (
+                                                <div className="my-4 border-t border-border pt-4">
+                                                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                                                        Bonus & Tambahan
+                                                    </p>
+                                                    <div className="space-y-3">
+                                                        {plan.items_lainnya.map((item) => (
+                                                            <div key={item.id} className="flex items-start gap-3">
+                                                                <Gift className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                                                                <span className="text-sm">
+                                                                    {item.qty > 1 ? <span className="font-semibold">{item.qty}x </span> : ""}
+                                                                    {item.nama_item}
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+
+                                </div>
+
+                                {/* CTA */}
+                                <Link 
+                                    className="btn btn-primary w-full mt-auto" 
+                                    href={plan.level === 2 ? `/checkout?package_id=${plan.id}` : "/register"}
+                                >
+                                    Pilih
+                                </Link>
+                            </Card>
+                        );
+                    })}
                 </div>
 
                 {/* FAQ Hint */}
