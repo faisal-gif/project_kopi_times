@@ -37,6 +37,8 @@ class User extends Authenticatable
         'dateexp',
         'type',
         'quota_news',
+        'feed_instagram',
+        'ekoran',
         'instansi',
         'avatar',
         'avatar_raw',
