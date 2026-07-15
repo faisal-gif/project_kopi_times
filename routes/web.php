@@ -35,6 +35,7 @@ Route::post('/checkout/payment', [PaymentController::class, 'store'])->middlewar
 Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('news', NewsController::class);
+    Route::post('/news/{news}/request-addon', [NewsController::class, 'requestAddon'])->name('news.request-addon');
     Route::get('/subscription', [SubscriptionController::class, 'index'])->name('subscription.index');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile/avatar', [ProfileController::class, 'uploadAvatar'])->name('upload.edit');

@@ -5,9 +5,9 @@ import PaginationDaisy from '@/Components/PaginationDaisy'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { formatDate, formatDateTime } from '@/Utils/formatter'
 import { Head, Link, router, usePage } from '@inertiajs/react'
-import { AlertTriangle, Crown, Eye, Newspaper, Plus, Search, TrendingUp } from 'lucide-react'
+// Tambahkan Icon Instagram dan FileText (untuk ekoran)
+import { AlertTriangle, Crown, Eye, Newspaper, Plus, Search, TrendingUp, Instagram, FileText } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
-
 
 function Index({ news, writers, kanals, filters }) {
   const [search, setSearch] = useState(() => filters.search || '');
@@ -15,20 +15,16 @@ function Index({ news, writers, kanals, filters }) {
   const { auth } = usePage().props;
   const user = auth.user;
 
-
   const isFirst = useRef(true);
   const INDEX_ROUTE = route('news.index');
 
   useEffect(() => {
-    // Lewati initial load (hindari double fetch)
     if (isFirst.current) {
       isFirst.current = false;
       return;
     }
 
     let timeout = null;
-
-    // Jika search berubah → debounce
     if (search !== filters.search) {
       timeout = setTimeout(() => {
         router.get(
@@ -37,9 +33,7 @@ function Index({ news, writers, kanals, filters }) {
           { preserveState: true, replace: true }
         );
       }, 400);
-    }
-    // Jika status berubah → langsung fetch
-    else {
+    } else {
       router.get(
         INDEX_ROUTE,
         { search, status, page: 1 },
@@ -48,12 +42,11 @@ function Index({ news, writers, kanals, filters }) {
     }
 
     return () => timeout && clearTimeout(timeout);
-  }, [search, status,]);
+  }, [search, status]);
 
   function handleReset() {
     setSearch('');
     setStatus('');
-
     router.get(
       INDEX_ROUTE,
       { search: '', status: '', page: 1 },
@@ -61,6 +54,28 @@ function Index({ news, writers, kanals, filters }) {
     );
   }
 
+  // FUNGSI BARU UNTUK TRIGGER REQUEST
+  function handleRequestAddon(newsId, jenis, kuotaTersedia) {
+    if (kuotaTersedia <= 0) {
+      alert(`Kuota ${jenis === 'feed_instagram' ? 'Feed IG' : 'Ekoran'} Anda habis. Silakan perpanjang membership.`);
+      return;
+    }
+
+    if (confirm(`Gunakan 1 kuota untuk jadikan berita ini ${jenis === 'feed_instagram' ? 'Feed IG' : 'Ekoran'}?`)) {
+      router.post(route('news.request-addon', newsId), {
+        jenis_request: jenis
+      }, {
+        preserveScroll: true
+      });
+    }
+  }
+
+  // Helper untuk mengecek apakah sebuah berita sudah direquest
+  function checkRequestStatus(addonRequests, jenis) {
+    if (!addonRequests || addonRequests.length === 0) return false;
+    // Cek jika ada request yang statusnya bukan rejected
+    return addonRequests.some(req => req.jenis_request === jenis && req.status !== 'rejected');
+  }
 
   function getStatusBadge(status) {
     switch (status) {
@@ -68,45 +83,22 @@ function Index({ news, writers, kanals, filters }) {
       case '0':
       case 0:
         return <span className="badge badge-secondary badge-soft">Pending</span>;
-
       case "Review":
       case '2':
       case 2:
         return <span className="badge badge-warning badge-soft">Review</span>;
-
       case "On Pro":
       case '3':
       case 3:
         return <span className="badge badge-error badge-soft">OnPro</span>;
-
       case "Publish":
       case '1':
       case 1:
         return <span className="badge badge-success badge-soft">Publish</span>;
-
       default:
         return <span className="badge badge-neutral">{status}</span>;
     }
   }
-
-
-  function getHeadlineBadge(status) {
-    switch (status) {
-      case '1':
-      case 1:
-        return <span className="badge badge-primary badge-soft">ON</span>;
-
-      case '0':
-      case 0:
-      case null:
-        return <span className="badge badge-secondary badge-soft">OFF</span>;
-
-      default:
-        return <span className="badge badge-neutral">{status}</span>;
-    }
-  }
-
-
 
   return (
     <>
@@ -114,49 +106,40 @@ function Index({ news, writers, kanals, filters }) {
       <AuthenticatedLayout >
         <div className="py-12">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-
-
             <div className=" space-y-6">
+              
+              {/* Header Info */}
               <div className='flex flex-row justify-between items-center'>
-                {/* start Header */}
                 <div>
                   <h1 className="text-3xl font-bold text-foreground">Daftar News</h1>
                 </div>
-                {/* end Header */}
-
-                {/* start breadcrumbs */}
                 <div className="breadcrumbs text-sm">
                   <ul>
                     <li><a>Home</a></li>
                     <li>News</li>
                   </ul>
                 </div>
-                {/* end breadcrumbs */}
-
               </div>
 
-              {/* Start Head */}
-
+              {/* Start Head Banner Kuota */}
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                {/* Button Tambah User */}
                 {user?.quota_news > 0 && new Date(user?.dateexp) > new Date() ? (
                   <Link href={route('news.create')} className="btn btn-primary rounded-lg">
                     <Plus size={16} /> Tambah Opini
                   </Link>
                 ) : (
-                  <Card className='border-2 border-primary/50 bg-primary/5'>
+                  <Card className='border-2 border-primary/50 bg-primary/5 w-full md:w-auto'>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                       <div className="flex items-center gap-3">
                         <div className="p-2 rounded-lg bg-primary/10">
                           <AlertTriangle className="w-5 h-5 text-destructive" />
                         </div>
                         <div>
-                          <p className="font-semibold text-destructive">Kuota artikel atau masa berlaku Anda sudah habis!</p>
+                          <p className="font-semibold text-destructive">Kuota artikel atau masa berlaku habis!</p>
                           <p className="text-sm text-muted-foreground">Upgrade paket membership untuk menambah kuota.</p>
                         </div>
                       </div>
-
-                      <Link className='btn btn-outline btn-primary' href={route('subscription.index')}>
+                      <Link className='btn btn-outline btn-primary shrink-0' href={route('subscription.index')}>
                         <Crown className="w-4 h-4 mr-2" />
                         Perpanjang Member
                       </Link>
@@ -164,26 +147,36 @@ function Index({ news, writers, kanals, filters }) {
                   </Card>
                 )}
               </div>
-              {/* End Head */}
 
-
-              {/* Quota Card */}
-              {
-                user?.package_id != 10 && (
-                  <Card className="mb-8 ">
-
-                    <div className=" flex items-center gap-2 text-lg text-base-content/80 font-semibold">
-                      <Newspaper className="w-5 h-5 text-primary" />
-                      Sisa Kuota: {user?.quota_news} artikel
+              {/* TAMPILAN INFORMASI KUOTA USER SAAT INI */}
+              {user?.package_id != 10 && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                  <Card className="flex items-center gap-3 p-4">
+                    <Newspaper className="w-6 h-6 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Sisa Artikel</p>
+                      <p className="text-xl font-bold">{user?.quota_news}</p>
                     </div>
                   </Card>
-                )
-              }
-
+                  <Card className="flex items-center gap-3 p-4">
+                    <Instagram className="w-6 h-6 text-pink-500" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Sisa Feed IG</p>
+                      <p className="text-xl font-bold">{user?.feed_instagram}</p>
+                    </div>
+                  </Card>
+                  <Card className="flex items-center gap-3 p-4">
+                    <FileText className="w-6 h-6 text-blue-500" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Sisa Ekoran</p>
+                      <p className="text-xl font-bold">{user?.ekoran}</p>
+                    </div>
+                  </Card>
+                </div>
+              )}
 
               {/* Start Filter */}
               <Card>
-                {/* Field Search And Filter */}
                 <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
                   <div className="w-full md:w-96">
                     <InputWithPrefix
@@ -208,99 +201,125 @@ function Index({ news, writers, kanals, filters }) {
                       ]}
                     />
                   </div>
-
-                  {/* RESET BUTTON */}
-                  <button
-                    type="button"
-                    className="btn btn-neutral md:ml-2"
-                    onClick={handleReset}
-                  >
+                  <button type="button" className="btn btn-neutral md:ml-2" onClick={handleReset}>
                     Reset
                   </button>
                 </div>
               </Card>
-              {/* End Filter */}
 
               {/* Start Table */}
-              <Card>
-                {/* MOBILE VERSION (Card Mode) */}
-                <div className="md:hidden flex flex-col gap-4">
-                  {/* Contoh data, ganti dengan data.map(...) */}
-                  {news.data.map((n) => (
-                    <div key={n.id} className="border rounded-xl p-4 bg-base-100 shadow-sm">
-
-                      {/* Header */}
-                      <div className="flex justify-between items-start gap-2 mb-3">
-                        <div>
-                          <p className="font-semibold text-base">{n.title}</p>
-                        </div>
-
-                        {getStatusBadge(n.status)}
-                      </div>
-
-                      {/* Detail */}
-                      <div className="text-sm space-y-1">
-
-                        <p>
-                          <span className="font-medium">Tanggal Upload:</span> {formatDate(n.created)}
-                        </p>
-
-                      </div>
-
-                      {/* Actions */}
-                      <div className="flex gap-2 mt-4">
-                        <Link href={route('news.show', n)} className="btn btn-sm btn-outline "><Eye size={16} /></Link>
-
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* DESKTOP VERSION (Table Mode) */}
-                <div className="hidden md:block overflow-x-auto">
-                  <table className="table table-zebra">
-
+              <Card className="overflow-hidden p-0">
+                
+                {/* DESKTOP VERSION */}
+                <div className="overflow-x-auto hidden md:block">
+                  <table className="table table-zebra w-full">
                     <thead>
                       <tr>
                         <th>#</th>
                         <th>Judul</th>
                         <th>Tanggal Upload</th>
                         <th>Status</th>
+                        <th className="text-center">Add-ons</th>
                         <th className="text-right">Action</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {news.data.map((n, index) => (
-                        <tr key={n.id}>
-                          <th>{n.id}</th>
-                          <td>{n.title}</td>
-                          <td>{formatDate(n.created)}</td>
-                          <td>
-                            {getStatusBadge(n.status)}
-                          </td>
-                          <td>
-                            <div className="flex justify-end gap-2">
-                              <Link href={route('news.show', n)} className="btn btn-sm btn-outline "><Eye size={16} /></Link>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
+                      {news.data.map((n) => {
+                        const isFeedRequested = checkRequestStatus(n.addon_requests, 'feed_instagram');
+                        const isEkoranRequested = checkRequestStatus(n.addon_requests, 'ekoran');
 
+                        return (
+                          <tr key={n.id}>
+                            <th>{n.id}</th>
+                            <td className="whitespace-normal break-words max-w-md">{n.title}</td>
+                            <td>{formatDate(n.created)}</td>
+                            <td>{getStatusBadge(n.status)}</td>
+                            <td>
+                              <div className="flex items-center justify-center gap-2">
+                                {/* Tombol Request Feed IG */}
+                                <button 
+                                  onClick={() => handleRequestAddon(n.id, 'feed_instagram', user.feed_instagram)}
+                                  disabled={isFeedRequested}
+                                  className={`btn btn-sm btn-circle ${isFeedRequested ? 'btn-disabled opacity-50 bg-pink-100' : 'btn-outline border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white hover:border-pink-500'}`}
+                                  title={isFeedRequested ? "Feed IG sedang diproses" : "Jadikan Feed IG"}
+                                >
+                                  <Instagram size={14} />
+                                </button>
+
+                                {/* Tombol Request Ekoran */}
+                                <button 
+                                  onClick={() => handleRequestAddon(n.id, 'ekoran', user.ekoran)}
+                                  disabled={isEkoranRequested}
+                                  className={`btn btn-sm btn-circle ${isEkoranRequested ? 'btn-disabled opacity-50 bg-blue-100' : 'btn-outline border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white hover:border-blue-500'}`}
+                                  title={isEkoranRequested ? "Ekoran sedang diproses" : "Jadikan Ekoran"}
+                                >
+                                  <FileText size={14} />
+                                </button>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="flex justify-end gap-2">
+                                <Link href={route('news.show', n)} className="btn btn-sm btn-outline"><Eye size={16} /></Link>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
                   </table>
                 </div>
 
+                {/* MOBILE VERSION (Card Mode) */}
+                <div className="md:hidden flex flex-col p-4 gap-4">
+                  {news.data.map((n) => {
+                    const isFeedRequested = checkRequestStatus(n.addon_requests, 'feed_instagram');
+                    const isEkoranRequested = checkRequestStatus(n.addon_requests, 'ekoran');
+
+                    return (
+                      <div key={n.id} className="border rounded-xl p-4 bg-base-100 shadow-sm">
+                        <div className="flex justify-between items-start gap-2 mb-3">
+                          <div>
+                            <p className="font-semibold text-base">{n.title}</p>
+                          </div>
+                          {getStatusBadge(n.status)}
+                        </div>
+
+                        <div className="text-sm space-y-1">
+                          <p><span className="font-medium">Tanggal:</span> {formatDate(n.created)}</p>
+                        </div>
+
+                        {/* Actions Mobile */}
+                        <div className="flex justify-between items-center mt-4 pt-4 border-t border-base-200">
+                           <div className="flex gap-2">
+                                <button 
+                                  onClick={() => handleRequestAddon(n.id, 'feed_instagram', user.feed_instagram)}
+                                  disabled={isFeedRequested}
+                                  className={`btn btn-sm ${isFeedRequested ? 'btn-disabled opacity-50' : 'btn-outline border-pink-500 text-pink-500'}`}
+                                >
+                                  <Instagram size={14} /> Feed
+                                </button>
+
+                                <button 
+                                  onClick={() => handleRequestAddon(n.id, 'ekoran', user.ekoran)}
+                                  disabled={isEkoranRequested}
+                                  className={`btn btn-sm ${isEkoranRequested ? 'btn-disabled opacity-50' : 'btn-outline border-blue-500 text-blue-500'}`}
+                                >
+                                  <FileText size={14} /> Ekoran
+                                </button>
+                           </div>
+                           
+                          <Link href={route('news.show', n)} className="btn btn-sm btn-outline"><Eye size={16} /></Link>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
               </Card>
-              {/* End Table */}
 
-              {/* Start Pagination */}
+              {/* Pagination */}
               <PaginationDaisy data={news} />
-              {/* End Pagination */}
-
 
             </div>
-
-
           </div>
         </div>
       </AuthenticatedLayout>

@@ -18,4 +18,10 @@ class News extends Model
     {
         return $this->belongsTo(User::class, 'pewarta_id');
     }
+
+    // Tambahkan relasi ini
+    public function addonRequests()
+    {
+        return $this->hasMany(NewsAddonRequest::class, 'news_id');
+    }
 }

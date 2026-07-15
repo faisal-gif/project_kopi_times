@@ -6,6 +6,7 @@ use App\Http\Requests\NewsFormRequest;
 use App\Models\ImagesThumbnail;
 use App\Models\KategoriKt;
 use App\Models\News;
+use App\Models\NewsAddonRequest;
 use App\Models\User;
 use App\Services\CdnService;
 use Illuminate\Http\Request;
@@ -27,9 +28,9 @@ class NewsController extends Controller
      */
     public function index(Request $request)
     {
-
         $auth = Auth::user();
         $query = News::query()
+            ->with('addonRequests') // Load data request agar tombol di UI bisa menyesuaikan
             ->select(
                 'id',
                 'title',
@@ -41,7 +42,6 @@ class NewsController extends Controller
         if ($request->search) {
             $query->where(function ($q) use ($request) {
                 $search = $request->search;
-
                 if (is_numeric($search)) {
                     $q->where('id', $search);
                 } else {
@@ -62,8 +62,6 @@ class NewsController extends Controller
 
         // Faster pagination
         $news = $query->simplePaginate(10)->withQueryString();
-
-
 
         return Inertia::render('News/Index', [
             'news'    => $news,
@@ -201,6 +199,52 @@ class NewsController extends Controller
         return Inertia::render('News/Show', [
             'news' => $news,
         ]);
+    }
+
+    public function requestAddon(Request $request, News $news)
+    {
+        $request->validate([
+            'jenis_request' => 'required|in:feed_instagram,ekoran'
+        ]);
+
+        $user = Auth::user();
+        $jenis = $request->jenis_request;
+
+        // 1. Cek apakah sudah pernah request dan statusnya belum ditolak
+        $existingRequest = NewsAddonRequest::where('news_id', $news->id)
+            ->where('jenis_request', $jenis)
+            ->whereIn('status', ['pending', 'processing', 'completed'])
+            ->first();
+
+        if ($existingRequest) {
+            return back()->with('error', 'Berita ini sudah diajukan untuk ' . str_replace('_', ' ', $jenis));
+        }
+
+        // 2. Cek apakah kuota masih ada
+        if ($user->$jenis <= 0) {
+            return back()->with('error', 'Kuota ' . str_replace('_', ' ', $jenis) . ' Anda sudah habis!');
+        }
+
+        // 3. Mulai Transaksi Database
+        DB::beginTransaction();
+        try {
+            // Potong kuota user
+            $user->decrement($jenis, 1);
+
+            // Masukkan ke tabel antrean
+            NewsAddonRequest::create([
+                'news_id' => $news->id,
+                'wartawan_id' => $user->id,
+                'jenis_request' => $jenis,
+                'status' => 'pending'
+            ]);
+
+            DB::commit();
+            return back()->with('success', 'Permintaan ' . str_replace('_', ' ', $jenis) . ' berhasil dikirim ke redaksi.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Terjadi kesalahan sistem saat memproses request.');
+        }
     }
 
 
