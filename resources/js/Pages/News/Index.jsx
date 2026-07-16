@@ -316,7 +316,7 @@ function Index({ news, writers, kanals, filters }) {
                         </div>
 
                         {/* Actions Mobile */}
-                        <div className="flex flex-col gap-8 mt-4 pt-4 border-t border-base-200">
+                        <div className="flex flex-col gap-4 mt-4 pt-4 border-t border-base-200">
                           <div className="grid grid-cols-2 gap-2">
                             <button
                               onClick={() => handleRequestAddon(n.id, 'feed_instagram', user.feed_instagram)}
@@ -343,7 +343,7 @@ function Index({ news, writers, kanals, filters }) {
                             </button>
                           </div>
 
-                          <Link href={route('news.show', n)} className="btn btn-sm btn-outline w-full"><Eye size={16} /></Link>
+                          <Link href={route('news.show', n)} className="btn btn-sm btn-outline w-full"><Eye size={16} /> Detail</Link>
                         </div>
                       </div>
                     )
