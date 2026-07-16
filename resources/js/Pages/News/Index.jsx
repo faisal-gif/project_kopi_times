@@ -56,12 +56,19 @@ function Index({ news, writers, kanals, filters }) {
 
   // FUNGSI BARU UNTUK TRIGGER REQUEST
   function handleRequestAddon(newsId, jenis, kuotaTersedia) {
+    // Mapping nama layanan agar lebih rapi dan mudah jika ada penambahan lagi ke depannya
+    const labelLayanan = {
+      feed_instagram: 'Feed IG',
+      ekoran: 'Ekoran',
+      wa_channel: 'WA Channel'
+    }[jenis] || jenis; // fallback ke 'jenis' jika tidak ditemukan di object
+
     if (kuotaTersedia <= 0) {
-      alert(`Kuota ${jenis === 'feed_instagram' ? 'Feed IG' : 'Ekoran'} Anda habis. Silakan perpanjang membership.`);
+      alert(`Kuota ${labelLayanan} Anda habis. Silakan perpanjang membership.`);
       return;
     }
 
-    if (confirm(`Gunakan 1 kuota untuk jadikan berita ini ${jenis === 'feed_instagram' ? 'Feed IG' : 'Ekoran'}?`)) {
+    if (confirm(`Gunakan 1 kuota untuk jadikan berita ini ${labelLayanan}?`)) {
       router.post(route('news.request-addon', newsId), {
         jenis_request: jenis
       }, {
