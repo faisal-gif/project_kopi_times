@@ -6,7 +6,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { formatDate, formatDateTime } from '@/Utils/formatter'
 import { Head, Link, router, usePage } from '@inertiajs/react'
 // Tambahkan Icon Instagram dan FileText (untuk ekoran)
-import { AlertTriangle, Crown, Eye, Newspaper, Plus, Search, TrendingUp, Instagram, FileText, PhoneCall } from 'lucide-react'
+import { AlertTriangle, Crown, Eye, Newspaper, Plus, Search, TrendingUp, Instagram, FileText, PhoneCall, Phone } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 
 function Index({ news, writers, kanals, filters }) {
@@ -174,9 +174,9 @@ function Index({ news, writers, kanals, filters }) {
                   </Card>
 
                   <Card className="flex items-center gap-3 p-4">
-                    <PhoneCall className="w-6 h-6 text-green-500" />
+                    <Phone className="w-6 h-6 text-green-500" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Sisa Ekoran</p>
+                      <p className="text-sm text-muted-foreground">Sisa Whatsapp Channel</p>
                       <p className="text-xl font-bold">{user?.wa_channel}</p>
                     </div>
                   </Card>
@@ -269,10 +269,10 @@ function Index({ news, writers, kanals, filters }) {
                                 <button
                                   onClick={() => handleRequestAddon(n.id, 'wa_channel', user.wa_channel)}
                                   disabled={isWAChannelRequested}
-                                  className={`btn btn-sm btn-circle ${isWAChannelRequested ? 'btn-disabled opacity-50 bg-blue-100' : 'btn-outline border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white hover:border-blue-500'}`}
-                                  title={isWAChannelRequested ? "Ekoran sedang diproses" : "Jadikan Ekoran"}
+                                  className={`btn btn-sm btn-circle ${isWAChannelRequested ? 'btn-disabled opacity-50 bg-gree-100' : 'btn-outline border-green-500 text-green-500 hover:bg-green-500 hover:text-white hover:border-green-500'}`}
+                                  title={isWAChannelRequested ? "Ekoran sedang diproses" : "Jadikan WA Channel"}
                                 >
-                                  <PhoneCall size={14} />
+                                  <Phone size={14} />
                                 </button>
                               </div>
                             </td>
@@ -332,7 +332,7 @@ function Index({ news, writers, kanals, filters }) {
                               disabled={isWAChannelRequested}
                               className={`btn btn-sm ${isWAChannelRequested ? 'btn-disabled opacity-50' : 'btn-outline border-green-500 text-green-500'}`}
                             >
-                              <PhoneCall size={14} /> Whatsapp Channel
+                              <Phone size={14} /> Whatsapp Channel
                             </button>
                           </div>
 
