@@ -173,6 +173,14 @@ function Index({ newsPackages, newsSatuan, userPackage }) {
                                             </div>
                                         )}
 
+
+                                        {plan.wa_channel > 0 && (
+                                            <div className="flex items-start gap-3">
+                                                <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                                                <span className="text-sm">Whatsapp Channel: {plan.wa_channel}</span>
+                                            </div>
+                                        )}
+
                                         {/* Plan Header */}
                                         <div className="text-center mb-6">
                                             <h3 className="font-serif text-2xl font-bold mb-2">{plan.name}</h3>

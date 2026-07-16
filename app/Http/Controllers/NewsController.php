@@ -204,7 +204,7 @@ class NewsController extends Controller
     public function requestAddon(Request $request, News $news)
     {
         $request->validate([
-            'jenis_request' => 'required|in:feed_instagram,ekoran'
+            'jenis_request' => 'required|in:feed_instagram,ekoran,wa_channel'
         ]);
 
         $user = Auth::user();

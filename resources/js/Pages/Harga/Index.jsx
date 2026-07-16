@@ -7,7 +7,7 @@ import { Link } from "@inertiajs/react";
 import { Check, Sparkles, Gift } from "lucide-react"; // Jangan lupa import Gift
 
 function Index({ newsPackages }) {
-    
+
     // Fallback data untuk Level 1 jika data feature dari database kosong/tidak terbaca
     const defaultLevel1Features = [
         "Dapat member card penulis",
@@ -116,6 +116,13 @@ function Index({ newsPackages }) {
                                                         </div>
                                                     )}
 
+                                                    {plan.wa_channel > 0 && (
+                                                        <div className="flex items-start gap-3">
+                                                            <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                                                            <span className="text-sm">Whatsapp Channel: {plan.wa_channel}</span>
+                                                        </div>
+                                                    )}
+
                                                     {/* Menampilkan Items Tambahan dari Tabel items_lainnya */}
                                                     {plan.items_lainnya && plan.items_lainnya.length > 0 && (
                                                         <div className="my-4 border-t border-border pt-4">
@@ -140,8 +147,8 @@ function Index({ newsPackages }) {
                                         </div>
 
                                         {/* CTA */}
-                                        <Link 
-                                            className="btn btn-primary w-full mt-auto" 
+                                        <Link
+                                            className="btn btn-primary w-full mt-auto"
                                             href={plan.level === 2 ? `/checkout?package_id=${plan.id}` : "/register"}
                                         >
                                             Pilih

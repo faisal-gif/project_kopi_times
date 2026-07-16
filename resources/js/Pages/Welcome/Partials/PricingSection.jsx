@@ -5,7 +5,7 @@ import { Check, Sparkles, Gift } from "lucide-react";
 
 const PricingSection = ({ newsPackages }) => {
 
-    
+
     const defaultLevel1Features = [
         "Dapat member card penulis",
         "Dapat Akun CMS akses",
@@ -72,7 +72,7 @@ const PricingSection = ({ newsPackages }) => {
                                     </div>
                                 )}
 
-                                
+
 
                                 {/* Plan Header */}
                                 <div className="text-center mb-6">
@@ -86,7 +86,7 @@ const PricingSection = ({ newsPackages }) => {
 
                                 {/* Features List */}
                                 <div className="flex-1 space-y-3 mb-8">
-                                    
+
                                     {plan.level === 1 ? (
                                         // TAMPILAN KHUSUS LEVEL 1
                                         <>
@@ -121,6 +121,13 @@ const PricingSection = ({ newsPackages }) => {
                                                 </div>
                                             )}
 
+                                            {plan.wa_channel > 0 && (
+                                                <div className="flex items-start gap-3">
+                                                    <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                                                    <span className="text-sm">Whatsapp Channel: {plan.wa_channel}</span>
+                                                </div>
+                                            )}
+
                                             {plan.items_lainnya && plan.items_lainnya.length > 0 && (
                                                 <div className="my-4 border-t border-border pt-4">
                                                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
@@ -145,8 +152,8 @@ const PricingSection = ({ newsPackages }) => {
                                 </div>
 
                                 {/* CTA */}
-                                <Link 
-                                    className="btn btn-primary w-full mt-auto" 
+                                <Link
+                                    className="btn btn-primary w-full mt-auto"
                                     href={plan.level === 2 ? `/checkout?package_id=${plan.id}` : "/register"}
                                 >
                                     Pilih

@@ -6,7 +6,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { formatDate, formatDateTime } from '@/Utils/formatter'
 import { Head, Link, router, usePage } from '@inertiajs/react'
 // Tambahkan Icon Instagram dan FileText (untuk ekoran)
-import { AlertTriangle, Crown, Eye, Newspaper, Plus, Search, TrendingUp, Instagram, FileText } from 'lucide-react'
+import { AlertTriangle, Crown, Eye, Newspaper, Plus, Search, TrendingUp, Instagram, FileText, PhoneCall } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 
 function Index({ news, writers, kanals, filters }) {
@@ -107,7 +107,7 @@ function Index({ news, writers, kanals, filters }) {
         <div className="py-12">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className=" space-y-6">
-              
+
               {/* Header Info */}
               <div className='flex flex-row justify-between items-center'>
                 <div>
@@ -172,6 +172,14 @@ function Index({ news, writers, kanals, filters }) {
                       <p className="text-xl font-bold">{user?.ekoran}</p>
                     </div>
                   </Card>
+
+                  <Card className="flex items-center gap-3 p-4">
+                    <PhoneCall className="w-6 h-6 text-green-500" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Sisa Ekoran</p>
+                      <p className="text-xl font-bold">{user?.wa_channel}</p>
+                    </div>
+                  </Card>
                 </div>
               )}
 
@@ -209,7 +217,7 @@ function Index({ news, writers, kanals, filters }) {
 
               {/* Start Table */}
               <Card className="overflow-hidden p-0">
-                
+
                 {/* DESKTOP VERSION */}
                 <div className="overflow-x-auto hidden md:block">
                   <table className="table table-zebra w-full">
@@ -227,6 +235,7 @@ function Index({ news, writers, kanals, filters }) {
                       {news.data.map((n) => {
                         const isFeedRequested = checkRequestStatus(n.addon_requests, 'feed_instagram');
                         const isEkoranRequested = checkRequestStatus(n.addon_requests, 'ekoran');
+                        const isWAChannelRequested = checkRequestStatus(n.addon_requests, 'wa_channel');
 
                         return (
                           <tr key={n.id}>
@@ -237,7 +246,7 @@ function Index({ news, writers, kanals, filters }) {
                             <td>
                               <div className="flex items-center justify-center gap-2">
                                 {/* Tombol Request Feed IG */}
-                                <button 
+                                <button
                                   onClick={() => handleRequestAddon(n.id, 'feed_instagram', user.feed_instagram)}
                                   disabled={isFeedRequested}
                                   className={`btn btn-sm btn-circle ${isFeedRequested ? 'btn-disabled opacity-50 bg-pink-100' : 'btn-outline border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white hover:border-pink-500'}`}
@@ -247,13 +256,23 @@ function Index({ news, writers, kanals, filters }) {
                                 </button>
 
                                 {/* Tombol Request Ekoran */}
-                                <button 
+                                <button
                                   onClick={() => handleRequestAddon(n.id, 'ekoran', user.ekoran)}
                                   disabled={isEkoranRequested}
                                   className={`btn btn-sm btn-circle ${isEkoranRequested ? 'btn-disabled opacity-50 bg-blue-100' : 'btn-outline border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white hover:border-blue-500'}`}
                                   title={isEkoranRequested ? "Ekoran sedang diproses" : "Jadikan Ekoran"}
                                 >
                                   <FileText size={14} />
+                                </button>
+
+                                {/* Tombol Request WA Channel */}
+                                <button
+                                  onClick={() => handleRequestAddon(n.id, 'wa_channel', user.wa_channel)}
+                                  disabled={isWAChannelRequested}
+                                  className={`btn btn-sm btn-circle ${isWAChannelRequested ? 'btn-disabled opacity-50 bg-blue-100' : 'btn-outline border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white hover:border-blue-500'}`}
+                                  title={isWAChannelRequested ? "Ekoran sedang diproses" : "Jadikan Ekoran"}
+                                >
+                                  <PhoneCall size={14} />
                                 </button>
                               </div>
                             </td>
@@ -274,6 +293,7 @@ function Index({ news, writers, kanals, filters }) {
                   {news.data.map((n) => {
                     const isFeedRequested = checkRequestStatus(n.addon_requests, 'feed_instagram');
                     const isEkoranRequested = checkRequestStatus(n.addon_requests, 'ekoran');
+                    const isWAChannelRequested = checkRequestStatus(n.addon_requests, 'wa_channel');
 
                     return (
                       <div key={n.id} className="border rounded-xl p-4 bg-base-100 shadow-sm">
@@ -290,24 +310,32 @@ function Index({ news, writers, kanals, filters }) {
 
                         {/* Actions Mobile */}
                         <div className="flex justify-between items-center mt-4 pt-4 border-t border-base-200">
-                           <div className="flex gap-2">
-                                <button 
-                                  onClick={() => handleRequestAddon(n.id, 'feed_instagram', user.feed_instagram)}
-                                  disabled={isFeedRequested}
-                                  className={`btn btn-sm ${isFeedRequested ? 'btn-disabled opacity-50' : 'btn-outline border-pink-500 text-pink-500'}`}
-                                >
-                                  <Instagram size={14} /> Feed
-                                </button>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleRequestAddon(n.id, 'feed_instagram', user.feed_instagram)}
+                              disabled={isFeedRequested}
+                              className={`btn btn-sm ${isFeedRequested ? 'btn-disabled opacity-50' : 'btn-outline border-pink-500 text-pink-500'}`}
+                            >
+                              <Instagram size={14} /> Feed
+                            </button>
 
-                                <button 
-                                  onClick={() => handleRequestAddon(n.id, 'ekoran', user.ekoran)}
-                                  disabled={isEkoranRequested}
-                                  className={`btn btn-sm ${isEkoranRequested ? 'btn-disabled opacity-50' : 'btn-outline border-blue-500 text-blue-500'}`}
-                                >
-                                  <FileText size={14} /> Ekoran
-                                </button>
-                           </div>
-                           
+                            <button
+                              onClick={() => handleRequestAddon(n.id, 'ekoran', user.ekoran)}
+                              disabled={isEkoranRequested}
+                              className={`btn btn-sm ${isEkoranRequested ? 'btn-disabled opacity-50' : 'btn-outline border-blue-500 text-blue-500'}`}
+                            >
+                              <FileText size={14} /> Ekoran
+                            </button>
+
+                            <button
+                              onClick={() => handleRequestAddon(n.id, 'wa_channel', user.wa_channel)}
+                              disabled={isWAChannelRequested}
+                              className={`btn btn-sm ${isWAChannelRequested ? 'btn-disabled opacity-50' : 'btn-outline border-green-500 text-green-500'}`}
+                            >
+                              <PhoneCall size={14} /> Whatsapp Channel
+                            </button>
+                          </div>
+
                           <Link href={route('news.show', n)} className="btn btn-sm btn-outline"><Eye size={16} /></Link>
                         </div>
                       </div>
