@@ -39,6 +39,7 @@ class User extends Authenticatable
         'quota_news',
         'feed_instagram',
         'ekoran',
+        'wa_channel',
         'instansi',
         'avatar',
         'avatar_raw',
