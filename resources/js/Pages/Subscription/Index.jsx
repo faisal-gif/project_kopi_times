@@ -174,13 +174,6 @@ function Index({ newsPackages, newsSatuan, userPackage }) {
                                         )}
 
 
-                                        {plan.wa_channel > 0 && (
-                                            <div className="flex items-start gap-3">
-                                                <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                                                <span className="text-sm">Whatsapp Channel: {plan.wa_channel}</span>
-                                            </div>
-                                        )}
-
                                         {/* Plan Header */}
                                         <div className="text-center mb-6">
                                             <h3 className="font-serif text-2xl font-bold mb-2">{plan.name}</h3>
@@ -215,6 +208,15 @@ function Index({ newsPackages, newsSatuan, userPackage }) {
                                                     <span className="text-sm">Ekoran: {plan.ekoran}</span>
                                                 </div>
                                             )}
+
+
+                                            {plan.wa_channel > 0 && (
+                                                <div className="flex items-start gap-3">
+                                                    <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                                                    <span className="text-sm">Whatsapp Channel: {plan.wa_channel}</span>
+                                                </div>
+                                            )}
+
 
                                             {plan.items_lainnya && plan.items_lainnya.length > 0 && (
                                                 <div className="my-4 border-t border-border pt-4">
