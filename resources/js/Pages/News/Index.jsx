@@ -316,7 +316,7 @@ function Index({ news, writers, kanals, filters }) {
                         </div>
 
                         {/* Actions Mobile */}
-                        <div className="flex flex-col items-center justify-between mt-4 pt-4 border-t border-base-200">
+                        <div className="flex flex-col gap-8 mt-4 pt-4 border-t border-base-200">
                           <div className="grid grid-cols-2 gap-2">
                             <button
                               onClick={() => handleRequestAddon(n.id, 'feed_instagram', user.feed_instagram)}
@@ -339,11 +339,11 @@ function Index({ news, writers, kanals, filters }) {
                               disabled={isWAChannelRequested}
                               className={`btn btn-sm ${isWAChannelRequested ? 'btn-disabled opacity-50' : 'btn-outline border-green-500 text-green-500'}`}
                             >
-                              <Phone size={14} /> Whatsapp Channel
+                              <Phone size={14} /> WA Channel
                             </button>
                           </div>
 
-                          <Link href={route('news.show', n)} className="btn btn-sm btn-outline"><Eye size={16} /></Link>
+                          <Link href={route('news.show', n)} className="btn btn-sm btn-outline w-full"><Eye size={16} /></Link>
                         </div>
                       </div>
                     )
