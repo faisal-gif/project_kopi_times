@@ -316,7 +316,7 @@ function Index({ news, writers, kanals, filters }) {
                         </div>
 
                         {/* Actions Mobile */}
-                        <div className="flex justify-between items-center mt-4 pt-4 border-t border-base-200">
+                        <div className="flex flex-row items-center justify-between mt-4 pt-4 border-t border-base-200">
                           <div className="grid grid-cols-2 gap-2">
                             <button
                               onClick={() => handleRequestAddon(n.id, 'feed_instagram', user.feed_instagram)}
