@@ -4,7 +4,6 @@ import { Editor } from '@tinymce/tinymce-react';
 export default function InputEditor({ value, onChange }) {
     return (
         <Editor
-
             tinymceScriptSrc="/vendor/tinymce/tinymce.min.js"
             referrerPolicy='origin'
             value={value}
@@ -35,7 +34,8 @@ export default function InputEditor({ value, onChange }) {
                     'wordcount'
                 ],
                 toolbar:
-                    'bold italic underline strikethrough | ' +
+                    // Tambahkan removeformat di baris ini
+                    'bold italic underline strikethrough removeformat | ' + 
                     'numlist bullist | ' +
                     'outdent indent | ' +
                     'blockquote | ' +
