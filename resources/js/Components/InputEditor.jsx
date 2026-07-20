@@ -8,44 +8,33 @@ export default function InputEditor({ value, onChange }) {
             referrerPolicy='origin'
             value={value}
             onEditorChange={(content, editor) => {
+                
                 onChange(content);
             }}
 
-            // 3. Konfigurasi Fitur Lengkap
             init={{
                 license_key: 'gpl',
                 height: 500,
                 forced_root_block: 'p',
-                noneditable_class: 'instagram-media',
-                extended_valid_elements: '+script[language|type|src]',
-                contextmenu: false,
-                quickbars_insert_toolbar: false,
-                quickbars_selection_toolbar: false,
+                
+                // 1. BATASI TAG HTML YANG DIIZINKAN HANYA <p> DAN <br>
+                // Semua format seperti <strong>, <em>, <span>, <ul> akan otomatis dihapus
+                valid_elements: 'p,br', 
+
+                // 2. Cegah format terbawa saat copy-paste dari luar
+                paste_as_text: true,
+
                 mobile: {
                     menubar: false,
                     toolbar_mode: 'wrap',
                 },
 
                 plugins: [
-                    'searchreplace', 'lists', 'advlist', 'link',
-                    'charmap', 'pagebreak', 'nonbreaking',
-                    'visualblocks', 'visualchars', 'fullscreen',
-                    'insertdatetime', 'table', 'help',
-                    'wordcount'
+                    'searchreplace', 'wordcount', 'paste'
                 ],
-                toolbar:
-                    // Tambahkan removeformat di baris ini
-                    'bold italic underline strikethrough removeformat | ' + 
-                    'numlist bullist | ' +
-                    'outdent indent | ' +
-                    'blockquote | ' +
-                    'alignleft aligncenter alignright alignjustify | ' +
-                    'ltr rtl | ' +
-                    'hr pagebreak | ',
-                image_title: true,
-                file_picker_types: '',
-                image_advtab: false,
-                automatic_uploads: false,
+                
+                toolbar: 'undo redo | removeformat',
+
                 menubar: false,
                 branding: false,
                 promotion: false,
@@ -55,10 +44,9 @@ export default function InputEditor({ value, onChange }) {
                     body { 
                         font-family:Helvetica,Arial,sans-serif; 
                         font-size:16px; 
-                        padding: 10px; /* Memberi ruang napas di pinggir */
+                        padding: 10px;
                         box-sizing: border-box; 
                     }
-                    .instagram-media { margin: 10px auto !important; }
                 `,
             }}
         />
