@@ -5,14 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\News;
 use App\Models\NewsPackage;
 use Illuminate\Http\Request;
+use App\Models\Pengumuman;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    public function index()
+   public function index()
     {
         $auth = Auth::user();
 
@@ -21,12 +23,29 @@ class DashboardController extends Controller
         $total_publish_news = News::where('pewarta_id', $auth->id)->where('status', 1)->count();
         $paket_terdaftar = NewsPackage::find($auth->package_id);
 
+        // LOGIKA PENGUMUMAN
+        $now = Carbon::now();
+        $pengumuman = Pengumuman::where('is_active', true)
+            ->where(function ($query) use ($now) {
+                // Tampilkan jika start_date kosong ATAU start_date sudah lewat/hari ini
+                $query->whereNull('start_date')
+                      ->orWhere('start_date', '<=', $now);
+            })
+            ->where(function ($query) use ($now) {
+                // Tampilkan jika end_date kosong ATAU end_date belum lewat
+                $query->whereNull('end_date')
+                      ->orWhere('end_date', '>=', $now);
+            })
+            ->orderByDesc('created_at')
+            ->get();
+
         return Inertia::render('Dashboard', [
             'total_news' => $total_news,
             'auth_user' => $auth,
             'paket_terdaftar' => $paket_terdaftar,
             'pending_news' => $total_pending_news,
             'publish_news' => $total_publish_news,
+            'pengumuman' => $pengumuman, // Kirim ke Frontend
         ]);
     }
 
