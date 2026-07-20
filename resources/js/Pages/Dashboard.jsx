@@ -24,9 +24,10 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
     const isExpiringSoon = daysRemaining <= 30 && daysRemaining > 0;
     const isExpired = daysRemaining <= 0;
 
-    const quotaPercentage = (user.quota_news / paket_terdaftar.quota) * 100;
+    const isUnlimited = paket_terdaftar.quota === null;
+    const quotaPercentage = isUnlimited ? 100 : (user.quota_news / paket_terdaftar.quota) * 100;
     const quotaRemaining = paket_terdaftar.quota - user.quota_news;
-    const isQuotaExhausted = user.quota_news <= 0;
+    const isQuotaExhausted = isUnlimited ? false : user.quota_news <= 0;
 
     const handleAvatarComplete = (blob) => {
         const formData = new FormData();
@@ -46,23 +47,22 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
             }
         >
             <Head title="Dashboard" />
-            
+
             <div className="space-y-6">
-                
+
                 {/* ================= SECTION PENGUMUMAN ================= */}
                 {pengumuman && pengumuman.length > 0 && (
                     <div className="flex flex-col gap-3">
                         {pengumuman.map((item) => (
-                            <div 
-                                key={item.id} 
-                                className={`flex items-start gap-4 p-4 rounded-xl border shadow-sm ${
-                                    item.type === 'urgent' 
-                                        ? 'bg-red-50 border-red-200 text-red-900' 
-                                        : 'bg-blue-50 border-blue-200 text-blue-900'
-                                }`}
+                            <div
+                                key={item.id}
+                                className={`flex items-start gap-4 p-4 rounded-xl border shadow-sm ${item.type === 'urgent'
+                                    ? 'bg-red-50 border-red-200 text-red-900'
+                                    : 'bg-blue-50 border-blue-200 text-blue-900'
+                                    }`}
                             >
                                 <div className="mt-0.5 shrink-0">
-                                    {item.type === 'urgent' 
+                                    {item.type === 'urgent'
                                         ? <AlertTriangle className="w-6 h-6 text-red-600" />
                                         : <Info className="w-6 h-6 text-blue-600" />
                                     }
@@ -82,7 +82,7 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
 
                     {/* Kolom Kiri: Profil & Member Card */}
                     <div className="flex flex-col gap-6">
-                        
+
                         <Card className={`border-2 ${profilePhoto ? 'border-green-500/50 bg-green-50/50' : 'border-orange-500/50 bg-orange-50/50'}`}>
                             <div className="pb-3 border-b border-black/5 mb-4">
                                 <div className={`flex items-center gap-2 text-lg font-bold ${profilePhoto ? 'text-green-700' : 'text-orange-700'}`}>
@@ -90,7 +90,7 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
                                     {profilePhoto ? 'Foto Profil Anda' : 'Lengkapi Foto Profil Anda'}
                                 </div>
                             </div>
-                            
+
                             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
                                 <div className="avatar shrink-0">
                                     <div className="w-24 h-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
@@ -122,7 +122,7 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
 
                     {/* Kolom Kanan: Status & Komunitas */}
                     <div className='flex flex-col gap-6'>
-                        
+
                         {/* Status Membership Card */}
                         <Card className="border-primary/20 shadow-sm">
                             <div className="flex items-center justify-between mb-6">
@@ -144,7 +144,7 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
                                     <span className="text-muted-foreground">Berakhir Pada</span>
                                     <span className="font-medium text-foreground">{formatDate(user.dateexp)}</span>
                                 </div>
-                                
+
                                 <div className="pt-2">
                                     {isExpired ? (
                                         <div className="flex items-center justify-center gap-2 text-destructive bg-destructive/10 py-2 rounded-lg">
@@ -174,12 +174,14 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
                                             Sisa Kuota Artikel Bulan Ini
                                         </p>
                                         <span className={`font-bold text-sm px-2 py-1 rounded-md ${isQuotaExhausted ? 'bg-destructive/10 text-destructive' : 'bg-primary/10 text-primary'}`}>
-                                            {user.quota_news} / {paket_terdaftar.quota}
+                                            {/* Jika unlimited, tampilkan teks khusus */}
+                                            {isUnlimited ? 'Unlimited (Tanpa Batas)' : `${user.quota_news} / ${paket_terdaftar.quota}`}
                                         </span>
                                     </div>
                                 )}
-                                
-                                {isQuotaExhausted && (
+
+                                {/* Tampil jika kuota habis & BUKAN unlimited */}
+                                {isQuotaExhausted && !isUnlimited && (
                                     <div className="space-y-4 mt-4 bg-destructive/5 p-4 rounded-xl border border-destructive/20">
                                         <div className="flex items-start gap-2 text-destructive">
                                             <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
@@ -195,7 +197,8 @@ export default function Dashboard({ auth_user, total_news, paket_terdaftar, pend
                                     </div>
                                 )}
 
-                                {paket_terdaftar.level != 1 && !isQuotaExhausted && quotaPercentage >= 80 && (
+                                {/* Warning kuota menipis (Sisa <= 20%) - Tampil jika BUKAN unlimited */}
+                                {paket_terdaftar.level != 1 && !isQuotaExhausted && !isUnlimited && quotaPercentage <= 20 && (
                                     <p className="text-xs font-semibold text-orange-600 mt-2 bg-orange-50 p-2 rounded">
                                         ⚠️ Peringatan: Kuota artikel Anda hampir habis!
                                     </p>
