@@ -7,7 +7,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatDate } from '@/Utils/formatter';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
-    AlertTriangle, Info, X, CheckCircle, Clock, Crown, ExternalLink, FileText,
+    AlertTriangle, X, CheckCircle, Clock, Crown, ExternalLink, FileText,
     Info, MessageCircle, NewspaperIcon, TrendingUp, Camera, ChevronRight,
 } from 'lucide-react';
 import { useState } from 'react';
