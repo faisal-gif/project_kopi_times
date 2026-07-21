@@ -41,6 +41,7 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/profile/avatar', [ProfileController::class, 'uploadAvatar'])->name('upload.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/thumbnail', [ProfileController::class, 'updateThumbnail'])->name('profile.thumbnail');
 });
 
 Route::get('/generate-card', [DashboardController::class, 'generateCard'])->name('generate-card');

@@ -9,6 +9,7 @@ import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
 import AvatarCrop from '@/Components/AvatarCrop';
 import MemberCard from '@/Components/MemberCard';
+import ThumbnailCrop from '@/Components/ThumbnailCrop';
 
 // Header card yang konsisten dipakai ulang di tiap section
 function SectionHeader({ icon: Icon, title, subtitle, tone = 'primary' }) {
@@ -16,6 +17,8 @@ function SectionHeader({ icon: Icon, title, subtitle, tone = 'primary' }) {
         primary: 'bg-primary/10 text-primary',
         warning: 'bg-warning/10 text-warning',
     };
+
+
     return (
         <div className="flex items-start gap-3 border-b border-base-200 bg-base-100/50 p-5 md:p-6">
             <div className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg ${tones[tone]}`}>
@@ -29,7 +32,7 @@ function SectionHeader({ icon: Icon, title, subtitle, tone = 'primary' }) {
     );
 }
 
-export default function Edit({ mustVerifyEmail, status, paket_terdaftar }) {
+export default function Edit({ mustVerifyEmail, status, paket_terdaftar, thumbnail }) {
     const { auth } = usePage().props;
     const user = auth.user;
     const isVerified = user.email_verified_at !== null;
@@ -39,6 +42,15 @@ export default function Edit({ mustVerifyEmail, status, paket_terdaftar }) {
         const formData = new FormData();
         formData.append('avatar', blob, 'avatar.png');
         router.post('/profile/avatar', formData, {
+            forceFormData: true,
+            preserveScroll: true,
+        });
+    };
+
+    const handleThumbnailComplete = (file) => {
+        const formData = new FormData();
+        formData.append('image', file);
+        router.post(route('profile.thumbnail'), formData, {
             forceFormData: true,
             preserveScroll: true,
         });
@@ -152,6 +164,21 @@ export default function Edit({ mustVerifyEmail, status, paket_terdaftar }) {
                                             )}
                                         </div>
                                     </div>
+                                </div>
+                            </Card>
+
+                            {/* Foto Thumbnail Berita */}
+                            <Card className="overflow-hidden border-base-200 p-0 shadow-sm">
+                                <SectionHeader
+                                    icon={Newspaper}
+                                    title="Foto Thumbnail Berita"
+                                    subtitle="Foto berframe yang dipakai otomatis di setiap opini Anda."
+                                />
+                                <div className="p-6">
+                                    <ThumbnailCrop
+                                        currentThumbnail={thumbnail}
+                                        onComplete={handleThumbnailComplete}
+                                    />
                                 </div>
                             </Card>
 

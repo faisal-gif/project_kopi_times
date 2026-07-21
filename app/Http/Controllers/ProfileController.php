@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\ImagesThumbnail;
 use App\Models\NewsPackage;
+use App\Services\CdnService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -12,16 +14,19 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Str;
 
 
 class ProfileController extends Controller
 {
+    public function __construct(private CdnService $cdnService) {}
     /**
      * Display the user's profile form.
      */
     public function edit(Request $request): Response
     {
         $user = $request->user();
+        $thumbnail = ImagesThumbnail::where('user_id', $user->id)->latest()->first();
 
         // Ambil data paket langganan user untuk ID Card
         $paket_terdaftar = NewsPackage::find($user->package_id);
@@ -30,6 +35,7 @@ class ProfileController extends Controller
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status'          => session('status'),
             'paket_terdaftar' => $paket_terdaftar, // Kirim ke frontend
+            'thumbnail' => $thumbnail?->image_path,
         ]);
     }
 
@@ -111,5 +117,41 @@ class ProfileController extends Controller
         $name = time() . '_raw.' . $ext;
         Storage::disk('public')->putFileAs('images/avatar/raw', $image, $name);
         return 'images/avatar/raw/' . $name;
+    }
+
+    public function updateThumbnail(Request $request)
+    {
+        $request->validate([
+            'image' => ['required', 'image', 'max:5120'], // maks 5MB
+        ]);
+
+        $user = $request->user();
+
+        try {
+            $file = $request->file('image');
+            $name = 'kopi-times-' . Str::slug(Str::limit($user->nama, 100, '')) . '-thumbnail-1';
+
+            $thumbnailUrl = $this->cdnService->uploadImage($file, $name, 3, 'raw', 0);
+
+            if (! $thumbnailUrl) {
+                return back()->withErrors(['image' => 'Gagal mengunggah gambar ke CDN.']);
+            }
+        } catch (\Exception $e) {
+            return back()->withErrors(['image' => 'Gagal mengunggah gambar: ' . $e->getMessage()]);
+        }
+
+        // Update jika sudah ada, buat baru jika belum — mengikuti pola latest()->first()
+        $existing = ImagesThumbnail::where('user_id', $user->id)->latest()->first();
+        if ($existing) {
+            $existing->update(['template_id' => 1, 'image_path' => $thumbnailUrl]);
+        } else {
+            ImagesThumbnail::create([
+                'user_id' => $user->id,
+                'template_id' => 1,
+                'image_path' => $thumbnailUrl,
+            ]);
+        }
+
+        return back()->with('success', 'Foto thumbnail berhasil diperbarui.');
     }
 }
