@@ -6,6 +6,7 @@ import {
     AlertTriangle, BadgeCheck, MailWarning, Building2, MapPin,
     Newspaper,
     Camera,
+    Crown, Instagram, MessageCircle, Layers, CalendarClock,
 } from 'lucide-react';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
@@ -34,7 +35,9 @@ function SectionHeader({ icon: Icon, title, subtitle, tone = 'primary' }) {
     );
 }
 
-export default function Edit({ mustVerifyEmail, status, paket_terdaftar, thumbnail }) {
+// ubah signature
+export default function Edit({ mustVerifyEmail, status, paket_terdaftar, thumbnail, news_package }) {
+
     const { auth } = usePage().props;
     const user = auth.user;
     const isVerified = user.email_verified_at !== null;
@@ -57,6 +60,20 @@ export default function Edit({ mustVerifyEmail, status, paket_terdaftar, thumbna
             preserveScroll: true,
         });
     };
+
+    function StatItem({ icon: Icon, label, value }) {
+        return (
+            <div className="flex items-center gap-3 rounded-xl border border-base-200 bg-base-100 p-4">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+                    <Icon size={18} />
+                </div>
+                <div className="min-w-0">
+                    <p className="text-xl font-bold leading-none text-foreground">{value ?? 0}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{label}</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <AuthenticatedLayout>
@@ -140,6 +157,50 @@ export default function Edit({ mustVerifyEmail, status, paket_terdaftar, thumbna
 
                         {/* KOLOM KIRI */}
                         <div className="space-y-6 lg:col-span-2">
+
+                            {/* Paket & Kuota */}
+                            <Card className="overflow-hidden border-base-200 p-0 shadow-sm">
+                                <SectionHeader
+                                    icon={Crown}
+                                    title="Paket Keanggotaan"
+                                    subtitle="Ringkasan paket aktif dan sisa kuota Anda."
+                                />
+                                <div className="p-6 space-y-5">
+                                    {/* Nama paket + masa aktif */}
+                                    <div className="flex flex-col gap-3 rounded-2xl bg-gradient-to-r from-primary/10 to-primary/5 p-5 sm:flex-row sm:items-center sm:justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="grid h-11 w-11 place-items-center rounded-xl bg-primary text-primary-content">
+                                                <Crown size={20} />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Paket saat ini</p>
+                                                <p className="text-lg font-bold text-foreground">
+                                                    {news_package?.name ?? 'Belum berlangganan'}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        {news_package?.dateexp && (
+                                            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                                                <CalendarClock size={15} />
+                                                Berlaku s.d.{' '}
+                                                <span className="font-semibold text-foreground">
+                                                    {new Date(news_package.dateexp).toLocaleDateString('id-ID', {
+                                                        day: '2-digit', month: 'long', year: 'numeric',
+                                                    })}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Grid kuota */}
+                                    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                                        <StatItem icon={Newspaper} label="Kuota Opini" value={news_package?.quota_news} />
+                                        <StatItem icon={Instagram} label="Feed Instagram" value={news_package?.feed_instagram} />
+                                        <StatItem icon={Layers} label="E-Koran" value={news_package?.ekoran} />
+                                        <StatItem icon={MessageCircle} label="WA Channel" value={news_package?.wa_channel} />
+                                    </div>
+                                </div>
+                            </Card>
 
 
                             {/* Kartu Member / ID Card */}

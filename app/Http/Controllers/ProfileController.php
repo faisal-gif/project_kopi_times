@@ -25,17 +25,22 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
-        $user = $request->user();
+        $user = $request->user()->load('paket');
         $thumbnail = ImagesThumbnail::where('user_id', $user->id)->latest()->first();
-
-        // Ambil data paket langganan user untuk ID Card
-        $paket_terdaftar = NewsPackage::find($user->package_id);
 
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
-            'status'          => session('status'),
-            'paket_terdaftar' => $paket_terdaftar, // Kirim ke frontend
+            'status' => session('status'),
             'thumbnail' => $thumbnail?->image_path,
+            // 'paket_terdaftar' => ...,   // biarkan yang sudah ada
+            'news_package' => [
+                'name'           => $user->paket?->name,   // sesuaikan kolom nama di NewsPackage
+                'dateexp'        => $user->dateexp,
+                'quota_news'     => $user->quota_news,
+                'feed_instagram' => $user->feed_instagram,
+                'ekoran'         => $user->ekoran,
+                'wa_channel'     => $user->wa_channel,
+            ],
         ]);
     }
 
