@@ -59,6 +59,7 @@ class ProfileController extends Controller
             'avatar' => 'required|image|mimes:png|max:2048',
             'avatar_raw' => 'required|image|max:5120',
         ]);
+
         $user = auth()->user();
 
         DB::transaction(function () use ($request, $user) {
@@ -74,6 +75,11 @@ class ProfileController extends Controller
                 Storage::disk('public')->delete($user->avatar_raw);
             }
 
+            // HAPUS member_card lama (karena kita tidak pakai ini lagi di DB)
+            if ($user->member_card && Storage::disk('public')->exists($user->member_card)) {
+                Storage::disk('public')->delete($user->member_card);
+            }
+
             /** =========================
              * SIMPAN FILE BARU
              * ========================= */
@@ -86,20 +92,14 @@ class ProfileController extends Controller
             $user->update([
                 'avatar' => $avatarPath,
                 'avatar_raw' => $rawPath,
+                'member_card' => null, // Dikosongkan karena di-generate via Frontend
             ]);
-            DB::afterCommit(function () use ($user) {
-                if ($user->member_card && Storage::disk('public')->exists($user->member_card)) {
-                    Storage::disk('public')->delete($user->member_card);
-                }
-
-                $memberCardPath = $this->generateCard($user);
-                $user->member_card = $memberCardPath;
-                $user->save();
-            });
         });
 
-        return redirect()->route('dashboard');
+        return back()->with('success', 'Avatar berhasil diperbarui!');
     }
+
+    // Biarkan fungsi storeAvatar() dan storeAvatarRaw() tetap seperti biasa
 
     private function storeAvatar($image)
     {
