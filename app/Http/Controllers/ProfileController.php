@@ -24,9 +24,15 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
+        $user = $request->user();
+
+        // Ambil data paket langganan user untuk ID Card
+        $paket_terdaftar = NewsPackage::find($user->package_id);
+
         return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => session('status'),
+            'mustVerifyEmail' => $user instanceof MustVerifyEmail,
+            'status'          => session('status'),
+            'paket_terdaftar' => $paket_terdaftar, // Kirim ke frontend
         ]);
     }
 
