@@ -3,13 +3,12 @@ import InputSelect from '@/Components/InputSelect'
 import InputWithPrefix from '@/Components/InputWithPrefix'
 import PaginationDaisy from '@/Components/PaginationDaisy'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
-import { formatDate, formatDateTime } from '@/Utils/formatter'
+import { formatDate } from '@/Utils/formatter'
 import { Head, Link, router, usePage } from '@inertiajs/react'
-// Tambahkan Icon Instagram dan FileText (untuk ekoran)
-import { AlertTriangle, Crown, Eye, Newspaper, Plus, Search, TrendingUp, Instagram, FileText, PhoneCall, Phone } from 'lucide-react'
+import { AlertTriangle, Crown, Eye, Newspaper, Plus, Search, Instagram, FileText, Phone, CheckCircle, Clock } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 
-function Index({ news, writers, kanals, filters }) {
+function Index({ news, filters }) {
   const [search, setSearch] = useState(() => filters.search || '');
   const [status, setStatus] = useState(() => filters.status || '');
   const { auth } = usePage().props;
@@ -54,14 +53,12 @@ function Index({ news, writers, kanals, filters }) {
     );
   }
 
-  // FUNGSI BARU UNTUK TRIGGER REQUEST
   function handleRequestAddon(newsId, jenis, kuotaTersedia) {
-    // Mapping nama layanan agar lebih rapi dan mudah jika ada penambahan lagi ke depannya
     const labelLayanan = {
       feed_instagram: 'Feed IG',
       ekoran: 'Ekoran',
       wa_channel: 'WA Channel'
-    }[jenis] || jenis; // fallback ke 'jenis' jika tidak ditemukan di object
+    }[jenis] || jenis;
 
     if (kuotaTersedia <= 0) {
       alert(`Kuota ${labelLayanan} Anda habis. Silakan perpanjang membership.`);
@@ -77,12 +74,59 @@ function Index({ news, writers, kanals, filters }) {
     }
   }
 
-  // Helper untuk mengecek apakah sebuah berita sudah direquest
-  function checkRequestStatus(addonRequests, jenis) {
-    if (!addonRequests || addonRequests.length === 0) return false;
-    // Cek jika ada request yang statusnya bukan rejected
-    return addonRequests.some(req => req.jenis_request === jenis && req.status !== 'rejected');
+  // ==========================================
+  // HELPER BARU UNTUK RENDER TOMBOL ADD-ONS
+  // ==========================================
+  function renderAddonButton(newsId, jenis, kuotaTersedia, addonRequests, icon, label, isMobile = false) {
+    // Cari request terakhir untuk jenis layanan ini (di-sort descending agar dapat yang paling baru)
+    const request = addonRequests
+      ?.filter(req => req.jenis_request === jenis)
+      ?.sort((a, b) => b.id - a.id)[0];
+
+    const baseClass = isMobile ? 'btn btn-sm flex-1' : 'btn btn-sm btn-circle';
+
+    // KONDISI 1: Belum pernah request, ATAU request terakhir ditolak (user boleh request lagi)
+    if (!request || request.status === 'rejected') {
+      return (
+        <button
+          onClick={() => handleRequestAddon(newsId, jenis, kuotaTersedia)}
+          className={`${baseClass} btn-outline ${request?.status === 'rejected' ? 'border-red-500 text-red-500 hover:bg-red-500 hover:border-red-500' : 'border-base-300 text-base-content/70 hover:bg-primary hover:border-primary'} hover:text-white`}
+          title={request?.status === 'rejected' ? `Ditolak: ${request.keterangan_admin} (Klik untuk request ulang)` : `Request ${label}`}
+        >
+          {icon} {isMobile && <span>{label}</span>}
+        </button>
+      );
+    }
+
+    // KONDISI 2: Selesai dikerjakan (Completed) -> Berubah jadi tombol Link
+    if (request.status === 'completed') {
+      return (
+        <a
+          href={request.url_hasil || '#'}
+          target="_blank"
+          rel="noreferrer"
+          className={`${baseClass} bg-green-100 border-green-500 text-green-700 hover:bg-green-600 hover:text-white hover:border-green-600 flex items-center justify-center gap-1`}
+          title={`Selesai! Lihat Hasil ${label}`}
+        >
+          {isMobile ? <CheckCircle size={14} /> : icon}
+          {isMobile && <span>Lihat Hasil</span>}
+        </a>
+      );
+    }
+
+    // KONDISI 3: Sedang diproses / Menunggu (Pending / Processing)
+    return (
+      <button
+        disabled
+        className={`${baseClass} btn-disabled opacity-80 bg-primary/10 text-primary border-primary/30 flex items-center justify-center gap-1 cursor-not-allowed`}
+        title={`${label} sedang ${request.status === 'processing' ? 'diproses' : 'menunggu antrean'}`}
+      >
+        {isMobile ? <Clock size={14} /> : icon} 
+        {isMobile && <span>{request.status === 'processing' ? 'Diproses' : 'Antre'}</span>}
+      </button>
+    );
   }
+  // ==========================================
 
   function getStatusBadge(status) {
     switch (status) {
@@ -157,7 +201,7 @@ function Index({ news, writers, kanals, filters }) {
 
               {/* TAMPILAN INFORMASI KUOTA USER SAAT INI */}
               {user?.package_id != 10 && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                   <Card className="flex items-center gap-3 p-4">
                     <Newspaper className="w-6 h-6 text-primary" />
                     <div>
@@ -179,11 +223,10 @@ function Index({ news, writers, kanals, filters }) {
                       <p className="text-xl font-bold">{user?.ekoran}</p>
                     </div>
                   </Card>
-
                   <Card className="flex items-center gap-3 p-4">
                     <Phone className="w-6 h-6 text-green-500" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Sisa Whatsapp Channel</p>
+                      <p className="text-sm text-muted-foreground">Sisa WA Channel</p>
                       <p className="text-xl font-bold">{user?.wa_channel}</p>
                     </div>
                   </Card>
@@ -239,12 +282,7 @@ function Index({ news, writers, kanals, filters }) {
                       </tr>
                     </thead>
                     <tbody>
-                      {news.data.map((n) => {
-                        const isFeedRequested = checkRequestStatus(n.addon_requests, 'feed_instagram');
-                        const isEkoranRequested = checkRequestStatus(n.addon_requests, 'ekoran');
-                        const isWAChannelRequested = checkRequestStatus(n.addon_requests, 'wa_channel');
-
-                        return (
+                      {news.data.map((n) => (
                           <tr key={n.id}>
                             <th>{n.id}</th>
                             <td className="whitespace-normal break-words max-w-md">{n.title}</td>
@@ -252,35 +290,10 @@ function Index({ news, writers, kanals, filters }) {
                             <td>{getStatusBadge(n.status)}</td>
                             <td>
                               <div className="flex items-center justify-center gap-2">
-                                {/* Tombol Request Feed IG */}
-                                <button
-                                  onClick={() => handleRequestAddon(n.id, 'feed_instagram', user.feed_instagram)}
-                                  disabled={isFeedRequested}
-                                  className={`btn btn-sm btn-circle ${isFeedRequested ? 'btn-disabled opacity-50 bg-pink-100' : 'btn-outline border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white hover:border-pink-500'}`}
-                                  title={isFeedRequested ? "Feed IG sedang diproses" : "Jadikan Feed IG"}
-                                >
-                                  <Instagram size={14} />
-                                </button>
-
-                                {/* Tombol Request Ekoran */}
-                                <button
-                                  onClick={() => handleRequestAddon(n.id, 'ekoran', user.ekoran)}
-                                  disabled={isEkoranRequested}
-                                  className={`btn btn-sm btn-circle ${isEkoranRequested ? 'btn-disabled opacity-50 bg-blue-100' : 'btn-outline border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white hover:border-blue-500'}`}
-                                  title={isEkoranRequested ? "Ekoran sedang diproses" : "Jadikan Ekoran"}
-                                >
-                                  <FileText size={14} />
-                                </button>
-
-                                {/* Tombol Request WA Channel */}
-                                <button
-                                  onClick={() => handleRequestAddon(n.id, 'wa_channel', user.wa_channel)}
-                                  disabled={isWAChannelRequested}
-                                  className={`btn btn-sm btn-circle ${isWAChannelRequested ? 'btn-disabled opacity-50 bg-gree-100' : 'btn-outline border-green-500 text-green-500 hover:bg-green-500 hover:text-white hover:border-green-500'}`}
-                                  title={isWAChannelRequested ? "Ekoran sedang diproses" : "Jadikan WA Channel"}
-                                >
-                                  <Phone size={14} />
-                                </button>
+                                {/* Pemanggilan fungsi renderAddonButton - sangat bersih! */}
+                                {renderAddonButton(n.id, 'feed_instagram', user.feed_instagram, n.addon_requests, <Instagram size={14} />, 'Feed IG')}
+                                {renderAddonButton(n.id, 'ekoran', user.ekoran, n.addon_requests, <FileText size={14} />, 'Ekoran')}
+                                {renderAddonButton(n.id, 'wa_channel', user.wa_channel, n.addon_requests, <Phone size={14} />, 'WA Channel')}
                               </div>
                             </td>
                             <td>
@@ -289,20 +302,14 @@ function Index({ news, writers, kanals, filters }) {
                               </div>
                             </td>
                           </tr>
-                        );
-                      })}
+                        ))}
                     </tbody>
                   </table>
                 </div>
 
                 {/* MOBILE VERSION (Card Mode) */}
                 <div className="md:hidden flex flex-col p-4 gap-4">
-                  {news.data.map((n) => {
-                    const isFeedRequested = checkRequestStatus(n.addon_requests, 'feed_instagram');
-                    const isEkoranRequested = checkRequestStatus(n.addon_requests, 'ekoran');
-                    const isWAChannelRequested = checkRequestStatus(n.addon_requests, 'wa_channel');
-
-                    return (
+                  {news.data.map((n) => (
                       <div key={n.id} className="border rounded-xl p-4 bg-base-100 shadow-sm">
                         <div className="flex justify-between items-start gap-2 mb-3">
                           <div>
@@ -317,37 +324,18 @@ function Index({ news, writers, kanals, filters }) {
 
                         {/* Actions Mobile */}
                         <div className="flex flex-col gap-4 mt-4 pt-4 border-t border-base-200">
+                          
+                          {/* Grid Tombol Addons Mobile (Parameter terakhir = true) */}
                           <div className="grid grid-cols-2 gap-2">
-                            <button
-                              onClick={() => handleRequestAddon(n.id, 'feed_instagram', user.feed_instagram)}
-                              disabled={isFeedRequested}
-                              className={`btn btn-sm ${isFeedRequested ? 'btn-disabled opacity-50' : 'btn-outline border-pink-500 text-pink-500'}`}
-                            >
-                              <Instagram size={14} /> Feed
-                            </button>
-
-                            <button
-                              onClick={() => handleRequestAddon(n.id, 'ekoran', user.ekoran)}
-                              disabled={isEkoranRequested}
-                              className={`btn btn-sm ${isEkoranRequested ? 'btn-disabled opacity-50' : 'btn-outline border-blue-500 text-blue-500'}`}
-                            >
-                              <FileText size={14} /> Ekoran
-                            </button>
-
-                            <button
-                              onClick={() => handleRequestAddon(n.id, 'wa_channel', user.wa_channel)}
-                              disabled={isWAChannelRequested}
-                              className={`btn btn-sm ${isWAChannelRequested ? 'btn-disabled opacity-50' : 'btn-outline border-green-500 text-green-500'}`}
-                            >
-                              <Phone size={14} /> WA Channel
-                            </button>
+                             {renderAddonButton(n.id, 'feed_instagram', user.feed_instagram, n.addon_requests, <Instagram size={14} />, 'Feed IG', true)}
+                             {renderAddonButton(n.id, 'ekoran', user.ekoran, n.addon_requests, <FileText size={14} />, 'Ekoran', true)}
+                             {renderAddonButton(n.id, 'wa_channel', user.wa_channel, n.addon_requests, <Phone size={14} />, 'WA Channel', true)}
                           </div>
 
-                          <Link href={route('news.show', n)} className="btn btn-sm btn-outline w-full"><Eye size={16} /> Detail</Link>
+                          <Link href={route('news.show', n)} className="btn btn-sm btn-outline w-full"><Eye size={16} /> Detail Berita</Link>
                         </div>
                       </div>
-                    )
-                  })}
+                    ))}
                 </div>
               </Card>
 
