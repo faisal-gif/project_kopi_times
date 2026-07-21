@@ -3,7 +3,7 @@ import Cropper from "react-easy-crop";
 import { router } from "@inertiajs/react";
 import { Upload } from "lucide-react";
 
-export default function AvatarCrop() {
+export default function AvatarCrop({ onComplete, children }) {
     const [open, setOpen] = useState(false);
     const [imageSrc, setImageSrc] = useState(null);
     const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -80,9 +80,14 @@ export default function AvatarCrop() {
 
     return (
         <>
-            {/* Upload input */}
             <label className="cursor-pointer inline-flex items-center gap-2">
-                <span className="btn btn-primary btn-sm"><Upload className="w-4 h-4" />  Ganti Avatar</span>
+                {children ? (
+                    children
+                ) : (
+                    <span className="btn btn-primary btn-sm">
+                        <Upload className="w-4 h-4" /> Ganti Avatar
+                    </span>
+                )}
                 <input
                     type="file"
                     accept="image/*"
@@ -90,7 +95,6 @@ export default function AvatarCrop() {
                     onChange={handleFile}
                 />
             </label>
-
             {/* Modal Crop */}
             {open && (
                 <div className="fixed inset-0 z-50 px-2 bg-black/50 flex items-center justify-center">

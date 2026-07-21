@@ -5,6 +5,7 @@ import {
     ArrowLeft, Key, User, Image as ImageIcon,
     AlertTriangle, BadgeCheck, MailWarning, Building2, MapPin,
     Newspaper,
+    Camera,
 } from 'lucide-react';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
@@ -83,13 +84,24 @@ export default function Edit({ mustVerifyEmail, status, paket_terdaftar, thumbna
                         <div className="h-24 bg-gradient-to-r from-primary/80 via-primary to-primary/70 md:h-28" />
                         <div className="px-6 pb-6">
                             <div className="-mt-12 flex flex-col items-center gap-4 md:flex-row md:items-end">
-                                <div className="avatar">
-                                    <div className="h-24 w-24 rounded-full ring ring-base-100 shadow-lg">
-                                        <img src={avatarSrc} alt="Avatar" className="object-cover" />
+                                {/* Avatar dengan tombol edit */}
+                                <div className="relative">
+                                    <div className="avatar">
+                                        <div className="h-24 w-24 rounded-full ring ring-base-100 shadow-lg">
+                                            <img src={avatarSrc} alt="Avatar" className="object-cover" />
+                                        </div>
                                     </div>
+                                    <AvatarCrop onComplete={handleAvatarComplete}>
+                                        <span
+                                            className="absolute bottom-0 right-0 grid h-8 w-8 place-items-center rounded-full bg-primary text-primary-content shadow-md ring-2 ring-base-100 transition hover:brightness-110"
+                                            title="Ganti foto profil"
+                                        >
+                                            <Camera size={15} />
+                                        </span>
+                                    </AvatarCrop>
                                 </div>
                                 <div className="flex-1 text-center md:pb-1 md:text-left">
-                                    <h1 className="text-2xl font-bold leading-tight text-foreground">
+                                    <h1 className="text-2xl text-white font-bold leading-tight text-foreground">
                                         {user.nama}
                                     </h1>
                                     <div className="mt-1 flex flex-wrap items-center justify-center gap-2 md:justify-start">
@@ -129,42 +141,30 @@ export default function Edit({ mustVerifyEmail, status, paket_terdaftar, thumbna
                         {/* KOLOM KIRI */}
                         <div className="space-y-6 lg:col-span-2">
 
-                            {/* Foto Profil & ID Card */}
+
+                            {/* Kartu Member / ID Card */}
                             <Card className="overflow-hidden border-base-200 p-0 shadow-sm">
                                 <SectionHeader
                                     icon={ImageIcon}
-                                    title="Foto Profil & ID Card"
-                                    subtitle="Foto ini tampil di artikel publik dan kartu keanggotaan Anda."
+                                    title="Kartu Keanggotaan"
+                                    subtitle="Dibuat otomatis dari foto profil Anda. Unduh untuk menyimpannya."
                                 />
                                 <div className="p-6">
-                                    <div className="flex flex-col items-center gap-8 md:flex-row md:items-start">
-                                        {/* Upload */}
-                                        <div className="flex shrink-0 flex-col items-center gap-4">
-                                            <div className="avatar">
-                                                <div className="h-32 w-32 rounded-full shadow-md ring ring-primary ring-offset-2 ring-offset-base-100">
-                                                    <img src={avatarSrc} alt="Avatar" className="object-cover" />
-                                                </div>
-                                            </div>
-                                            <AvatarCrop onComplete={handleAvatarComplete} />
+                                    {user.avatar ? (
+                                        <div className="mx-auto max-w-sm">
+                                            <MemberCard user={user} paket_terdaftar={paket_terdaftar} />
                                         </div>
-
-                                        {/* Preview Member Card */}
-                                        <div className="flex w-full flex-1 flex-col justify-center">
-                                            {user.avatar ? (
-                                                <MemberCard user={user} paket_terdaftar={paket_terdaftar} />
-                                            ) : (
-                                                <div className="flex h-full min-h-[220px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-base-300 bg-base-200/30 p-6 text-center">
-                                                    <AlertTriangle className="mb-3 h-10 w-10 text-warning opacity-80" />
-                                                    <p className="mb-1 text-lg font-bold text-foreground">
-                                                        Kartu Member Belum Tersedia
-                                                    </p>
-                                                    <p className="mx-auto max-w-xs text-sm text-muted-foreground">
-                                                        Pasang foto profil di sebelah kiri untuk men-generate ID Card otomatis.
-                                                    </p>
-                                                </div>
-                                            )}
+                                    ) : (
+                                        <div className="flex min-h-[220px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-base-300 bg-base-200/30 p-6 text-center">
+                                            <AlertTriangle className="mb-3 h-10 w-10 text-warning opacity-80" />
+                                            <p className="mb-1 text-lg font-bold text-foreground">
+                                                Kartu Member Belum Tersedia
+                                            </p>
+                                            <p className="mx-auto max-w-xs text-sm text-muted-foreground">
+                                                Pasang foto profil dulu (tombol kamera di atas) untuk men-generate ID Card otomatis.
+                                            </p>
                                         </div>
-                                    </div>
+                                    )}
                                 </div>
                             </Card>
 

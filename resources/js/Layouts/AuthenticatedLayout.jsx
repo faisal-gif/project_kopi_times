@@ -45,7 +45,7 @@ export default function AuthenticatedLayout({ header, children }) {
             <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
 
             {/* ================= CONTENT ================= */}
-            <div className="drawer-content overflow-x-auto">
+            <div className="drawer-content overflow-x-clip">
                 {/* NAVBAR */}
                 <div className="navbar bg-base-100 border-b border-base-300 px-4">
                     <div className="flex-none lg:hidden">
