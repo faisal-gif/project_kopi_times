@@ -14,7 +14,7 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-   public function index()
+    public function index()
     {
         $auth = Auth::user();
 
@@ -29,15 +29,20 @@ class DashboardController extends Controller
             ->where(function ($query) use ($now) {
                 // Tampilkan jika start_date kosong ATAU start_date sudah lewat/hari ini
                 $query->whereNull('start_date')
-                      ->orWhere('start_date', '<=', $now);
+                    ->orWhere('start_date', '<=', $now);
             })
             ->where(function ($query) use ($now) {
                 // Tampilkan jika end_date kosong ATAU end_date belum lewat
                 $query->whereNull('end_date')
-                      ->orWhere('end_date', '>=', $now);
+                    ->orWhere('end_date', '>=', $now);
             })
             ->orderByDesc('created_at')
             ->get();
+
+        $recent_news = News::where('pewarta_id', $auth->id)
+            ->latest('datetime')
+            ->limit(5)
+            ->get(['id', 'title', 'status', 'datetime']);
 
         return Inertia::render('Dashboard', [
             'total_news' => $total_news,
@@ -46,6 +51,7 @@ class DashboardController extends Controller
             'pending_news' => $total_pending_news,
             'publish_news' => $total_publish_news,
             'pengumuman' => $pengumuman, // Kirim ke Frontend
+            'recent_news' => $recent_news, // tambahan
         ]);
     }
 
@@ -90,7 +96,7 @@ class DashboardController extends Controller
             $font->align('center');
         });
 
-         // Teks Nomor ID
+        // Teks Nomor ID
         $image->text('BERLAKU SAMPAI: 20-09-2028', $centerX, 1250, function ($font) {
             $font->filename(public_path('fonts/Montserrat-Regular.ttf'));
             $font->size(30);

@@ -6,233 +6,327 @@ import { Button } from '@/Components/ui/button';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatDate } from '@/Utils/formatter';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { AlertTriangle, CheckCircle, Crown, ExternalLink, Info, MessageCircle, TrendingUp } from 'lucide-react';
+import {
+    AlertTriangle, CheckCircle, Clock, Crown, ExternalLink, FileText,
+    Info, MessageCircle, NewspaperIcon, TrendingUp, Camera, ChevronRight,
+} from 'lucide-react';
 import { useState } from 'react';
 
-// Tambahkan pengumuman di parameter props
-export default function Dashboard({ auth_user, total_news, paket_terdaftar, pending_news, publish_news, pengumuman }) {
+// ---- Kartu statistik kecil ----
+function StatCard({ icon: Icon, label, value, tone = 'primary', hint, href }) {
+    const tones = {
+        primary: 'bg-primary/10 text-primary',
+        green: 'bg-green-100 text-green-700',
+        orange: 'bg-orange-100 text-orange-700',
+        blue: 'bg-blue-100 text-blue-700',
+    };
 
+    const inner = (
+        <div className="flex items-center gap-4">
+            <div className={`grid h-12 w-12 shrink-0 place-items-center rounded-xl ${tones[tone]}`}>
+                <Icon className="h-6 w-6" />
+            </div>
+            <div className="min-w-0">
+                <p className="text-2xl font-bold leading-none text-foreground">{value}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{label}</p>
+                {hint && <p className="text-xs text-muted-foreground/70">{hint}</p>}
+            </div>
+        </div>
+    );
+
+    return (
+        <Card className={`border-base-200 shadow-sm ${href ? 'transition hover:shadow-md hover:border-primary/30' : ''}`}>
+            {href ? <Link href={href} className="block">{inner}</Link> : inner}
+        </Card>
+    );
+}
+
+// ---- Badge status berita ----
+function StatusBadge({ status }) {
+    // 0 = pending review, 1 = publish (sesuaikan bila ada status lain)
+    if (status === 1) {
+        return <span className="badge badge-success badge-sm gap-1 text-white"><CheckCircle size={11} /> Terbit</span>;
+    }
+    return <span className="badge badge-warning badge-sm gap-1"><Clock size={11} /> Review</span>;
+}
+
+export default function Dashboard({
+    auth_user, total_news, paket_terdaftar, pending_news, publish_news, pengumuman, recent_news = [],
+}) {
     const { auth } = usePage().props;
     const user = auth.user;
 
-    const [profilePhoto, setProfilePhoto] = useState(auth_user.avatar);
+    const [profilePhoto] = useState(auth_user.avatar);
 
-    // Calculate days remaining
+    // Sisa masa aktif
     const today = new Date();
     const endDate = new Date(user.dateexp);
     const daysRemaining = Math.ceil((endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     const isExpiringSoon = daysRemaining <= 30 && daysRemaining > 0;
     const isExpired = daysRemaining <= 0;
 
+    // Kuota
     const isUnlimited = paket_terdaftar.quota === null;
     const quotaPercentage = isUnlimited ? 100 : (user.quota_news / paket_terdaftar.quota) * 100;
-    const quotaRemaining = paket_terdaftar.quota - user.quota_news;
     const isQuotaExhausted = isUnlimited ? false : user.quota_news <= 0;
 
     const handleAvatarComplete = (blob) => {
         const formData = new FormData();
-        formData.append("avatar", blob, "avatar.png");
-
-        router.post("/profile/avatar", formData, {
-            forceFormData: true,
-        });
+        formData.append('avatar', blob, 'avatar.png');
+        router.post('/profile/avatar', formData, { forceFormData: true });
     };
 
     return (
         <AuthenticatedLayout
-            header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Dashboard
-                </h2>
-            }
+            header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Dashboard</h2>}
         >
             <Head title="Dashboard" />
 
             <div className="space-y-6">
 
-                {/* ================= SECTION PENGUMUMAN ================= */}
+                {/* ================= PENGUMUMAN ================= */}
                 {pengumuman && pengumuman.length > 0 && (
                     <div className="flex flex-col gap-3">
                         {pengumuman.map((item) => (
                             <div
                                 key={item.id}
-                                className={`flex items-start gap-4 p-4 rounded-xl border shadow-sm ${item.type === 'urgent'
-                                    ? 'bg-red-50 border-red-200 text-red-900'
-                                    : 'bg-blue-50 border-blue-200 text-blue-900'
-                                    }`}
+                                className={`flex items-start gap-4 rounded-xl border p-4 shadow-sm ${
+                                    item.type === 'urgent'
+                                        ? 'border-red-200 bg-red-50 text-red-900'
+                                        : 'border-blue-200 bg-blue-50 text-blue-900'
+                                }`}
                             >
                                 <div className="mt-0.5 shrink-0">
                                     {item.type === 'urgent'
-                                        ? <AlertTriangle className="w-6 h-6 text-red-600" />
-                                        : <Info className="w-6 h-6 text-blue-600" />
-                                    }
+                                        ? <AlertTriangle className="h-6 w-6 text-red-600" />
+                                        : <Info className="h-6 w-6 text-blue-600" />}
                                 </div>
                                 <div className="flex-1">
-                                    <h3 className="font-bold text-lg leading-none mb-2">{item.title}</h3>
-                                    {/* whitespace-pre-wrap agar enter/baris baru dari textarea tetap terbaca */}
-                                    <p className="text-sm opacity-90 whitespace-pre-wrap">{item.content}</p>
+                                    <h3 className="mb-2 text-lg font-bold leading-none">{item.title}</h3>
+                                    <p className="whitespace-pre-wrap text-sm opacity-90">{item.content}</p>
                                 </div>
                             </div>
                         ))}
                     </div>
                 )}
-                {/* ================= END SECTION PENGUMUMAN ================= */}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-6">
+                {/* ================= STATISTIK ================= */}
+                <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                    <StatCard icon={NewspaperIcon} label="Total Opini" value={total_news} tone="blue" />
+                    <StatCard
+                        icon={CheckCircle} label="Terbit" value={publish_news} tone="green"
+                        href={route('news.index')}
+                    />
+                    <StatCard
+                        icon={Clock} label="Menunggu Review" value={pending_news} tone="orange"
+                        href={route('news.index')}
+                    />
+                    <StatCard
+                        icon={TrendingUp} label="Sisa Kuota"
+                        value={isUnlimited ? '∞' : user.quota_news} tone="primary"
+                        hint={isUnlimited ? 'Tanpa batas' : `dari ${paket_terdaftar.quota}`}
+                    />
+                </div>
 
-                    {/* Kolom Kiri: Profil & Member Card */}
+                {/* ================= GRID PROFIL & STATUS ================= */}
+                <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2">
+
+                    {/* Kolom Kiri */}
                     <div className="flex flex-col gap-6">
 
-                        <Card className={`border-2 ${profilePhoto ? 'border-green-500/50 bg-green-50/50' : 'border-orange-500/50 bg-orange-50/50'}`}>
-                            <div className="pb-3 border-b border-black/5 mb-4">
-                                <div className={`flex items-center gap-2 text-lg font-bold ${profilePhoto ? 'text-green-700' : 'text-orange-700'}`}>
-                                    {profilePhoto ? <CheckCircle className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
-                                    {profilePhoto ? 'Foto Profil Anda' : 'Lengkapi Foto Profil Anda'}
-                                </div>
-                            </div>
+                        {profilePhoto ? (
+                            // Foto sudah ada → ringkas, member card yang menonjol
+                            <>
+                                <Card className="border-base-200 shadow-sm">
+                                    <div className="flex items-center gap-4">
+                                        <div className="relative shrink-0">
+                                            <div className="avatar">
+                                                <div className="h-16 w-16 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100">
+                                                    <img src={'storage/' + auth_user.avatar} alt="Avatar" className="object-cover" />
+                                                </div>
+                                            </div>
+                                            <AvatarCrop onComplete={handleAvatarComplete}>
+                                                <span className="absolute -bottom-1 -right-1 grid h-7 w-7 place-items-center rounded-full bg-primary text-primary-content shadow-md ring-2 ring-base-100 transition hover:brightness-110" title="Ganti foto">
+                                                    <Camera size={13} />
+                                                </span>
+                                            </AvatarCrop>
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <p className="truncate font-bold text-foreground">{user.nama}</p>
+                                            <p className="truncate text-sm text-muted-foreground">{user.email}</p>
+                                        </div>
+                                        <Link href={route('profile.edit')} className="btn btn-ghost btn-sm">
+                                            Profil <ChevronRight size={15} />
+                                        </Link>
+                                    </div>
+                                </Card>
 
-                            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-                                <div className="avatar shrink-0">
-                                    <div className="w-24 h-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                                        {auth_user.avatar ? (
-                                            <img src={'storage/' + auth_user.avatar} alt="Avatar" className="object-cover" />
-                                        ) : (
+                                <MemberCard user={user} paket_terdaftar={paket_terdaftar} />
+                            </>
+                        ) : (
+                            // Belum ada foto → ajakan yang menonjol
+                            <Card className="border-2 border-orange-500/50 bg-orange-50/50">
+                                <div className="mb-4 border-b border-black/5 pb-3">
+                                    <div className="flex items-center gap-2 text-lg font-bold text-orange-700">
+                                        <AlertTriangle className="h-5 w-5" /> Lengkapi Foto Profil Anda
+                                    </div>
+                                </div>
+                                <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
+                                    <div className="avatar shrink-0">
+                                        <div className="h-24 w-24 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100">
                                             <img src={'placeholder.svg'} alt="Placeholder" className="object-cover" />
-                                        )}
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 space-y-4 text-center sm:text-left">
+                                        <p className="text-sm leading-relaxed text-muted-foreground">
+                                            Tambahkan foto profil untuk melengkapi identitas Anda sebagai penulis Kopi TIMES.
+                                            Foto akan tampil di artikel dan kartu member Anda.
+                                        </p>
+                                        <div className="flex justify-center sm:justify-start">
+                                            <AvatarCrop onComplete={handleAvatarComplete} />
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="flex-1 space-y-4 text-center sm:text-left">
-                                    <p className="text-sm text-muted-foreground leading-relaxed">
-                                        {profilePhoto
-                                            ? 'Foto profil Anda sudah terpasang. Klik tombol di bawah jika ingin menggantinya dengan yang baru.'
-                                            : 'Tambahkan foto profil untuk melengkapi identitas Anda sebagai penulis Kopi TIMES. Foto akan ditampilkan di artikel dan kartu member Anda.'
-                                        }
-                                    </p>
-                                    <div className="flex justify-center sm:justify-start">
-                                        <AvatarCrop onComplete={handleAvatarComplete} />
-                                    </div>
-                                </div>
-                            </div>
-                        </Card>
-
-                        {auth_user.avatar && (
-                            <MemberCard user={user} paket_terdaftar={paket_terdaftar} />
+                            </Card>
                         )}
                     </div>
 
-                    {/* Kolom Kanan: Status & Komunitas */}
-                    <div className='flex flex-col gap-6'>
+                    {/* Kolom Kanan */}
+                    <div className="flex flex-col gap-6">
 
-                        {/* Status Membership Card */}
+                        {/* Status Membership */}
                         <Card className="border-primary/20 shadow-sm">
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-lg font-bold flex items-center gap-2">
-                                    <Crown className="w-5 h-5 text-primary" />
-                                    Status Membership
+                            <div className="mb-6 flex items-center justify-between">
+                                <h3 className="flex items-center gap-2 text-lg font-bold">
+                                    <Crown className="h-5 w-5 text-primary" /> Status Membership
                                 </h3>
-                                <div className='badge badge-primary badge-outline font-semibold'>
+                                <div className="badge badge-primary badge-outline font-semibold">
                                     Level {paket_terdaftar.level}
                                 </div>
                             </div>
 
-                            <div className="space-y-4 bg-base-200/50 p-4 rounded-xl border border-base-200">
-                                <div className="flex justify-between items-center text-sm">
+                            <div className="space-y-4 rounded-xl border border-base-200 bg-base-200/50 p-4">
+                                <div className="flex items-center justify-between text-sm">
                                     <span className="text-muted-foreground">Mulai Bergabung</span>
                                     <span className="font-medium text-foreground">{formatDate(user.created)}</span>
                                 </div>
-                                <div className="flex justify-between items-center text-sm border-t border-base-300 pt-3">
+                                <div className="flex items-center justify-between border-t border-base-300 pt-3 text-sm">
                                     <span className="text-muted-foreground">Berakhir Pada</span>
                                     <span className="font-medium text-foreground">{formatDate(user.dateexp)}</span>
                                 </div>
-
                                 <div className="pt-2">
                                     {isExpired ? (
-                                        <div className="flex items-center justify-center gap-2 text-destructive bg-destructive/10 py-2 rounded-lg">
-                                            <AlertTriangle className="w-4 h-4" />
-                                            <span className="font-bold text-sm">Paket Sudah Berakhir!</span>
+                                        <div className="flex items-center justify-center gap-2 rounded-lg bg-destructive/10 py-2 text-destructive">
+                                            <AlertTriangle className="h-4 w-4" />
+                                            <span className="text-sm font-bold">Paket Sudah Berakhir!</span>
                                         </div>
                                     ) : isExpiringSoon ? (
-                                        <div className="flex items-center justify-center gap-2 text-orange-600 bg-orange-100 py-2 rounded-lg">
-                                            <AlertTriangle className="w-4 h-4" />
-                                            <span className="font-bold text-sm">Sisa {daysRemaining} hari lagi</span>
+                                        <div className="flex items-center justify-center gap-2 rounded-lg bg-orange-100 py-2 text-orange-600">
+                                            <AlertTriangle className="h-4 w-4" />
+                                            <span className="text-sm font-bold">Sisa {daysRemaining} hari lagi</span>
                                         </div>
                                     ) : (
-                                        <div className="flex items-center justify-center gap-2 text-green-600 bg-green-100 py-2 rounded-lg">
-                                            <CheckCircle className="w-4 h-4" />
-                                            <span className="font-bold text-sm">Status Aktif (Sisa {daysRemaining} hari)</span>
+                                        <div className="flex items-center justify-center gap-2 rounded-lg bg-green-100 py-2 text-green-600">
+                                            <CheckCircle className="h-4 w-4" />
+                                            <span className="text-sm font-bold">Status Aktif (Sisa {daysRemaining} hari)</span>
                                         </div>
                                     )}
                                 </div>
                             </div>
 
-                            {/* Section Kuota Artikel */}
-                            <div className="mt-6 pt-6 border-t border-border">
+                            {/* Kuota */}
+                            <div className="mt-6 border-t border-border pt-6">
                                 {paket_terdaftar.level != 1 && (
-                                    <div className="flex items-center justify-between mb-2">
-                                        <p className="text-sm font-bold flex items-center gap-2">
-                                            <TrendingUp className={`w-4 h-4 ${isQuotaExhausted ? 'text-destructive' : 'text-primary'}`} />
+                                    <div className="mb-2 flex items-center justify-between">
+                                        <p className="flex items-center gap-2 text-sm font-bold">
+                                            <TrendingUp className={`h-4 w-4 ${isQuotaExhausted ? 'text-destructive' : 'text-primary'}`} />
                                             Sisa Kuota Artikel Bulan Ini
                                         </p>
-                                        <span className={`font-bold text-sm px-2 py-1 rounded-md ${isQuotaExhausted ? 'bg-destructive/10 text-destructive' : 'bg-primary/10 text-primary'}`}>
-                                            {/* Jika unlimited, tampilkan teks khusus */}
+                                        <span className={`rounded-md px-2 py-1 text-sm font-bold ${isQuotaExhausted ? 'bg-destructive/10 text-destructive' : 'bg-primary/10 text-primary'}`}>
                                             {isUnlimited ? 'Unlimited (Tanpa Batas)' : `${user.quota_news} / ${paket_terdaftar.quota}`}
                                         </span>
                                     </div>
                                 )}
 
-                                {/* Tampil jika kuota habis & BUKAN unlimited */}
                                 {isQuotaExhausted && !isUnlimited && (
-                                    <div className="space-y-4 mt-4 bg-destructive/5 p-4 rounded-xl border border-destructive/20">
+                                    <div className="mt-4 space-y-4 rounded-xl border border-destructive/20 bg-destructive/5 p-4">
                                         <div className="flex items-start gap-2 text-destructive">
-                                            <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
+                                            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
                                             <p className="text-sm leading-tight">
-                                                <span className="font-bold block mb-1">Kuota Habis!</span>
+                                                <span className="mb-1 block font-bold">Kuota Habis!</span>
                                                 Anda tidak dapat mengirim artikel baru. Silakan perpanjang paket Anda.
                                             </p>
                                         </div>
-                                        <Link className="btn btn-primary w-full" href={route('subscription.index')} >
-                                            <Crown className="w-4 h-4 mr-2" />
-                                            Perpanjang Member
+                                        <Link className="btn btn-primary w-full" href={route('subscription.index')}>
+                                            <Crown className="mr-2 h-4 w-4" /> Perpanjang Member
                                         </Link>
                                     </div>
                                 )}
 
-                                {/* Warning kuota menipis (Sisa <= 20%) - Tampil jika BUKAN unlimited */}
                                 {paket_terdaftar.level != 1 && !isQuotaExhausted && !isUnlimited && quotaPercentage <= 20 && (
-                                    <p className="text-xs font-semibold text-orange-600 mt-2 bg-orange-50 p-2 rounded">
+                                    <p className="mt-2 rounded bg-orange-50 p-2 text-xs font-semibold text-orange-600">
                                         ⚠️ Peringatan: Kuota artikel Anda hampir habis!
                                     </p>
                                 )}
                             </div>
                         </Card>
 
-                        {/* Join WhatsApp Community */}
-                        <Card className="border-green-500/30 bg-gradient-to-br from-green-50 to-emerald-50/30 shadow-sm overflow-hidden relative">
-                            <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
-                                <div className="shrink-0 p-4 bg-white rounded-2xl shadow-sm border border-green-100">
-                                    <ApplicationLogo className="w-20 h-auto" />
+                        {/* Komunitas WA */}
+                        <Card className="relative overflow-hidden border-green-500/30 bg-gradient-to-br from-green-50 to-emerald-50/30 shadow-sm">
+                            <div className="relative z-10 flex flex-col items-center gap-6 md:flex-row">
+                                <div className="shrink-0 rounded-2xl border border-green-100 bg-white p-4 shadow-sm">
+                                    <ApplicationLogo className="h-auto w-20" />
                                 </div>
                                 <div className="flex-1 text-center md:text-left">
-                                    <h3 className="text-xl font-bold text-green-900 mb-2">Komunitas Penulis</h3>
-                                    <p className="text-sm text-green-800/80 mb-4 leading-relaxed">
-                                        Mari bergabung dengan grup WhatsApp Kopi TIMES untuk berdiskusi, berbagi ilmu, dan mendapat update terbaru!
+                                    <h3 className="mb-2 text-xl font-bold text-green-900">Komunitas Penulis</h3>
+                                    <p className="mb-4 text-sm leading-relaxed text-green-800/80">
+                                        Bergabunglah dengan grup WhatsApp Kopi TIMES untuk berdiskusi, berbagi ilmu, dan mendapat update terbaru!
                                     </p>
-                                    <Button
-                                        asChild
-                                        className="bg-green-600 hover:bg-green-700 text-white w-full md:w-auto shadow-md shadow-green-600/20"
-                                    >
+                                    <Button asChild className="w-full bg-green-600 text-white shadow-md shadow-green-600/20 hover:bg-green-700 md:w-auto">
                                         <a href="https://chat.whatsapp.com/Lgq2lmuD9wHH7Rh2Udj2M0" target="_blank" rel="noopener noreferrer">
-                                            <MessageCircle className="w-4 h-4 mr-2" />
-                                            Gabung Grup WA
-                                            <ExternalLink className="w-3.5 h-3.5 ml-2 opacity-70" />
+                                            <MessageCircle className="mr-2 h-4 w-4" /> Gabung Grup WA
+                                            <ExternalLink className="ml-2 h-3.5 w-3.5 opacity-70" />
                                         </a>
                                     </Button>
                                 </div>
                             </div>
                         </Card>
-
                     </div>
                 </div>
+
+                {/* ================= OPINI TERBARU ================= */}
+                <Card className="border-base-200 shadow-sm">
+                    <div className="mb-4 flex items-center justify-between">
+                        <h3 className="flex items-center gap-2 text-lg font-bold">
+                            <FileText className="h-5 w-5 text-primary" /> Opini Terbaru
+                        </h3>
+                        <Link href={route('news.index')} className="btn btn-ghost btn-sm gap-1">
+                            Lihat Semua <ChevronRight size={15} />
+                        </Link>
+                    </div>
+
+                    {recent_news.length > 0 ? (
+                        <div className="divide-y divide-base-200">
+                            {recent_news.map((news) => (
+                                <div key={news.id} className="flex items-center justify-between gap-3 py-3">
+                                    <div className="min-w-0">
+                                        <p className="truncate font-medium text-foreground">{news.title}</p>
+                                        <p className="text-xs text-muted-foreground">{formatDate(news.datetime)}</p>
+                                    </div>
+                                    <StatusBadge status={news.status} />
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-10 text-center">
+                            <NewspaperIcon className="mb-3 h-10 w-10 text-muted-foreground/40" />
+                            <p className="text-sm text-muted-foreground">Belum ada opini. Mulai tulis opini pertama Anda!</p>
+                            <Link href={route('news.create')} className="btn btn-primary btn-sm mt-4">
+                                Tulis Opini
+                            </Link>
+                        </div>
+                    )}
+                </Card>
             </div>
         </AuthenticatedLayout>
     );
