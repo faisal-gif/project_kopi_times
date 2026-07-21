@@ -6,8 +6,8 @@ import InputLabel from '@/Components/InputLabel'
 import InputTextarea from '@/Components/InputTextarea'
 import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
-import { Head, useForm, usePage } from '@inertiajs/react'
-import { NotebookPenIcon, Settings2, ImageIcon } from 'lucide-react'
+import { Head, useForm, usePage, Link } from '@inertiajs/react'
+import { NotebookPenIcon, Settings2, ImageIcon, Lock, PencilLine } from 'lucide-react'
 import React, { useState, useRef, useEffect } from 'react'
 
 // Import React Cropper
@@ -286,17 +286,35 @@ function Create({ narsum_detail, thumbnail }) {
                                     <div className='grid grid-cols-1 lg:grid-cols-6 gap-4 mt-8'>
                                         <div className='lg:col-span-2'>
                                             {thumbnail ? (
-                                                // Sudah punya thumbnail: tidak bisa upload lagi, pakai foto jadi
+                                                // Sudah punya thumbnail: terkunci, hanya bisa diganti dari profil
                                                 <div>
-                                                    <span className='label-text font-bold'>Foto Anda</span>
-                                                    <img
-                                                        src={thumbnail}
-                                                        alt="Thumbnail"
-                                                        className="mt-2 w-full rounded-lg border"
-                                                    />
-                                                    <p className="text-sm text-gray-500 mt-2">
-                                                        Foto ini otomatis digunakan untuk setiap opini Anda.
-                                                    </p>
+                                                    <div className="flex items-center gap-1.5 mb-2">
+                                                        <span className="label-text font-bold">Foto Anda</span>
+                                                        <span className="inline-flex items-center gap-1 rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                                                            <Lock size={11} /> Terkunci
+                                                        </span>
+                                                    </div>
+
+                                                    <div className="relative">
+                                                        <img
+                                                            src={thumbnail}
+                                                            alt="Thumbnail"
+                                                            className="w-full rounded-lg border border-base-200"
+                                                        />
+                                                    </div>
+
+                                                    <div className="mt-3 rounded-lg border border-base-200 bg-base-100 p-3">
+                                                        <p className="text-sm text-muted-foreground leading-relaxed">
+                                                            Foto ini otomatis dipakai untuk setiap opini Anda. Untuk menggantinya,
+                                                            buka pengaturan profil — perubahan hanya berlaku untuk opini berikutnya.
+                                                        </p>
+                                                        <Link
+                                                            href={route('profile.edit')}
+                                                            className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-primary underline underline-offset-2 hover:opacity-80"
+                                                        >
+                                                            <PencilLine size={14} /> Ganti Foto Thumbnail
+                                                        </Link>
+                                                    </div>
                                                 </div>
                                             ) : (
                                                 <InputImageUpload
