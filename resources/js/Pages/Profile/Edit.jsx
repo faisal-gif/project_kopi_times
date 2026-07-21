@@ -4,6 +4,7 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     ArrowLeft, Key, User, Image as ImageIcon,
     AlertTriangle, BadgeCheck, MailWarning, Building2, MapPin,
+    Newspaper,
 } from 'lucide-react';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
