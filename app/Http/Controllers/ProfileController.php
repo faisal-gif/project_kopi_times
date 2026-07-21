@@ -4,19 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\NewsPackage;
-use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\ImageManager;
+
 
 class ProfileController extends Controller
 {
@@ -103,98 +99,17 @@ class ProfileController extends Controller
 
     private function storeAvatar($image)
     {
-        $manager = new ImageManager(new Driver());
-        $image = $manager->read($image);
-        $encode = $image->toPng();
-        $path = 'images/avatar/' . time() . '.png';
-        Storage::disk('public')->put($path, $encode);
+        $ext = $image->getClientOriginalExtension() ?: 'png';
+        $path = 'images/avatar/' . time() . '.' . $ext;
+        Storage::disk('public')->putFileAs('images/avatar', $image, time() . '.' . $ext);
         return $path;
     }
 
     private function storeAvatarRaw($image)
     {
-        $manager = new ImageManager(new Driver());
-        $image = $manager->read($image);
-        $encode = $image->toPng();
-        $path = 'images/avatar/raw/' . time() . '_raw' . '.png';
-        Storage::disk('public')->put($path, $encode);
-        return $path;
-    }
-
-    public function generateCard($user)
-    {
-        // Buat instance manager dengan driver GD
-        $manager = new ImageManager(new Driver());
-
-        Carbon::setLocale('id');
-
-        $expiredDate = Carbon::parse($user->dateexp)->translatedFormat('d F Y');
-
-        // 1. Baca Template Background
-        $image = $manager->read(public_path('templates/card_bg.jpeg'));
-
-        $width = $image->width();
-        $centerX = $width / 2; // Ini adalah titik tengah absolut
-
-        // 2. Tambahkan Foto Profil
-        // Kita buat foto jadi bulat/frame sesuai contoh
-        $profile = $manager->read(public_path('storage/' . $user->avatar));
-        $profile->cover(400, 400); // Resize dan crop otomatis
-        $image->place($profile, 'top', 0, 500);
-
-
-        // Teks Nama (Tengah)
-        $image->text($user->nama, $centerX, 1150, function ($font) {
-            $font->filename(public_path('fonts/Montserrat-SemiBold.ttf'));
-            $font->size(50);
-            $font->color('a80000'); // Merah gelap
-            $font->align('center');
-        });
-
-        // Teks Nomor ID
-        $image->text('NOMOR ID: KT-' . time() . $user->id, $centerX, 1200, function ($font) {
-            $font->filename(public_path('fonts/Montserrat-Regular.ttf'));
-            $font->size(30);
-            $font->color('000000');
-            $font->align('center');
-        });
-
-        // Teks Nomor ID
-        $image->text('BERLAKU SAMPAI: ' . $expiredDate, $centerX, 1250, function ($font) {
-            $font->filename(public_path('fonts/Montserrat-Regular.ttf'));
-            $font->size(30);
-            $font->color('000000');
-            $font->align('center');
-        });
-
-
-        // 5. Simpan atau Encode
-        $encoded = $image->toJpeg(90);
-        $path = 'images/member_card/' . time() . '.jpeg';
-        Storage::disk('public')->put($path, $encoded);
-        return $path;
-    }
-
-
-
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
-
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+        $ext = $image->getClientOriginalExtension() ?: 'png';
+        $name = time() . '_raw.' . $ext;
+        Storage::disk('public')->putFileAs('images/avatar/raw', $image, $name);
+        return 'images/avatar/raw/' . $name;
     }
 }

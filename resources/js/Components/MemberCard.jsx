@@ -47,7 +47,7 @@ export default function MemberCard({ user, paket_terdaftar }) {
                 {/* Pembungkus utama yang akan di-Capture oleh html-to-image */}
                 <div 
                     ref={cardRef} 
-                    className="relative w-full max-w-[400px] aspect-[2/3] rounded-xl overflow-hidden shadow-xl bg-white"
+                    className="relative w-full max-w-[300px] aspect-[5/8] h-full rounded-xl overflow-hidden shadow-xl bg-white"
                     style={{ fontFamily: "'Montserrat', sans-serif" }} 
                 >
                     {/* Background Card */}
