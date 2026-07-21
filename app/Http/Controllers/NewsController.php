@@ -191,11 +191,14 @@ class NewsController extends Controller
     //     return $image->storeAs('images/berita', $filename, 'public');
     // }
 
-    /**
+  /**
      * Display the specified resource.
      */
     public function show(News $news)
     {
+        // Load relasi addonRequests agar datanya tersedia di frontend
+        $news->load('addonRequests');
+
         return Inertia::render('News/Show', [
             'news' => $news,
         ]);
