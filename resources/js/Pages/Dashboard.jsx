@@ -7,7 +7,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatDate } from '@/Utils/formatter';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
-    AlertTriangle, CheckCircle, Clock, Crown, ExternalLink, FileText,
+    AlertTriangle, Info, X, CheckCircle, Clock, Crown, ExternalLink, FileText,
     Info, MessageCircle, NewspaperIcon, TrendingUp, Camera, ChevronRight,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -50,6 +50,86 @@ function StatusBadge({ status }) {
     return <span className="badge badge-warning badge-sm gap-1"><Clock size={11} /> Review</span>;
 }
 
+function AnnouncementItem({ item }) {
+    const [open, setOpen] = useState(false);
+    const isUrgent = item.type === 'urgent';
+
+    // Ambil ~180 karakter pertama sebagai teaser
+    const teaser = item.content.length > 180
+        ? item.content.slice(0, 180).trim() + '…'
+        : item.content;
+
+    const Icon = isUrgent ? AlertTriangle : Info;
+    const tone = isUrgent
+        ? 'border-red-200 bg-red-50 text-red-900'
+        : 'border-blue-200 bg-blue-50 text-blue-900';
+    const iconColor = isUrgent ? 'text-red-600' : 'text-blue-600';
+
+    return (
+        <>
+            <div className={`flex items-start gap-4 rounded-xl border p-4 shadow-sm ${tone}`}>
+                <div className="mt-0.5 shrink-0">
+                    <Icon className={`h-6 w-6 ${iconColor}`} />
+                </div>
+                <div className="min-w-0 flex-1">
+                    <h3 className="mb-1.5 text-lg font-bold leading-tight">{item.title}</h3>
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed opacity-90">{teaser}</p>
+                    {item.content.length > 180 && (
+                        <button
+                            onClick={() => setOpen(true)}
+                            className="mt-2 text-sm font-semibold underline underline-offset-2 hover:opacity-70"
+                        >
+                            Baca Selengkapnya
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {/* Modal detail */}
+            {open && (
+                <div
+                    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
+                    onClick={() => setOpen(false)}
+                >
+                    <div
+                        className="flex max-h-[85vh] w-full max-w-2xl flex-col rounded-2xl bg-base-100 shadow-xl"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Header modal */}
+                        <div className="flex items-start justify-between gap-4 border-b border-base-200 p-5">
+                            <div className="flex items-start gap-3">
+                                <div className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg ${isUrgent ? 'bg-red-100' : 'bg-blue-100'}`}>
+                                    <Icon className={`h-5 w-5 ${iconColor}`} />
+                                </div>
+                                <h3 className="text-xl font-bold leading-tight text-foreground">{item.title}</h3>
+                            </div>
+                            <button
+                                onClick={() => setOpen(false)}
+                                className="btn btn-circle btn-ghost btn-sm shrink-0"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        {/* Isi lengkap (scrollable) */}
+                        <div className="overflow-y-auto p-6">
+                            <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/90">
+                                {item.content}
+                            </p>
+                        </div>
+
+                        <div className="border-t border-base-200 p-4 text-right">
+                            <button onClick={() => setOpen(false)} className="btn btn-primary btn-sm">
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
+    );
+}
+
 export default function Dashboard({
     auth_user, total_news, paket_terdaftar, pending_news, publish_news, pengumuman, recent_news = [],
 }) {
@@ -88,24 +168,7 @@ export default function Dashboard({
                 {pengumuman && pengumuman.length > 0 && (
                     <div className="flex flex-col gap-3">
                         {pengumuman.map((item) => (
-                            <div
-                                key={item.id}
-                                className={`flex items-start gap-4 rounded-xl border p-4 shadow-sm ${
-                                    item.type === 'urgent'
-                                        ? 'border-red-200 bg-red-50 text-red-900'
-                                        : 'border-blue-200 bg-blue-50 text-blue-900'
-                                }`}
-                            >
-                                <div className="mt-0.5 shrink-0">
-                                    {item.type === 'urgent'
-                                        ? <AlertTriangle className="h-6 w-6 text-red-600" />
-                                        : <Info className="h-6 w-6 text-blue-600" />}
-                                </div>
-                                <div className="flex-1">
-                                    <h3 className="mb-2 text-lg font-bold leading-none">{item.title}</h3>
-                                    <p className="whitespace-pre-wrap text-sm opacity-90">{item.content}</p>
-                                </div>
-                            </div>
+                            <AnnouncementItem key={item.id} item={item} />
                         ))}
                     </div>
                 )}
