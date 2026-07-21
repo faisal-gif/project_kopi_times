@@ -16,15 +16,16 @@ class ProfileUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => [
-                'required',
-                'string',
-                'lowercase',
-                'email',
-                'max:255',
-                Rule::unique(User::class)->ignore($this->user()->id),
-            ],
+            // Gunakan 'nama' menyesuaikan $fillable di User.php kamu
+            'nama' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('wartawan')->ignore($this->user()->id)],
+
+            // Tambahan field untuk profil wartawan
+            'contact'  => ['nullable', 'string', 'max:20'],
+            'instansi' => ['nullable', 'string', 'max:255'],
+            'prov'     => ['nullable', 'string', 'max:255'],
+            'city'     => ['nullable', 'string', 'max:255'],
+            'address'  => ['nullable', 'string'],
         ];
     }
 }
