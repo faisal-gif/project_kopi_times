@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Mail\PaymentSuccessfulMail;
+use App\Models\ItemsLainnya;
+use App\Models\MerchandiseShipment;
 use App\Models\NewsPackage;
 use App\Models\Payments;
 use App\Models\User;
@@ -13,7 +15,7 @@ use Illuminate\Support\Facades\Mail;
 
 class TripayCallbackController extends Controller
 {
-    public function handle(Request $request)
+   public function handle(Request $request)
     {
         $signature = hash_hmac(
             'sha256',
@@ -35,11 +37,12 @@ class TripayCallbackController extends Controller
         if ($statusDariTripay === 'unpaid') {
             $statusDariTripay = 'pending';
         } elseif ($statusDariTripay === 'refund') {
-            $statusDariTripay = 'refunded'; // Jika Tripay pakai 'refund' tapi DB kamu 'refunded'
+            $statusDariTripay = 'refunded';
         }
 
         if ($statusDariTripay === 'paid') {
             DB::transaction(function () use ($payment, $statusDariTripay, $data) {
+                // Update tabel payment
                 $payment->update([
                     'status' => $statusDariTripay,
                     'fee_merchant' => $data['fee_merchant'],
@@ -53,6 +56,7 @@ class TripayCallbackController extends Controller
                 $newsPackage = NewsPackage::find($payment->package_id);
                 $user = User::find($payment->user_id);
 
+                // Hitung perpanjangan tanggal
                 $baseDate = ($user->dateexp && Carbon::parse($user->dateexp)->isFuture())
                     ? Carbon::parse($user->dateexp)
                     : Carbon::now();
@@ -73,6 +77,7 @@ class TripayCallbackController extends Controller
                         break;
                 }
 
+                // Update kuota & data user
                 $user->quota_news += $newsPackage->quota;
                 $user->feed_instagram += $newsPackage->feed_instagram;
                 $user->ekoran += $newsPackage->ekoran;
@@ -83,12 +88,43 @@ class TripayCallbackController extends Controller
                 $user->type = $newsPackage->type;
                 $user->save();
 
+                // ====================================================
+                // LOGIKA MERCHANDISE DINAMIS (DARI TABEL items_lainnya)
+                // ====================================================
+                
+                // Cari semua item bertipe 'merchandise' yang terkait dengan paket ini
+                $merchandises = ItemsLainnya::where('news_package_id', $newsPackage->id)
+                                            ->where('type', 'merchandise')
+                                            ->get();
+
+                // Jika ada merchandise untuk paket ini, lakukan proses pengiriman
+                if ($merchandises->isNotEmpty()) {
+                    
+                    // Siapkan alamat
+                    $alamatUser = trim($user->address ?? ''); 
+                    if (empty($alamatUser)) {
+                        $alamatUser = 'ALAMAT KOSONG - Mohon hubungi wartawan untuk menanyakan alamat pengiriman.';
+                    }
+
+                    // Looping setiap barang dan buatkan entri pengirimannya
+                    foreach ($merchandises as $merch) {
+                        MerchandiseShipment::create([
+                            'user_id'          => $user->id,
+                            'payment_id'       => $payment->id,
+                            'item_name'        => $merch->nama_item . ' (Qty: ' . $merch->qty . ')', 
+                            'shipping_address' => $alamatUser,
+                            'status'           => 'pending',
+                            'tracking_number'  => null,
+                        ]);
+                    }
+                }
+                // ====================================================
+
                 DB::afterCommit(function () use ($user, $payment, $newsPackage) {
                     Mail::to($user->email)->send(new PaymentSuccessfulMail($payment, $user, $newsPackage));
                 });
             });
         } elseif (in_array($statusDariTripay, ['pending', 'failed', 'expired', 'refunded'])) {
-            // Handle semua status selain paid di sini
             $payment->update([
                 'status' => $statusDariTripay,
             ]);
