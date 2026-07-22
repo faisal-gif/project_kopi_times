@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('merchandise_shipments', function (Blueprint $table) {
             $table->id();
-            
+
             // Relasi ke tabel wartawan (penerima)
             // Sesuaikan references('id')->on('wartawan') jika menggunakan custom table
-            $table->id('user_id');
+            $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('wartawan')->onDelete('cascade');
 
             // Relasi ke tabel payments (sumber transaksi)
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->text('shipping_address');
             $table->enum('status', ['pending', 'processing', 'shipped', 'delivered'])->default('pending');
             $table->string('tracking_number')->nullable();
-            
+
             $table->timestamps();
         });
     }
