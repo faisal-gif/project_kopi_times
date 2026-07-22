@@ -16,7 +16,7 @@ return new class extends Migration
             
             // Relasi ke tabel wartawan (penerima)
             // Sesuaikan references('id')->on('wartawan') jika menggunakan custom table
-            $table->unsignedBigInteger('user_id');
+            $table->id('user_id');
             $table->foreign('user_id')->references('id')->on('wartawan')->onDelete('cascade');
 
             // Relasi ke tabel payments (sumber transaksi)
