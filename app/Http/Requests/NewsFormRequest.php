@@ -40,11 +40,57 @@ class NewsFormRequest extends FormRequest
 
     /**
      * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
      */
     public function messages(): array
     {
         return [
+            // Title
+            'title.required' => 'Judul wajib diisi.',
+            'title.string'   => 'Judul harus berupa teks.',
+            'title.max'      => 'Judul maksimal 255 karakter.',
+
+            // Content
+            'content.required' => 'Konten atau isi wajib diisi.',
+            'content.string'   => 'Konten harus berupa teks.',
+
+            // City
+            'city.required' => 'Kota asal wajib diisi.',
+            'city.string'   => 'Kota harus berupa teks.',
+            'city.max'      => 'Nama kota maksimal 100 karakter.',
+
+            // Narsum
+            'narsum.required' => 'Nama narasumber wajib diisi.',
+            'narsum.string'   => 'Nama narasumber harus berupa teks.',
+            'narsum.max'      => 'Nama narasumber maksimal 255 karakter.',
+
+            // Profesi
+            'profesi.required' => 'Profesi wajib diisi.',
+            'profesi.string'   => 'Profesi harus berupa teks.',
+            'profesi.max'      => 'Profesi maksimal 255 karakter.',
+
+            // Contact
+            'contact.required' => 'Kontak wajib diisi.',
+            'contact.string'   => 'Kontak harus berupa teks.',
+            'contact.max'      => 'Kontak maksimal 100 karakter.',
+
+            // Image 1 (Thumbnail utama)
             'image.required' => 'Foto wajib diunggah untuk opini pertama Anda.',
+            'image.image'    => 'File yang diunggah harus berupa gambar.',
+            'image.max'      => 'Ukuran gambar pertama maksimal 4MB.',
+
+            // Image 2
+            'image_2.image' => 'File gambar kedua harus berupa gambar.',
+            'image_2.max'   => 'Ukuran gambar kedua maksimal 4MB.',
+
+            // Image 3
+            'image_3.image' => 'File gambar ketiga harus berupa gambar.',
+            'image_3.max'   => 'Ukuran gambar ketiga maksimal 4MB.',
+
+            // Caption
+            'caption.string' => 'Caption harus berupa teks.',
+            'caption.max'    => 'Caption maksimal 255 karakter.',
         ];
     }
 }

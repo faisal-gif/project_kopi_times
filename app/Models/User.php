@@ -79,4 +79,13 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function isProfileComplete(): bool
+    {
+        return filled($this->contact)
+            && filled($this->city)
+            && filled($this->address)
+            && filled($this->avatar)
+            && filled($this->instansi);
+    }
 }
