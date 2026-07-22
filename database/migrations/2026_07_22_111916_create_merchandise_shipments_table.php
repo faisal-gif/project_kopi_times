@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('merchandise_shipments', function (Blueprint $table) {
-            $$table->id();
+            $table->id();
             
             // Relasi ke tabel wartawan (penerima)
             // Sesuaikan references('id')->on('wartawan') jika menggunakan custom table
