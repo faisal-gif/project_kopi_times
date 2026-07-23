@@ -17,6 +17,7 @@ import {
     MapPin,
     Menu,
     NewspaperIcon,
+    Package,
     Pen,
     Settings,
     User
@@ -112,6 +113,17 @@ export default function AuthenticatedLayout({ header, children }) {
                             Opini Saya
                         </Link>
                     </li>
+
+                    <li>
+                        <Link
+                            href={route('merchandise.index')}
+                            className={linkClass(isActive('merchandise.*'))}
+                        >
+                            <Package size={16} />
+                            Merchandise Saya
+                        </Link>
+                    </li>
+
                     <li>
                         <Link
                             href={route('subscription.index')}

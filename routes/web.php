@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MerchandiseShipmentController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PendingController;
@@ -42,6 +43,9 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/profile/thumbnail', [ProfileController::class, 'updateThumbnail'])->name('profile.thumbnail');
+    Route::get('/merchandise', [MerchandiseShipmentController::class, 'index'])->name('merchandise.index');
+    Route::get('/merchandise/{merchandise}', [MerchandiseShipmentController::class, 'show'])->name('merchandise.show');
+    Route::patch('/merchandise/{merchandise}/received', [MerchandiseShipmentController::class, 'confirmReceived'])->name('merchandise.received');
 });
 
 Route::get('/generate-card', [DashboardController::class, 'generateCard'])->name('generate-card');
