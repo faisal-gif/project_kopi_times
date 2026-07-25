@@ -238,6 +238,7 @@ class NewsController extends Controller
                 'news_id' => $news->id,
                 'wartawan_id' => $user->id,
                 'jenis_request' => $jenis,
+                'type' => '4',
                 'status' => 'pending'
             ]);
 

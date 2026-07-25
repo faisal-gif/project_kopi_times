@@ -8,7 +8,13 @@ class NewsAddonRequest extends Model
 {
     protected $table = 'news_addon_requests';
 
-    protected $guarded = [];
+    protected $fillable = [
+        'news_id',
+        'wartawan_id',
+        'type',
+        'jenis_request',
+        'status',
+    ];
 
     // Relasi balik ke berita
     public function news()
