@@ -10,6 +10,7 @@ class MerchandiseShipment extends Model
         'user_id',
         'payment_id',
         'item_name',
+        'type',
         'shipping_address',
         'status',
         'courier',
