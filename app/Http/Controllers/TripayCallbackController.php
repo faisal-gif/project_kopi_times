@@ -111,7 +111,8 @@ class TripayCallbackController extends Controller
                         MerchandiseShipment::create([
                             'user_id'          => $user->id,
                             'payment_id'       => $payment->id,
-                            'item_name'        => $merch->nama_item . ' (Qty: ' . $merch->qty . ')', 
+                            'item_name'        => $merch->nama_item . ' (Qty: ' . $merch->qty . ')',
+                            'type'             => '4', 
                             'shipping_address' => $alamatUser,
                             'status'           => 'pending',
                             'tracking_number'  => null,
