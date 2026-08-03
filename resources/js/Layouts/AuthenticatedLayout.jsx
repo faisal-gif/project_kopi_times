@@ -133,6 +133,16 @@ export default function AuthenticatedLayout({ header, children }) {
                             Membership
                         </Link>
                     </li>
+
+                    <li>
+                        <Link
+                            href={route('payments.index')}
+                            className={linkClass(isActive('payments.*'))}
+                        >
+                            <History size={16} />
+                            Riwayat Transaksi
+                        </Link>
+                    </li>
                 </ul>
             </div>
         </div>

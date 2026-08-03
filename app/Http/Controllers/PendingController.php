@@ -18,10 +18,13 @@ class PendingController extends Controller
 
         $auth = auth()->user();
 
-        $newsPackage = NewsPackage::find($auth->package_id);
+        $packageId = $request->package_id ?: $auth->package_id;
+        $newsPackage = NewsPackage::where('type', '4')
+            ->where('status', 1)
+            ->find($packageId);
 
-        if ($request->package_id) {
-            $newsPackage = NewsPackage::find($request->package_id);
+        if (!$newsPackage) {
+            return redirect()->route('subscription.index');
         }
 
         $paymentChannels = $tripayService->getPaymentChannel();

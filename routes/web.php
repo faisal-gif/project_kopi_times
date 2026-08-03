@@ -7,7 +7,6 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PendingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SubscriptionController;
-use App\Http\Controllers\TripayCallbackController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -51,8 +50,9 @@ Route::middleware(['auth', 'active'])->group(function () {
 Route::get('/generate-card', [DashboardController::class, 'generateCard'])->name('generate-card');
 
 
-Route::post('/tripay/callback', [TripayCallbackController::class, 'handle'])->name('tripay.callback');
-
-Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+Route::middleware('auth')->group(function () {
+    Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
+});
 
 require __DIR__ . '/auth.php';

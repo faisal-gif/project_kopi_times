@@ -32,6 +32,12 @@ class TripayCallbackController extends Controller
 
         $payment = Payments::where('reference', $request->reference)->firstOrFail();
 
+        // Idempotency: kalau sudah paid, abaikan callback duplikat agar
+        // kuota/masa aktif/shipment/email tidak diproses berulang.
+        if ($payment->status === 'paid') {
+            return response()->json(['success' => true]);
+        }
+
         $statusDariTripay = strtolower($data['status']);
 
         if ($statusDariTripay === 'unpaid') {
