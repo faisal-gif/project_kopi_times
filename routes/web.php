@@ -16,7 +16,14 @@ use Inertia\Inertia;
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
 Route::get('/tentang', function () {
-    return Inertia::render('Tentang/Index');
+    return Inertia::render('Tentang/Index', [
+        'og' => [
+            'title'       => 'Tentang — Kopi TIMES',
+            'description' => 'Mengenal Kopi TIMES — program keanggotaan penulis TIMES Indonesia untuk ekosistem gagasan dan jurnalisme positif.',
+            'image'       => url('/bg_kopi_times.png'),
+            'url'         => route('tentang'),
+        ],
+    ]);
 })->name('tentang');
 Route::get('/harga', [WelcomeController::class, 'harga'])->name('harga');
 Route::get('/kebijakan-privasi', function () {

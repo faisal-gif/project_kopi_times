@@ -22,9 +22,17 @@ class PublicNewsController extends Controller
     {
         abort_unless($event->category === 'public_event', 404);
 
+        $og = [
+            'title'       => $event->name . ' — Kirim Berita | Kopi TIMES',
+            'description' => $event->description ?: 'Kirim berita Anda untuk event ini di Kopi TIMES.',
+            'image'       => url('/bg_kopi_times.png'),
+            'url'         => route('public-news.create', $event->slug),
+        ];
+
         if (!$event->isOpen()) {
             return Inertia::render('PublicNews/Closed', [
                 'reason' => $event->quotaLeft() <= 0 ? 'quota_full' : 'not_active',
+                'og'     => $og,
                 'flash'  => ['success' => session('success')],
             ]);
         }
@@ -38,6 +46,7 @@ class PublicNewsController extends Controller
                 'quota_left'  => $event->quotaLeft(),
             ],
             'professions' => KategoriKt::orderBy('name')->get(['id', 'name']),
+            'og'          => $og,
             'flash'       => ['success' => session('success'), 'error' => session('error')],
         ]);
     }
