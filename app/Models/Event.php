@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class PublicNewsEvent extends Model
+// Tabel event umum. Dibedakan lewat kolom category: event | public_event | lomba.
+// Hanya category 'public_event' yang membuka form kirim berita publik.
+class Event extends Model
 {
-    protected $table = 'public_news_events';
+    protected $table = 'events';
 
     protected $fillable = [
         'name',
@@ -43,24 +45,25 @@ class PublicNewsEvent extends Model
         });
     }
 
-    // Event terbuka untuk kiriman: enabled + dalam window + kuota tersisa.
+    // Menerima kiriman publik: category public_event + enabled + dalam window + kuota tersisa.
     public function isOpen(): bool
     {
         $now = now();
 
-        return $this->enabled
+        return $this->category === 'public_event'
+            && $this->enabled
             && $this->starts_at <= $now
             && $this->ends_at >= $now
             && $this->quotaLeft() > 0;
     }
 
-    // Semua kiriman berita publik untuk event ini.
+    // Semua kiriman berita untuk event ini.
     public function submissions()
     {
         return $this->hasMany(News::class, 'event_id');
     }
 
-    // Jumlah kiriman guest untuk event ini (dihitung eksplisit via event_id).
+    // Jumlah kiriman untuk event ini (dihitung eksplisit via event_id).
     public function submissionCount(): int
     {
         return $this->submissions()->count();

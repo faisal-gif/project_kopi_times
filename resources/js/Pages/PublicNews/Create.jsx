@@ -33,7 +33,6 @@ export default function Create({ event, flash }) {
                 <div className="flex items-center gap-2 text-primary mb-2">
                     <NotebookPen className="w-6 h-6" />
                     <h1 className="text-2xl font-bold">Kirim Berita</h1>
-                    {event.category === 'lomba' && <span className="badge badge-secondary">Lomba</span>}
                 </div>
                 <p className="text-sm opacity-70">
                     Event: <span className="font-semibold">{event.name}</span> · sisa kuota{' '}

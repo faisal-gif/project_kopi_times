@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-// Tandai asal event untuk kiriman berita publik. Null = bukan dari event publik.
+// Tandai asal event (relasi ke tabel events). Null = bukan dari event.
 return new class extends Migration
 {
     public function up(): void

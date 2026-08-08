@@ -53,9 +53,9 @@ class News extends Model
         return $this->hasMany(NewsAddonRequest::class, 'news_id');
     }
 
-    // Event publik asal kiriman (null jika bukan dari event publik)
+    // Event asal kiriman (null jika bukan dari event)
     public function event()
     {
-        return $this->belongsTo(PublicNewsEvent::class, 'event_id');
+        return $this->belongsTo(Event::class, 'event_id');
     }
 }

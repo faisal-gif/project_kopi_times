@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
 use App\Models\News;
-use App\Models\PublicNewsEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
-// Kirim berita publik (tanpa login). Tiap event punya URL sendiri via slug.
+// Kirim berita publik (tanpa login). Hanya untuk event ber-category public_event.
 class PublicNewsController extends Controller
 {
-    public function create(PublicNewsEvent $event)
+    public function create(Event $event)
     {
+        abort_unless($event->category === 'public_event', 404);
+
         if (!$event->isOpen()) {
             return Inertia::render('PublicNews/Closed', [
                 'reason' => $event->quotaLeft() <= 0 ? 'quota_full' : 'not_active',
@@ -25,7 +27,6 @@ class PublicNewsController extends Controller
             'event' => [
                 'slug'        => $event->slug,
                 'name'        => $event->name,
-                'category'    => $event->category,
                 'description' => $event->description,
                 'ends_at'     => $event->ends_at,
                 'quota_left'  => $event->quotaLeft(),
@@ -34,8 +35,10 @@ class PublicNewsController extends Controller
         ]);
     }
 
-    public function store(Request $request, PublicNewsEvent $event)
+    public function store(Request $request, Event $event)
     {
+        abort_unless($event->category === 'public_event', 404);
+
         // Honeypot: field tersembunyi 'website'. Bot mengisi semua field → drop diam-diam.
         if ($request->filled('website')) {
             return redirect()->route('public-news.create', $event->slug);
@@ -77,7 +80,7 @@ class PublicNewsController extends Controller
                 'is_code'    => $code,
                 'pewarta_id' => null,
                 'event_id'   => $event->id,
-                'category'   => 'public_event', // sumber: dari public event (jenis event/lomba ada di public_news_events)
+                'category'   => 'public_event', // sumber kiriman (regular = berita biasa)
                 'title'      => $clean($data['title']),
                 'content'    => $clean($data['content']),
                 'narsum'     => $clean($data['narsum']),
