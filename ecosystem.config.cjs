@@ -7,14 +7,6 @@ module.exports = {
       interpreter: "php",
       instances: 1,
       autorestart: true,
-    },
-   {
-      name: "kopi-ssr",
-      script: "artisan",
-      args: "inertia:start-ssr",
-      interpreter: "php",
-      instances: 1,
-      autorestart: true,
     }
   ],
 };
