@@ -12,6 +12,8 @@ class News extends Model
     protected $fillable = [
         'is_code',
         'pewarta_id',
+        'event_id',
+        'category',
         'editor_id',
         'datetime',
         'datepub',
@@ -49,5 +51,11 @@ class News extends Model
     public function addonRequests()
     {
         return $this->hasMany(NewsAddonRequest::class, 'news_id');
+    }
+
+    // Event publik asal kiriman (null jika bukan dari event publik)
+    public function event()
+    {
+        return $this->belongsTo(PublicNewsEvent::class, 'event_id');
     }
 }

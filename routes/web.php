@@ -5,6 +5,7 @@ use App\Http\Controllers\MerchandiseShipmentController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PendingController;
+use App\Http\Controllers\PublicNewsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\WelcomeController;
@@ -26,6 +27,13 @@ Route::get('/syarat-ketentuan', function () {
 })->name('syarat-ketentuan');
 
 
+
+
+// Kirim berita publik tanpa login — tiap event punya URL sendiri via slug
+Route::get('/kirim-berita/{event:slug}', [PublicNewsController::class, 'create'])->name('public-news.create');
+Route::post('/kirim-berita/{event:slug}', [PublicNewsController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('public-news.store');
 
 
 Route::get('/checkout', [PendingController::class, 'index'])->middleware('auth')->name('checkout');
