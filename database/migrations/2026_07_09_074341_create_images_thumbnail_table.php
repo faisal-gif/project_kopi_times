@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('images_thumbnail', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained('wartawan')->onDelete('cascade')->unique();
-            $table->unsignedBigInteger('template_id')->nullable();
-            $table->string('image_path');
-            $table->timestamps();
-        });
+        // Schema::create('images_thumbnail', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->foreignId('user_id')->constrained('wartawan')->onDelete('cascade')->unique();
+        //     $table->unsignedBigInteger('template_id')->nullable();
+        //     $table->string('image_path');
+        //     $table->timestamps();
+        // });
     }
 
     /**
