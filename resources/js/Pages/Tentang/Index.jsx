@@ -54,7 +54,7 @@ const Tentang = () => {
                                     Tentang Kopi TIMES
                                 </span>
                                 <h1 className="font-serif text-4xl md:text-5xl font-bold mt-3 mb-6">
-                                    Platform Klub opini Nasional
+                                    Platform Klub Penulis Opini Nasional
                                 </h1>
                                 <p className="text-lg text-muted-foreground leading-relaxed">
                                   Kopi TIMES adalah program keanggotaan eksklusif bagi penulis yang ingin terlibat aktif dalam ekosistem gagasan di TIMES Indonesia. Program ini dirancang bukan sekadar untuk memuat tulisan, tetapi sebagai kawah candradimuka bagi para intelektual untuk mengawal diskursus publik di skala nasional.
@@ -88,7 +88,7 @@ const Tentang = () => {
                                     Nilai-Nilai Kami
                                 </span>
                                 <h2 className="font-serif text-3xl md:text-4xl font-bold mt-3 mb-6">
-                                    Mengapa Memilih AJP?
+                                    Mengapa Memilih Kopi Times?
                                 </h2>
                             </div>
 
@@ -123,13 +123,13 @@ const Tentang = () => {
                                             Misi Kami
                                         </h2>
                                         <blockquote className="font-serif text-xl md:text-2xl italic text-center leading-relaxed mb-6">
-                                            "Kami percaya bahwa setiap cerita positif memiliki kekuatan untuk
+                                            "Kami percaya bahwa setiap opini dan pemikiran positif memiliki kekuatan untuk
                                             mengubah perspektif dan menginspirasi tindakan nyata."
                                         </blockquote>
                                         <div className="text-center">
                                             <div className="w-16 h-1 hero-gradient mx-auto rounded-full mb-4" />
                                             <p className="text-muted-foreground text-sm">
-                                                Tim AJP - Aplikasi Jurnalisme Positif
+                                                Tim Kopi Times - Aplikasi Kopi Times, TIMES Indonesia
                                             </p>
                                         </div>
                                     </div>
@@ -149,10 +149,10 @@ const Tentang = () => {
                                     Masa Depan Jurnalisme Indonesia
                                 </h2>
                                 <p className="text-muted-foreground leading-relaxed mb-8">
-                                    Kami bermimpi menjadi platform jurnalisme terdepan di Indonesia yang
+                                    Kami ingin menjadi platform jurnalisme terdepan di Indonesia yang
                                     tidak hanya menyajikan berita, tetapi juga menginspirasi perubahan positif
                                     di masyarakat. Dengan teknologi dan komunitas yang kuat, kami yakin dapat
-                                    mewujudkan ekosistem media yang sehat dan konstruktif.
+                                    mewujudkan ekosistem pengetahuan dan informasi yang sehat dan konstruktif.
                                 </p>
                                 <div className="flex flex-wrap justify-center gap-4 text-sm">
                                     <span className="px-4 py-2 bg-primary/10 text-primary rounded-full">
