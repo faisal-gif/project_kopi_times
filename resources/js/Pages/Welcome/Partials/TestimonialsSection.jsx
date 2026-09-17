@@ -1,72 +1,51 @@
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/Components/ui/carousel";
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useRef } from 'react';
 
-const slides = [
-  [
-    { src: 'https://cdn2.timesmedia.co.id/cdn-times/uploads/assets/2026/03/30/testimonial-cdn-1-kmcwo5oq.webp', alt: "Testimoni dr. Karolon Margret Natasa, MH. - Bupati Kabupaten Landak, Kalbar" },
-    { src: 'https://cdn2.timesmedia.co.id/cdn-times/uploads/assets/2026/03/30/testimonial-cdn-2-8sir22zk.webp', alt: "Testimoni Drs. Cornelis, M.H. - Anggota Banggar dan Komisi XII DPR RI" },
-    { src: 'https://cdn2.timesmedia.co.id/cdn-times/uploads/assets/2026/03/30/testimonial-cdn-3-avlvrauf.webp', alt: "Testimoni Tri Gunadi - Psikolog dan Dosen Universitas 17 Agustus 1945 Surabaya" },
-    { src: 'https://cdn2.timesmedia.co.id/cdn-times/uploads/assets/2026/03/30/testimonial-cdn-4-vvj9jkxo.webp', alt: "Testimoni dr. Karolon Margret Natasa, MH. (2)" },
-  ],
-  [
-    { src: 'https://cdn2.timesmedia.co.id/cdn-times/uploads/assets/2026/03/30/testimonial-cdn-5-r2jxoqpx.webp', alt: "Testimoni Drs. Cornelis, M.H. (2)" },
-    { src: 'https://cdn2.timesmedia.co.id/cdn-times/uploads/assets/2026/03/30/testimonial-cdn-6-18r7wr2s.webp', alt: "Testimoni Tri Gunadi (2)" },
-    { src: 'https://cdn2.timesmedia.co.id/cdn-times/uploads/assets/2026/03/30/testimonial-cdn-7-4xehf3cr.webp', alt: "Testimoni dr. Karolon Margret Natasa, MH. (3)" },
-    { src: 'https://cdn2.timesmedia.co.id/cdn-times/uploads/assets/2026/03/30/testimonial-cdn-8-1qd6seur.webp', alt: "Testimoni Drs. Cornelis, M.H. (3)" },
-  ],
+const base = 'https://cdn2.timesmedia.co.id/cdn-times/uploads/assets/2026/03/30/';
+const testimonials = [
+    ['testimonial-cdn-1-kmcwo5oq.webp', 'Testimoni dr. Karolon Margret Natasa, MH. - Bupati Kabupaten Landak, Kalbar'],
+    ['testimonial-cdn-2-8sir22zk.webp', 'Testimoni Drs. Cornelis, M.H. - Anggota Banggar dan Komisi XII DPR RI'],
+    ['testimonial-cdn-3-avlvrauf.webp', 'Testimoni Tri Gunadi - Psikolog dan Dosen Universitas 17 Agustus 1945 Surabaya'],
+    ['testimonial-cdn-4-vvj9jkxo.webp', 'Testimoni dr. Karolon Margret Natasa, MH. (2)'],
+    ['testimonial-cdn-5-r2jxoqpx.webp', 'Testimoni Drs. Cornelis, M.H. (2)'],
+    ['testimonial-cdn-6-18r7wr2s.webp', 'Testimoni Tri Gunadi (2)'],
+    ['testimonial-cdn-7-4xehf3cr.webp', 'Testimoni dr. Karolon Margret Natasa, MH. (3)'],
+    ['testimonial-cdn-8-1qd6seur.webp', 'Testimoni Drs. Cornelis, M.H. (3)'],
 ];
 
+// Kliping testimoni ditempel selotip; baris geser native (scroll-snap), tanpa pustaka carousel.
 const TestimonialsSection = () => {
-  return (
-    <section className="py-24 bg-muted/50">
-      <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto text-center mb-16">
-          <span className="text-sm font-medium text-primary uppercase tracking-wider">
-            Testimoni
-          </span>
-          <h2 className="font-serif text-3xl md:text-4xl font-bold mt-3 mb-6">
-            Apa Kata Mereka?
-          </h2>
-          <p className="text-muted-foreground leading-relaxed">
-            Tokoh-tokoh nasional yang telah merasakan manfaat bergabung di ekosistem AJP.
-          </p>
-        </div>
+    const rail = useRef(null);
+    const scroll = (dir) => rail.current?.scrollBy({ left: dir * rail.current.clientWidth * 0.8, behavior: 'smooth' });
 
-        <div className="max-w-7xl mx-auto">
-          <Carousel opts={{ loop: true }}>
-            <CarouselContent>
-              {slides.map((slide, slideIndex) => (
-                <CarouselItem key={slideIndex}>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {slide.map((item, imgIndex) => (
-                      <div
-                        key={imgIndex}
-                        className="rounded-2xl overflow-hidden border border-border shadow-sm"
-                      >
-                        <img
-                          src={item.src}
-                          alt={item.alt}
-                          className="w-full h-auto object-cover"
-                          loading="lazy"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-        </div>
-      </div>
-    </section>
-  );
+    return (
+        <section className="bg-ink py-20 text-white md:py-28">
+            <div className="mx-auto max-w-7xl px-4">
+                <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+                    <h2 className="max-w-2xl text-balance text-4xl font-black leading-[1.02] tracking-[-0.025em] md:text-5xl">
+                        Kepala daerah, anggota DPR, dan akademisi sudah menulis di sini.
+                    </h2>
+                    <div className="flex gap-2">
+                        {[[-1, ArrowLeft, 'Testimoni sebelumnya'], [1, ArrowRight, 'Testimoni berikutnya']].map(([dir, Icon, label]) => (
+                            <button key={label} type="button" onClick={() => scroll(dir)} aria-label={label}
+                                className="grid h-12 w-12 place-items-center rounded-full border border-white/30 transition-colors hover:border-saffron hover:bg-saffron hover:text-ink">
+                                <Icon className="h-5 w-5" />
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            <ul ref={rail} className="kt-scroll mt-12 flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-px-4 px-4 pb-8 pt-4 md:scroll-px-[max(1rem,calc((100vw-80rem)/2+1rem))] md:px-[max(1rem,calc((100vw-80rem)/2+1rem))]">
+                {testimonials.map(([file, alt], i) => (
+                    <li key={file} className={`relative w-[72vw] shrink-0 snap-start sm:w-72 ${i % 2 ? 'rotate-1' : '-rotate-1'}`}>
+                        <div className={`absolute -top-3 z-10 h-6 w-20 bg-saffron/85 ${i % 2 ? 'right-6 rotate-6' : 'left-6 -rotate-3'}`} aria-hidden="true" />
+                        <img src={base + file} alt={alt} width="600" height="810" loading="lazy" className="block w-full rounded-[3px] bg-white/10 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.8)]" />
+                    </li>
+                ))}
+            </ul>
+        </section>
+    );
 };
 
 export default TestimonialsSection;

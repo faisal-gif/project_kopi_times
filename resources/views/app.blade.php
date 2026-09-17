@@ -35,6 +35,14 @@
         @inertiaHead
     </head>
     <body class="font-sans antialiased">
+        <!--
+        THESIS: Landing Kopi TIMES adalah naskah opini yang sedang disunting redaksi; menolak hero SaaS tengah + kartu ikon.
+        OWN-WORLD: meja merah TIMES (#8a0b10), lembar HVS (#fcfcfa), tinta hitam, pena merah (#b30d12), stabilo saffron (#fbb40a); Archivo cetak, Courier Prime ketik, Kalam tulisan tangan; selotip kuning, garis putus-putus.
+        STORY: pengunjung paham tulisannya akan terbit di TIMES Indonesia setelah seleksi redaksi, melihat member card & bingkai, lalu daftar atau pilih paket.
+        FIRST VIEWPORT: lembar naskah 8/12 miring tipis di meja merah; judul "Gagasan Anda" + frasa dicoret pena + sisipan tulisan tangan; tombol Daftar merah di dalam lembar; member card asli diselotip di kanan.
+        FORM: Naskah & Tinta Merah Redaksi, kandidat #1 (pick), seed 89e085db.
+        FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+        -->
         @inertia
     </body>
 </html>

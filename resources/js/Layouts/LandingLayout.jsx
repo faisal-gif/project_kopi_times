@@ -2,7 +2,7 @@ import React from 'react'
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import { Menu, User, X, Youtube } from 'lucide-react';
 import { Newspaper, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
-import { Link, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import Dropdown from '@/Components/Dropdown';
 
 
@@ -12,6 +12,10 @@ function LandingLayout({ children }) {
     const user = auth.user;
     return (
         <>
+            <Head>
+                <link rel="preconnect" href="https://fonts.bunny.net" />
+                <link rel="stylesheet" href="https://fonts.bunny.net/css?family=archivo:400,600,800,900|courier-prime:400,700|kalam:400,700&display=swap" />
+            </Head>
             <div className="w-full fixed z-[99] border-b bg-base-100">
                 <div className="navbar max-w-7xl mx-auto px-4">
 

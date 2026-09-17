@@ -1,80 +1,44 @@
-import { Pen, BookOpen, Users, Lightbulb, Clock, FileCheck } from "lucide-react";
+// Kriteria redaksi, ditulis sebagai catatan pena merah di pinggir naskah.
+const criteria = [
+    { title: 'Orisinal', body: 'Asli, bukan plagiasi, saduran, terjemahan, kompilasi, atau rangkuman pendapat dan buku orang lain.' },
+    { title: 'Eksklusif', body: 'Belum pernah dimuat di media, penerbitan, atau blog lain, dan tidak dikirim bersamaan ke tempat lain.' },
+    { title: 'Aktual & relevan', body: 'Membahas persoalan yang sedang terjadi dan dirasakan masyarakat.' },
+    { title: 'Kepentingan umum', body: 'Substansinya menyangkut kepentingan publik, bukan kepentingan komunitas tertentu.' },
+    { title: 'Perspektif baru', body: 'Membawa informasi, pandangan, pendekatan, saran, atau solusi yang belum dikemukakan penulis lain.' },
+    { title: 'Bahasa populer', body: 'Luwes dan mudah ditangkap. Maksimal 4.000 karakter (sekitar 600 kata), ditulis satu orang.' },
+];
 
-const FeaturesSection = () => {
-  const features = [
-    {
-      icon: FileCheck,
-      title: "Orisinal",
-      description: "Asli, bukan plagiasi, bukan saduran, bukan terjemahan, bukan sekadar kompilasi, bukan rangkuman pendapat atau buku orang lain.",
-    },
-    {
-      icon: Clock,
-      title: "Eksklusif",
-      description: "Belum pernah dimuat di media atau penerbitan lain termasuk Blog, dan juga tidak dikirim bersamaan ke media atau penerbitan lain.",
-    },
-    {
-      icon: Lightbulb,
-      title: "Aktual & Relevan",
-      description: "Topik yang diuraikan adalah sesuatu yang aktual, relevan, dan menjadi persoalan dalam masyarakat.",
-    },
-    {
-      icon: Users,
-      title: "Kepentingan Umum",
-      description: "Substansi yang dibahas menyangkut kepentingan umum, bukan kepentingan komunitas tertentu.",
-    },
-    {
-      icon: BookOpen,
-      title: "Perspektif Baru",
-      description: "Artikel mengandung hal baru yang belum pernah dikemukakan penulis lain, baik informasi, pandangan, pencerahan, pendekatan, saran, maupun solusinya.",
-    },
-    {
-      icon: Pen,
-      title: "Bahasa Populer",
-      description: "Penyajian tidak berkepanjangan, menggunakan bahasa populer/luwes yang mudah ditangkap. Maksimal 4.000 karakter atau sekitar 600 kata. Ditulis satu orang.",
-    },
-  ];
+function Underline() {
+    return (
+        <svg className="mt-0.5 h-2 w-full max-w-40 text-pen" viewBox="0 0 160 8" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M2 5 C 40 1, 90 7, 158 3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+    );
+}
 
-  return (
-    <section className="py-24">
-      <div className="max-w-7xl mx-auto px-4">
-        {/* Header */}
-        <div className="max-w-2xl mx-auto text-center mb-16">
-          <span className="text-sm font-medium text-primary uppercase tracking-wider">
-            Kriteria Tulisan
-          </span>
-          <h2 className="font-serif text-3xl md:text-4xl font-bold mt-3 mb-6">
-            Kriteria Tulisan yang Kami Cari
-          </h2>
-          <p className="text-muted-foreground leading-relaxed">
-            Pastikan tulisan Anda memenuhi kriteria berikut untuk dapat dimuat
-            di Kopi TIMES.
-          </p>
-        </div>
-
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <div
-              key={feature.title}
-              className="group relative p-6 rounded-xl border border-border bg-card hover:border-primary/50 transition-all duration-300"
-            >
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-lg bg-primary/5 flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors">
-                  <feature.icon className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-serif text-lg font-semibold mb-2">{feature.title}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {feature.description}
-                  </p>
-                </div>
-              </div>
+const FeaturesSection = () => (
+    <section className="py-20 md:py-28">
+        <div className="mx-auto grid max-w-7xl gap-12 px-4 lg:grid-cols-12">
+            <div className="lg:col-span-5 lg:sticky lg:top-28 lg:self-start">
+                <h2 className="text-balance text-4xl font-black leading-[1.02] tracking-[-0.025em] md:text-5xl">
+                    Redaksi membaca setiap naskah. Ini yang kami cari.
+                </h2>
+                <p className="mt-6 max-w-[46ch] font-type leading-relaxed text-ink/80">
+                    Seleksi inilah yang membuat nama Anda berdiri di samping penulis yang serius. Periksa naskah Anda sebelum mengirim.
+                </p>
             </div>
-          ))}
+
+            <ol className="grid gap-x-10 sm:grid-cols-2 lg:col-span-7">
+                {criteria.map((item) => (
+                    <li key={item.title} className="border-t border-dashed border-ink/25 py-7">
+                        <h3 className="font-pen text-2xl font-bold leading-none text-pen">{item.title}</h3>
+                        <Underline />
+                        <p className="mt-3 font-type text-[15px] leading-relaxed text-ink/85">{item.body}</p>
+                    </li>
+                ))}
+            </ol>
         </div>
-      </div>
     </section>
-  );
-};
+);
 
 export default FeaturesSection;
