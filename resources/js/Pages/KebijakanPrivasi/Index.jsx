@@ -5,15 +5,7 @@ import React from 'react'
 function Index() {
     return (
         <LandingLayout>
-            <Head>
-                <title>Kebijakan Privasi</title>
-                <meta name="description" content="AJP (Aplikasi Jurnalisme Positif) adalah platform jurnalistik yang mendorong pemberitaan berimbang, solutif, dan inspiratif untuk membangun optimisme publik." />
-
-                {/* Meta untuk Social Media (Open Graph) */}
-                <meta property="og:title" content="Kebijakan Privasi - AJP" />
-                <meta property="og:description" content="AJP (Aplikasi Jurnalisme Positif) adalah platform jurnalistik yang mendorong pemberitaan berimbang, solutif, dan inspiratif untuk membangun optimisme publik." />
-                <meta property="og:image" content="/logo-web-ajp.png" />
-            </Head>
+            <Head title="Kebijakan Privasi" />
             <main className="pt-16">
                 {/* Hero Section */}
                 <section className="py-16 bg-base-300">

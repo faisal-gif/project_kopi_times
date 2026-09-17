@@ -1,12 +1,10 @@
 import Alert from '@/Components/Alert';
 import InputError from '@/Components/InputError';
 import InputImageUpload from '@/Components/InputImageUpload';
-import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
+import GuestLayout, { Field, GuestHeading } from '@/Layouts/GuestLayout';
 import { Head, useForm } from '@inertiajs/react';
-import { NotebookPen } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 
 import { Cropper } from 'react-cropper';
@@ -104,17 +102,12 @@ export default function Create({ event, professions = [], flash }) {
         <GuestLayout>
             <Head title="Kirim Berita" />
 
-            <div className="mb-6">
-                <div className="flex items-center gap-2 text-primary mb-2">
-                    <NotebookPen className="w-6 h-6" />
-                    <h1 className="text-2xl font-bold">Kirim Berita</h1>
-                </div>
-                <p className="text-sm opacity-70">
-                    Event: <span className="font-semibold">{event.name}</span> · sisa kuota{' '}
-                    <span className="font-semibold">{event.quota_left}</span> kiriman
-                </p>
+            <div className="mb-10">
+                <GuestHeading label={event.name} title="Kirim berita Anda.">
+                    Sisa kuota: <span className="kt-mark font-bold text-ink">{event.quota_left} kiriman</span>
+                </GuestHeading>
                 {event.description && (
-                    <p className="mt-3 text-sm bg-base-200 rounded-lg p-3 whitespace-pre-line">
+                    <p className="mt-6 whitespace-pre-line border-y border-dashed border-ink/30 py-4 font-type text-[15px] leading-relaxed text-ink/85">
                         {event.description}
                     </p>
                 )}
@@ -131,9 +124,8 @@ export default function Create({ event, professions = [], flash }) {
                 </div>
             )}
 
-            <form onSubmit={submit} className="space-y-4">
-                <div>
-                    <InputLabel htmlFor="title" value="Judul Berita" />
+            <form onSubmit={submit} className="space-y-5">
+                <Field id="title" label="Judul berita" error={errors.title}>
                     <TextInput
                         id="title"
                         className="w-full"
@@ -141,11 +133,9 @@ export default function Create({ event, professions = [], flash }) {
                         onChange={(e) => setData('title', e.target.value)}
                         placeholder="Judul berita"
                     />
-                    <InputError message={errors.title} className="mt-1" />
-                </div>
+                </Field>
 
-                <div>
-                    <InputLabel htmlFor="content" value="Isi Berita" />
+                <Field id="content" label="Isi berita" error={errors.content}>
                     <textarea
                         id="content"
                         className="textarea textarea-bordered w-full"
@@ -154,12 +144,10 @@ export default function Create({ event, professions = [], flash }) {
                         onChange={(e) => setData('content', e.target.value)}
                         placeholder="Tulis isi berita di sini..."
                     />
-                    <InputError message={errors.content} className="mt-1" />
-                </div>
+                </Field>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <InputLabel htmlFor="narsum" value="Nama Anda" />
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                    <Field id="narsum" label="Nama Anda" error={errors.narsum}>
                         <TextInput
                             id="narsum"
                             className="w-full"
@@ -167,10 +155,8 @@ export default function Create({ event, professions = [], flash }) {
                             onChange={(e) => setData('narsum', e.target.value)}
                             placeholder="Nama lengkap"
                         />
-                        <InputError message={errors.narsum} className="mt-1" />
-                    </div>
-                    <div>
-                        <InputLabel htmlFor="city" value="Kota" />
+                    </Field>
+                    <Field id="city" label="Kota" error={errors.city}>
                         <TextInput
                             id="city"
                             className="w-full"
@@ -178,13 +164,11 @@ export default function Create({ event, professions = [], flash }) {
                             onChange={(e) => setData('city', e.target.value)}
                             placeholder="Kota asal"
                         />
-                        <InputError message={errors.city} className="mt-1" />
-                    </div>
+                    </Field>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <InputLabel htmlFor="profesi" value="Profesi" />
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                    <Field id="profesi" label="Profesi" error={errors.profesi}>
                         <select
                             id="profesi"
                             className="select select-bordered w-full"
@@ -196,10 +180,8 @@ export default function Create({ event, professions = [], flash }) {
                                 <option key={p.id} value={p.id}>{p.name}</option>
                             ))}
                         </select>
-                        <InputError message={errors.profesi} className="mt-1" />
-                    </div>
-                    <div>
-                        <InputLabel htmlFor="contact" value="Kontak (No. HP / Email)" />
+                    </Field>
+                    <Field id="contact" label="Kontak (nomor HP atau email)" error={errors.contact}>
                         <TextInput
                             id="contact"
                             className="w-full"
@@ -207,18 +189,17 @@ export default function Create({ event, professions = [], flash }) {
                             onChange={(e) => setData('contact', e.target.value)}
                             placeholder="No. HP / email"
                         />
-                        <InputError message={errors.contact} className="mt-1" />
-                    </div>
+                    </Field>
                 </div>
 
                 <div>
-                    <InputLabel value="Foto" />
+                    <p className="mb-2 font-type text-sm text-ink/80">Foto</p>
                     {previewUrl ? (
                         <div className="space-y-2">
-                            <img src={previewUrl} alt="Preview" className="w-full rounded-lg border border-base-200" />
+                            <img src={previewUrl} alt="Preview" className="w-full rounded-[3px] shadow-[0_18px_36px_-24px_rgba(0,0,0,0.5)]" />
                             <button
                                 type="button"
-                                className="btn btn-sm btn-ghost bg-base-200"
+                                className="font-type text-sm text-pen underline underline-offset-4 hover:text-desk"
                                 onClick={() => { setPreviewUrl(null); setData('image', null); }}
                             >
                                 Ganti Foto
@@ -247,7 +228,7 @@ export default function Create({ event, professions = [], flash }) {
                 />
 
                 <PrimaryButton className="w-full" disabled={processing}>
-                    {processing ? 'Mengirim...' : 'Kirim Berita'}
+                    {processing ? 'Mengirim...' : 'Kirim berita'}
                 </PrimaryButton>
             </form>
 
@@ -262,11 +243,12 @@ export default function Create({ event, professions = [], flash }) {
                         .custom-cropper .cropper-view-box { outline: none !important; }
                     `}</style>
 
-                    <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-4xl">
-                        <h2 className="text-xl font-bold mb-4 text-gray-900">Sesuaikan Posisi Foto</h2>
+                    <div className="kt-auth w-full max-w-4xl rounded-[3px] bg-sheet p-5 font-print text-ink shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)]">
+                        <h2 className="mb-1 text-2xl font-black tracking-[-0.02em]">Sesuaikan posisi foto</h2>
+                        <p className="mb-4 font-type text-sm text-ink/75">Geser foto agar wajah pas di dalam bingkai.</p>
 
                         <div
-                            className="relative mx-auto bg-gray-200 overflow-hidden"
+                            className="relative mx-auto overflow-hidden bg-ink/10"
                             style={{
                                 aspectRatio: `${frameSize.width} / ${frameSize.height}`,
                                 width: `min(100%, calc(60vh * ${frameRatio}))`,
@@ -300,11 +282,11 @@ export default function Create({ event, professions = [], flash }) {
                         </div>
 
                         <div className="flex justify-end gap-2 mt-6">
-                            <button type="button" className="btn btn-ghost bg-gray-200" onClick={() => setImageToCrop(null)}>
+                            <button type="button" className="px-4 font-type text-sm text-ink/75 underline underline-offset-4 hover:text-pen" onClick={() => setImageToCrop(null)}>
                                 Batal
                             </button>
                             <button type="button" className="btn btn-primary" onClick={handleSaveCrop}>
-                                Potong & Simpan
+                                Pakai foto ini
                             </button>
                         </div>
                     </div>

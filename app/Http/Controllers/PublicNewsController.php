@@ -23,9 +23,8 @@ class PublicNewsController extends Controller
         abort_unless($event->category === 'public_event', 404);
 
         $og = [
-            'title'       => $event->name . ' — Kirim Berita | Kopi TIMES',
-            'description' => $event->description ?: 'Kirim berita Anda untuk event ini di Kopi TIMES.',
-            'image'       => url('/bg_kopi_times.png'),
+            'title'       => 'Kirim Berita: ' . $event->name . ' — Kopi TIMES',
+            'description' => Str::limit(Str::squish((string) $event->description), 155) ?: 'Kirim berita Anda untuk event ' . $event->name . ' di Kopi TIMES, TIMES Indonesia.',
             'url'         => route('public-news.create', $event->slug),
         ];
 

@@ -18,19 +18,30 @@ Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 Route::get('/tentang', function () {
     return Inertia::render('Tentang/Index', [
         'og' => [
-            'title'       => 'Tentang — Kopi TIMES',
-            'description' => 'Mengenal Kopi TIMES — program keanggotaan penulis TIMES Indonesia untuk ekosistem gagasan dan jurnalisme positif.',
-            'image'       => url('/bg_kopi_times.png'),
+            'title'       => 'Tentang Kami — Kopi TIMES',
+            'description' => 'Kopi TIMES adalah kolom opini TIMES Indonesia dan program keanggotaan bagi penulis yang ingin mengawal diskursus publik di skala nasional.',
             'url'         => route('tentang'),
         ],
     ]);
 })->name('tentang');
 Route::get('/harga', [WelcomeController::class, 'harga'])->name('harga');
 Route::get('/kebijakan-privasi', function () {
-    return Inertia::render('KebijakanPrivasi/Index');
+    return Inertia::render('KebijakanPrivasi/Index', [
+        'og' => [
+            'title'       => 'Kebijakan Privasi — Kopi TIMES',
+            'description' => 'Kebijakan privasi layanan Kopi TIMES dan AJP (Aplikasi Jurnalisme Positif) oleh TIMES Indonesia.',
+            'url'         => route('kebijakan-privasi'),
+        ],
+    ]);
 })->name('kebijakan-privasi');
 Route::get('/syarat-ketentuan', function () {
-    return Inertia::render('SyaratKetentuan/Index');
+    return Inertia::render('SyaratKetentuan/Index', [
+        'og' => [
+            'title'       => 'Syarat & Ketentuan — Kopi TIMES',
+            'description' => 'Syarat dan ketentuan penggunaan layanan Kopi TIMES dan AJP (Aplikasi Jurnalisme Positif) oleh TIMES Indonesia.',
+            'url'         => route('syarat-ketentuan'),
+        ],
+    ]);
 })->name('syarat-ketentuan');
 
 

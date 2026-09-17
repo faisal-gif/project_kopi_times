@@ -6,7 +6,7 @@ import PricingSection from '../Welcome/Partials/PricingSection';
 function Index({ newsPackages }) {
     return (
         <>
-            <Head title="Harga" />
+            <Head title="Paket Membership Penulis" />
             <LandingLayout>
                 <main className="kt-landing bg-paper text-ink font-print">
                     <PricingSection

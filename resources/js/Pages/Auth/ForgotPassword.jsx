@@ -1,8 +1,7 @@
-import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, useForm } from '@inertiajs/react';
+import GuestLayout, { Field, GuestHeading, Notice, textLinkClass } from '@/Layouts/GuestLayout';
+import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function ForgotPassword({ status }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -11,45 +10,44 @@ export default function ForgotPassword({ status }) {
 
     const submit = (e) => {
         e.preventDefault();
-
         post(route('password.email'));
     };
 
     return (
         <GuestLayout>
-            <Head title="Forgot Password" />
+            <Head title="Lupa Password" />
 
-            <div className="mb-4 text-sm text-gray-600">
-                Forgot your password? No problem. Just let us know your email
-                address and we will email you a password reset link that will
-                allow you to choose a new one.
-            </div>
+            <GuestHeading title="Lupa password?">
+                Masukkan email akun Anda. Kami akan mengirim tautan untuk membuat password baru.
+            </GuestHeading>
 
-            {status && (
-                <div className="mb-4 text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
+            {status && <Notice>{status}</Notice>}
 
-            <form onSubmit={submit}>
-                <TextInput
-                    id="email"
-                    type="email"
-                    name="email"
-                    value={data.email}
-                    className="mt-1 block w-full"
-                    isFocused={true}
-                    onChange={(e) => setData('email', e.target.value)}
-                />
+            <form onSubmit={submit} className="mt-10 space-y-6">
+                <Field id="email" label="Email" error={errors.email}>
+                    <TextInput
+                        id="email"
+                        type="email"
+                        name="email"
+                        value={data.email}
+                        className="block w-full"
+                        autoComplete="email"
+                        placeholder="nama@email.com"
+                        isFocused={true}
+                        onChange={(e) => setData('email', e.target.value)}
+                    />
+                </Field>
 
-                <InputError message={errors.email} className="mt-2" />
-
-                <div className="mt-4 flex items-center justify-end">
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Email Password Reset Link
-                    </PrimaryButton>
-                </div>
+                <PrimaryButton className="w-full" disabled={processing}>
+                    {processing ? 'Mengirim...' : 'Kirim tautan reset password'}
+                </PrimaryButton>
             </form>
+
+            <div className="kt-rule mt-10 text-ink/25" />
+            <p className="mt-6 font-type text-sm text-ink/80">
+                Sudah ingat?{' '}
+                <Link href={route('login')} className={textLinkClass}>Kembali ke halaman masuk</Link>
+            </p>
         </GuestLayout>
     );
 }

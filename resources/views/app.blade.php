@@ -5,24 +5,45 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        @php($og = data_get($page, 'props.og'))
-        <title inertia>{{ data_get($og, 'title', config('app.name', 'Laravel')) }}</title>
+        @php
+            // OpenGraph server-side (crawler WhatsApp, FB, X, Google tidak menjalankan JS).
+            // Halaman tanpa props.og memakai default; yang bukan halaman publik diberi noindex.
+            $pageOg = data_get($page, 'props.og') ?? [];
+            $og = array_merge([
+                'title'       => 'Kolom Opini TIMES Indonesia — Kopi TIMES',
+                'description' => 'Tulis opini dan terbitkan di TIMES Indonesia. Jadi anggota penulis Kopi TIMES: akses CMS, kuota menulis, member card, dan tulisan terindeks Google.',
+                'image'       => url('/og-kopi-times.png'),
+                'image_alt'   => 'Naskah opini Kopi TIMES: Gagasan Anda layak dibaca Indonesia.',
+                'url'         => url()->current(),
+                'type'        => 'website',
+            ], array_filter($pageOg));
+            $indexable = (bool) $pageOg;
+        @endphp
+        <title inertia>{{ $og['title'] }}</title>
+        <meta name="description" content="{{ $og['description'] }}">
+        <meta name="robots" content="{{ $indexable ? 'index, follow' : 'noindex, nofollow' }}">
+        <link rel="canonical" href="{{ $og['url'] }}">
+        <meta name="theme-color" content="#8a0b10">
+        <link rel="icon" href="/favicon.ico">
 
-        {{-- OpenGraph server-side (untuk crawler: WhatsApp, FB, Google — mereka tak jalankan JS) --}}
-        @if($og)
-            <meta name="description" content="{{ data_get($og, 'description') }}">
-            <meta property="og:type" content="{{ data_get($og, 'type', 'website') }}">
-            <meta property="og:title" content="{{ data_get($og, 'title') }}">
-            <meta property="og:description" content="{{ data_get($og, 'description') }}">
-            <meta property="og:image" content="{{ data_get($og, 'image') }}">
-            <meta property="og:url" content="{{ data_get($og, 'url', url()->current()) }}">
-            <meta property="og:image:width" content="1200">
-            <meta property="og:image:height" content="630">
-            <meta name="twitter:card" content="summary_large_image">
-            <meta name="twitter:title" content="{{ data_get($og, 'title') }}">
-            <meta name="twitter:description" content="{{ data_get($og, 'description') }}">
-            <meta name="twitter:image" content="{{ data_get($og, 'image') }}">
-        @endif
+        <meta property="og:site_name" content="Kopi TIMES">
+        <meta property="og:locale" content="id_ID">
+        <meta property="og:type" content="{{ $og['type'] }}">
+        <meta property="og:title" content="{{ $og['title'] }}">
+        <meta property="og:description" content="{{ $og['description'] }}">
+        <meta property="og:url" content="{{ $og['url'] }}">
+        <meta property="og:image" content="{{ $og['image'] }}">
+        <meta property="og:image:type" content="image/png">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        <meta property="og:image:alt" content="{{ $og['image_alt'] }}">
+
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="@@timescoid">
+        <meta name="twitter:title" content="{{ $og['title'] }}">
+        <meta name="twitter:description" content="{{ $og['description'] }}">
+        <meta name="twitter:image" content="{{ $og['image'] }}">
+        <meta name="twitter:image:alt" content="{{ $og['image_alt'] }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

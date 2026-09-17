@@ -28,6 +28,11 @@ class RegisteredUserController extends Controller
         return Inertia::render('Auth/Register', [
             'newsPackages' => $newsPackages,
             'kategoriKt' => $kategoriKt,
+            'og' => [
+                'title'       => 'Daftar Jadi Penulis — Kopi TIMES',
+                'description' => 'Daftar membership penulis Kopi TIMES dan terbitkan opini Anda di TIMES Indonesia. Pilih paket, isi data, lalu mulai menulis.',
+                'url'         => route('register'),
+            ],
         ]);
     }
 

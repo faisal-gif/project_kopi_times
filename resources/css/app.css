@@ -161,3 +161,26 @@
 
 .kt-rule { background-image: linear-gradient(90deg, currentColor 50%, transparent 50%); background-size: 8px 1px; background-repeat: repeat-x; height: 1px; }
 .kt-scroll { scrollbar-width: thin; scrollbar-color: var(--color-saffron) transparent; }
+
+/* Halaman guest (login, daftar, dll): input daisyUI dalam dunia naskah */
+.kt-auth .input, .kt-auth .select, .kt-auth .textarea {
+  background: var(--color-sheet); border: 1px solid color-mix(in oklab, var(--color-ink) 28%, transparent);
+  border-radius: 3px; font-family: var(--font-type); font-size: 15px; color: var(--color-ink); box-shadow: none;
+}
+.kt-auth .input:focus, .kt-auth .input:focus-within, .kt-auth .select:focus, .kt-auth .textarea:focus {
+  outline: 3px solid var(--color-saffron); outline-offset: 0; border-color: var(--color-ink);
+}
+.kt-auth .input input:focus { outline: none; }
+.kt-auth ::placeholder { color: color-mix(in oklab, var(--color-ink) 45%, transparent); }
+.kt-auth .join .btn { background: var(--color-sheet); border: 1px solid color-mix(in oklab, var(--color-ink) 28%, transparent); border-left: 0; border-radius: 0 3px 3px 0; box-shadow: none; }
+.kt-auth .btn-primary {
+  background: var(--color-pen); border: 0; border-radius: 3px; color: #fff; font-family: var(--font-print); font-weight: 800; font-size: 1rem; height: 3.25rem; box-shadow: none;
+}
+.kt-auth .btn-primary:hover { background: var(--color-desk); }
+.kt-auth .checkbox { border-radius: 2px; --input-color: var(--color-pen); }
+.kt-auth .checkbox:checked { background-color: var(--color-pen); border-color: var(--color-pen); color: #fff; }
+.kt-auth .label-text-alt { font-family: var(--font-type); }
+.kt-auth .text-red-600 { color: var(--color-pen); font-family: var(--font-type); }
+.kt-auth .rounded-box { border-radius: 3px; border-color: color-mix(in oklab, var(--color-ink) 30%, transparent); background: var(--color-sheet); }
+.kt-auth .rounded-box:hover { border-color: var(--color-pen); }
+.kt-auth .alert { border-radius: 3px; font-family: var(--font-type); box-shadow: none; }
