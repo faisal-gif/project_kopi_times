@@ -23,8 +23,8 @@ class TripayCallbackController extends Controller
             config('services.tripay.private_key')
         );
 
-        abort_if(
-            $signature !== $request->header('X-Callback-Signature'),
+        abort_unless(
+            hash_equals($signature, (string) $request->header('X-Callback-Signature')),
             403
         );
 
@@ -32,8 +32,8 @@ class TripayCallbackController extends Controller
 
         $payment = Payments::where('reference', $request->reference)->firstOrFail();
 
-        // Idempotency: kalau sudah paid, abaikan callback duplikat agar
-        // kuota/masa aktif/shipment/email tidak diproses berulang.
+        // Fast path: callback duplikat untuk payment yang sudah paid.
+        // Cek ulang di bawah lock di dalam transaksi untuk callback yang datang bersamaan.
         if ($payment->status === 'paid') {
             return response()->json(['success' => true]);
         }
@@ -48,6 +48,12 @@ class TripayCallbackController extends Controller
 
         if ($statusDariTripay === 'paid') {
             DB::transaction(function () use ($payment, $statusDariTripay, $data) {
+                // Idempotency: kunci baris payment; callback kedua menunggu lalu melihat status paid.
+                $payment = Payments::whereKey($payment->id)->lockForUpdate()->first();
+                if ($payment->status === 'paid') {
+                    return;
+                }
+
                 // Update tabel payment
                 $payment->update([
                     'status' => $statusDariTripay,
@@ -60,7 +66,7 @@ class TripayCallbackController extends Controller
                 ]);
 
                 $newsPackage = NewsPackage::find($payment->package_id);
-                $user = User::find($payment->user_id);
+                $user = User::whereKey($payment->user_id)->lockForUpdate()->first();
 
                 // Hitung perpanjangan tanggal
                 $baseDate = ($user->dateexp && Carbon::parse($user->dateexp)->isFuture())
@@ -132,9 +138,10 @@ class TripayCallbackController extends Controller
                 });
             });
         } elseif (in_array($statusDariTripay, ['pending', 'failed', 'expired', 'refunded'])) {
-            $payment->update([
-                'status' => $statusDariTripay,
-            ]);
+            // Jangan timpa status paid yang dicatat callback lain di antara cek awal dan update ini.
+            Payments::whereKey($payment->id)
+                ->where('status', '!=', 'paid')
+                ->update(['status' => $statusDariTripay]);
         }
 
         return response()->json(['success' => true]);

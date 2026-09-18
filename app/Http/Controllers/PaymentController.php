@@ -7,7 +7,7 @@ use App\Models\Payments;
 use App\Services\TripayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class PaymentController extends Controller
@@ -66,8 +66,6 @@ class PaymentController extends Controller
             ->where('status', 1)
             ->findOrFail($request->package_id);
 
-        $merchant_ref = 'SUB-' . time();
-
         $payment = Payments::where('user_id', $user->id)
             ->where('package_id', $newsPackage->id)
             ->where('status', 'pending')
@@ -80,30 +78,34 @@ class PaymentController extends Controller
             return redirect($payment->checkout_url);
         }
 
-        DB::beginTransaction();
+        // ULID: unik walau dua user checkout di detik yang sama (kolom merchant_ref unique).
+        $merchant_ref = 'SUB-' . Str::upper((string) Str::ulid());
+
+        // Panggil Tripay di luar transaksi DB; timeout/putus koneksi ditangani, bukan meninggalkan transaksi terbuka.
+        try {
+            $response = $tripayService->createTransaction($newsPackage, $user, $merchant_ref, $request->paymentMethod);
+        } catch (\Throwable $e) {
+            report($e);
+            $response = null;
+        }
+
+        if (empty($response['success'])) {
+            return back()->with('error', $response['message'] ?? 'Gagal membuat transaksi pembayaran. Coba lagi.');
+        }
+
+        // Catat payment hanya setelah Tripay menerima transaksi.
         $payment = Payments::create([
-            'user_id' =>  $user->id,
+            'user_id' => $user->id,
             'method' => $request->paymentMethod,
             'type' => $newsPackage->type,
             'package_id' => $newsPackage->id,
             'merchant_ref' => $merchant_ref,
             'amount' => $newsPackage->price,
             'status' => 'pending',
-        ]);
-
-        $response = $tripayService->createTransaction($newsPackage, $user, $merchant_ref, $request->paymentMethod);
-
-        if (empty($response['success'])) {
-            DB::rollBack();
-            return back()->with('error', $response['message'] ?? 'Gagal membuat transaksi pembayaran. Coba lagi.');
-        }
-
-        $payment->update([
             'expired_at' => now()->addHours(24),
             'reference' => $response['data']['reference'],
             'checkout_url' => $response['data']['checkout_url'],
         ]);
-        DB::commit();
 
         return redirect($payment->checkout_url);
     }

@@ -110,6 +110,14 @@ class NewsController extends Controller
     {
         $auth = Auth::user();
 
+        // Guard yang sama dengan create(): POST langsung tidak boleh melewati kuota/masa aktif.
+        if ($auth->quota_news <= 0) {
+            return redirect()->route('news.index')->with('error', 'Kuota menulis Anda sudah habis.');
+        }
+        if ($auth->dateexp < now()) {
+            return redirect()->route('news.index')->with('error', 'Masa aktif akun Anda telah berakhir. Silakan perbarui langganan Anda.');
+        }
+
         $cleanTitle = preg_replace('/[^\x00-\x{FFFF}]/u', '', $request->title);
         $cleanContent = preg_replace('/[^\x00-\x{FFFF}]/u', '', $request->content);
         $cleanCaption = preg_replace('/[^\x00-\x{FFFF}]/u', '', $request->caption);
@@ -144,6 +152,12 @@ class NewsController extends Controller
 
         DB::beginTransaction();
         try {
+            // Kurangi kuota lebih dulu secara atomik: dua submit bersamaan tidak bisa membuat kuota minus.
+            $decremented = User::whereKey($auth->id)->where('quota_news', '>', 0)->decrement('quota_news');
+            if (!$decremented) {
+                throw new \RuntimeException('Kuota menulis Anda sudah habis.');
+            }
+
             // Simpan foto jadi ke images_thumbnail agar dipakai selamanya
             if ($newThumbnail) {
                 ImagesThumbnail::create([
@@ -169,8 +183,6 @@ class NewsController extends Controller
                 'type' => $auth->type,
                 'status' => 0,
             ]);
-
-            User::where('id', $auth->id)->decrement('quota_news');
 
             DB::commit();
         } catch (\Exception $e) {
