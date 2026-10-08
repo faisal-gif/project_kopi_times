@@ -67,6 +67,18 @@ class User extends Authenticatable
         return $this->belongsTo(NewsPackage::class, 'package_id', 'id');
     }
 
+    /** Baris afiliator bila akun ini ditautkan admin sebagai afiliator. */
+    public function affiliate()
+    {
+        return $this->hasOne(Affiliate::class, 'user_id');
+    }
+
+    /** Siapa yang merekrut user ini saat mendaftar. */
+    public function referral()
+    {
+        return $this->hasOne(AffiliateReferral::class, 'user_id');
+    }
+
     /**
      * Get the attributes that should be cast.
      *

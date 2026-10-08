@@ -7,38 +7,42 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
+ * Tabel `wartawan`, bukan `users`: kolomnya `nama`, `status`, `package_id`, dst.
+ *
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
  */
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
     protected static ?string $password;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'nama' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'prov' => fake()->state(),
+            'city' => fake()->city(),
+            'contact' => fake()->numerify('8##########'),
+            'address' => fake()->address(),
+            'type' => 4,
+            'status' => 0,
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
+    /** Member aktif berbayar. */
+    public function active(): static
+    {
+        return $this->state(fn () => [
+            'status' => 1,
+            'dateexp' => now()->addMonth(),
+        ]);
+    }
+
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
-        ]);
+        return $this->state(fn () => ['email_verified_at' => null]);
     }
 }

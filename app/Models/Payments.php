@@ -62,4 +62,9 @@ class Payments extends Model
     {
         return $this->hasOne(MerchandiseShipment::class, 'payment_id');
     }
+
+    public function commissions()
+    {
+        return $this->hasMany(AffiliateCommission::class, 'payment_id');
+    }
 }

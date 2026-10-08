@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
-import GuestLayout, { Field } from '@/Layouts/GuestLayout';
+import GuestLayout, { Field, Notice } from '@/Layouts/GuestLayout';
 import { Check, ArrowRight, ArrowLeft } from "lucide-react";
 import { formatDuration, formatRupiah } from '@/Utils/formatter';
 import TextInput from '@/Components/TextInput';
@@ -13,7 +13,7 @@ function StepLabel({ step }) {
     return <p className="font-pen text-xl font-bold text-pen">Langkah {step} dari 2</p>;
 }
 
-export default function Register({ newsPackages, kategoriKt }) {
+export default function Register({ newsPackages, kategoriKt, referral = null }) {
     const [registerStep, setRegisterStep] = useState("plan");
     const [selectedPlan, setSelectedPlan] = useState(null);
 
@@ -28,6 +28,8 @@ export default function Register({ newsPackages, kategoriKt }) {
         password: '',
         password_confirmation: '',
         plan_id: '',
+        ref: referral?.code ?? '',
+        referral_code: '',
     });
 
     const handlePlanSelect = (planId) => {
@@ -133,6 +135,9 @@ export default function Register({ newsPackages, kategoriKt }) {
                                 Paket: <span className="kt-mark font-bold text-ink">{plan.name}</span> &middot; {formatRupiah(plan.price)} / {formatDuration(plan.period)}
                             </p>
                         )}
+                        {referral && (
+                            <Notice>Anda mendaftar atas ajakan <strong>{referral.name}</strong>.</Notice>
+                        )}
                     </div>
 
                     <form onSubmit={handleRegister} className="mt-10 space-y-5">
@@ -198,6 +203,19 @@ export default function Register({ newsPackages, kategoriKt }) {
                                     autoComplete="new-password" placeholder="Ketik ulang password" onChange={(e) => setData('password_confirmation', e.target.value)} />
                             </Field>
                         </div>
+
+                        {!referral && (
+                            <Field id="referral_code" label="Kode referral (jika ada)" error={errors.referral_code}>
+                                <TextInput
+                                    id="referral_code"
+                                    name="referral_code"
+                                    value={data.referral_code}
+                                    className="block w-full uppercase"
+                                    placeholder="Mis. DOSEN01"
+                                    onChange={(e) => setData('referral_code', e.target.value.toUpperCase())}
+                                />
+                            </Field>
+                        )}
 
                         <label htmlFor="terms" className="flex items-start gap-3 pt-2 font-type text-sm text-ink/80">
                             <input id="terms" type="checkbox" className="checkbox checkbox-sm mt-0.5" required />

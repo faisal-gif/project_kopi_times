@@ -5,6 +5,7 @@ Aplikasi membership penulis **Kopi TIMES** (Kolom Opini TIMES Indonesia). Penuli
 - Produk, audiens, dan fakta yang boleh diklaim: [PRODUCT.md](PRODUCT.md)
 - Sistem visual halaman publik: [DESIGN.md](DESIGN.md)
 - Spesifikasi manage event untuk CMS redaksi: [INSTRUKSI_MANAGE_PUBLIC_EVENT.md](INSTRUKSI_MANAGE_PUBLIC_EVENT.md)
+- Program afiliasi 2 tingkat (rencana): [ADR](docs/adr/0001-afiliasi-2-tingkat.md) · [rancangan teknis](docs/afiliasi-rancangan-teknis.md) · [spesifikasi CMS](INSTRUKSI_AFILIASI_CMS.md)
 
 ## Stack
 
