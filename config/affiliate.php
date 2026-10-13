@@ -19,7 +19,20 @@ return [
     // Masa tahan sebelum komisi boleh disetujui untuk dicairkan.
     'hold_days' => (int) env('AFFILIATE_HOLD_DAYS', 7),
 
+    /*
+     * Label situs untuk laporan. Kopi TIMES dan AJP memakai codebase dan database
+     * yang sama, jadi deployment-lah yang menyebutkan dirinya siapa.
+     */
+    'site' => env('AFFILIATE_SITE', 'kopi'),
+
     // Cookie atribusi: sentuhan pertama yang menang.
     'cookie_name' => 'kt_ref',
     'cookie_days' => 30,
+
+    /*
+     * Kosong = cookie hanya berlaku di domain situs ini (atribusi terpisah per situs).
+     * Diisi '.times.co.id' = satu klik berlaku di seluruh subdomain TIMES.
+     * Nama cookie sengaja sama di semua situs supaya opsi ini bisa dinyalakan kapan saja.
+     */
+    'cookie_domain' => env('AFFILIATE_COOKIE_DOMAIN'),
 ];

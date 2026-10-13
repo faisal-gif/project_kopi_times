@@ -22,7 +22,14 @@ class CaptureReferralCode
         $cookie = config('affiliate.cookie_name');
 
         if ($code !== '' && preg_match('/^[A-Z0-9]{3,32}$/', $code) && ! $request->cookie($cookie)) {
-            Cookie::queue($cookie, $code, config('affiliate.cookie_days') * 1440);
+            // cookie_domain diisi '.times.co.id' bila atribusi harus berlaku lintas subdomain.
+            Cookie::queue(
+                $cookie,
+                $code,
+                config('affiliate.cookie_days') * 1440,
+                '/',
+                config('affiliate.cookie_domain'),
+            );
         }
 
         return $next($request);

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AffiliateController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MerchandiseShipmentController;
 use App\Http\Controllers\NewsController;
@@ -79,6 +80,10 @@ Route::get('/generate-card', [DashboardController::class, 'generateCard'])->name
 Route::middleware('auth')->group(function () {
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
     Route::get('/payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
+
+    // Tanpa middleware 'active': afiliator belum tentu member berbayar.
+    Route::get('/afiliasi', [AffiliateController::class, 'index'])
+        ->middleware('affiliate')->name('afiliasi.index');
 });
 
 require __DIR__ . '/auth.php';

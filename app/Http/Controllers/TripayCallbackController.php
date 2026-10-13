@@ -8,6 +8,7 @@ use App\Models\MerchandiseShipment;
 use App\Models\NewsPackage;
 use App\Models\Payments;
 use App\Models\User;
+use App\Services\AffiliateCommissionService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -64,6 +65,10 @@ class TripayCallbackController extends Controller
                     'amount_recived' => $data['amount_received'],
                     'paid_at' => now(),
                 ]);
+
+                // Komisi afiliasi dicatat sebelum user dimutasi, supaya deteksi "member baru"
+                // tidak terganggu status aktif yang baru saja ditulis di bawah.
+                app(AffiliateCommissionService::class)->accrue($payment);
 
                 $newsPackage = NewsPackage::find($payment->package_id);
                 $user = User::whereKey($payment->user_id)->lockForUpdate()->first();

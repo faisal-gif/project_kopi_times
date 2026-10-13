@@ -20,6 +20,7 @@ import {
     Package,
     Pen,
     Settings,
+    Share2,
     User
 } from 'lucide-react';
 
@@ -143,6 +144,18 @@ export default function AuthenticatedLayout({ header, children }) {
                             Riwayat Transaksi
                         </Link>
                     </li>
+
+                    {auth.is_affiliate && (
+                        <li>
+                            <Link
+                                href={route('afiliasi.index')}
+                                className={linkClass(isActive('afiliasi.*'))}
+                            >
+                                <Share2 size={16} />
+                                Afiliasi
+                            </Link>
+                        </li>
+                    )}
                 </ul>
             </div>
         </div>

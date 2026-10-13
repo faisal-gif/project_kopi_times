@@ -64,9 +64,19 @@ Alasan: meneruskan pembagian kerja yang sudah berjalan. Membangun admin di aplik
 
 ### 7. AJP memakai modul yang sama dengan deploy dan database terpisah
 
+> **DIGANTI 2026-10-12.** Keputusan ini dibuat dengan asumsi AJP punya database sendiri. Ternyata **AJP dan Kopi TIMES memakai codebase dan database yang sama** (`timesindo_ajp`), hanya beda projek dan branding; `wartawan.type` adalah pembeda produknya. Lihat keputusan 7a.
+
 Tidak ada layanan afiliasi terpusat dan tidak ada saldo lintas situs.
 
 Alasan: kebutuhan yang disampaikan adalah "skema yang sama", bukan "saldo yang sama". Layanan terpusat menambah autentikasi antar-layanan, sinkronisasi, dan satu titik gagal baru, tanpa manfaat yang diminta hari ini.
+
+### 7a. AJP ikut memakai tabel afiliasi yang sama (pengganti keputusan 7)
+
+Satu tabel afiliator, satu kode referral, satu ledger, dan satu saldo untuk semua situs di database bersama. AJP tidak membuat migration apa pun dan tidak membangun portal afiliator sendiri; cukup mengambil kode yang sama dan mengisi `AFFILIATE_SITE` serta tarif di `.env`. Arahannya ada di [INSTRUKSI_AFILIASI_AJP.md](../../INSTRUKSI_AFILIASI_AJP.md).
+
+Laporan per situs tetap bisa dipecah lewat `news_package.type` (dijoin dari `payments.package_id`), jadi ledger tidak perlu kolom situs. Atribusi lintas subdomain tersedia sebagai pilihan lewat `AFFILIATE_COOKIE_DOMAIN`, mati secara default.
+
+Alasan: database sudah bersama, jadi memisahkan ledger justru menciptakan dua kebenaran untuk satu afiliator, dan pencairan harus dilakukan dua kali untuk orang yang sama.
 
 ### 8. Komisi hanya untuk pembayaran member baru yang berafiliasi
 

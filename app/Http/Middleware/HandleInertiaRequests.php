@@ -34,6 +34,8 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
+                // Menu afiliasi hanya muncul untuk akun yang ditautkan sebagai afiliator aktif.
+                'is_affiliate' => fn () => (bool) $request->user()?->affiliate?->isActive(),
             ],
             'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),

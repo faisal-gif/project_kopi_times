@@ -2,6 +2,8 @@
 
 Dokumen ini merinci implementasi di repo `kopi.times.co.id`. Keputusan dan alasannya ada di [ADR 0001](adr/0001-afiliasi-2-tingkat.md). Sisi admin dikerjakan CMS dengan kontrak di [INSTRUKSI_AFILIASI_CMS.md](../INSTRUKSI_AFILIASI_CMS.md).
 
+> **AJP memakai database dan codebase yang sama.** Tabel, afiliator, kode referral, ledger, dan saldo di dokumen ini otomatis berlaku untuk kedua situs; pembedanya `news_package.type` (**1 = AJP, 4 = Kopi TIMES**, 2 dan 3 lini produk lain). AJP tidak membuat tabel sendiri — lihat [INSTRUKSI_AFILIASI_AJP.md](../INSTRUKSI_AFILIASI_AJP.md) dan keputusan 7a di ADR.
+
 ## 0. Ringkasan rumus
 
 Berlaku hanya untuk pembayaran **member baru yang punya perekrut**.

@@ -4,6 +4,37 @@ Bangun layar **admin program afiliasi**: kelola afiliator, tinjau komisi, dan ca
 
 > Prinsip: minimal. Pakai pola/komponen yang **sudah ada** di CMS ini (layout, tabel, form, validasi). Jangan bikin abstraksi baru, jangan tambah dependency. Bangun hanya yang diminta.
 
+## Riwayat perubahan dokumen
+
+**Sudah memegang versi sebelumnya? Baca bagian ini dulu, sisanya hanya penajaman.**
+
+### 2026-10-12 — program ini melayani lebih dari satu situs
+
+Versi pertama dokumen ini menyebut `ajp.times.co.id` akan memakai **database terpisah**. **Itu keliru.** AJP dan Kopi TIMES memakai codebase dan database yang sama (`timesindo_ajp`), hanya beda projek dan branding.
+
+Dampaknya ke layar yang Anda bangun:
+
+| Hal | Versi lama | Yang benar |
+|---|---|---|
+| Asal komisi | Semua dari Kopi TIMES | Bisa dari situs mana pun di database ini |
+| Afiliator | Per situs | Satu afiliator bisa merekrut ke beberapa situs |
+| Saldo & pencairan | Per situs | Satu saldo, satu batch, mencakup semua situs |
+| Daftar komisi & laporan | Tanpa kolom situs | **Wajib ada filter dan kolom situs** |
+
+Situs asal sebuah komisi ditelusuri lewat paket yang dibeli: `affiliate_commissions.payment_id → payments.package_id → news_package.type`.
+
+| `type` | Produk |
+|---|---|
+| **1** | **AJP** |
+| 2, 3 | lini produk lain di database yang sama |
+| **4** | **Kopi TIMES** |
+
+Tampilkan nama produknya, bukan angkanya, di daftar komisi dan laporan.
+
+Tidak ada perubahan skema. Keempat tabel, seluruh kolom, dan kedua state machine tetap sama persis seperti versi sebelumnya.
+
+### 2026-10-08 — versi pertama
+
 ## Konteks
 
 Program afiliasi 2 tingkat untuk mengejar member baru. Harga membership baru **Rp 48.000**; perpanjangan memakai harga lama dan **tidak** menghasilkan komisi.
@@ -149,14 +180,14 @@ Keduanya final. Kalau ada kekeliruan setelah `paid`, buat batch baru sebagai kor
 
 3. **Setujui / tangguhkan afiliator** — aksi cepat mengubah `status`, mengisi `approved_at` saat jadi `active`. Penangguhan menghentikan atribusi dan komisi **baru**; komisi lama tidak ikut batal.
 
-4. **Daftar komisi** — kolom: tanggal, member, nama paket/nomor pembayaran, pos (`tier1`/`tier2`/`internal`), penerima, nominal, status, `available_at`. Filter per afiliator, status, pos, dan rentang tanggal. Aksi: setujui (massal), tolak dengan alasan, dan untuk baris `unassigned` tetapkan penerima.
+4. **Daftar komisi** — kolom: tanggal, member, **situs asal**, nama paket/nomor pembayaran, pos (`tier1`/`tier2`/`internal`), penerima, nominal, status, `available_at`. Filter per afiliator, **situs**, status, pos, dan rentang tanggal. Aksi: setujui (massal), tolak dengan alasan, dan untuk baris `unassigned` tetapkan penerima.
    - Tombol setujui harus nonaktif selama `available_at > sekarang`.
 
 5. **Laporan baris tertahan** — daftar khusus `status = 'unassigned'` beserta `source_affiliate_id`. Tanpa layar ini, uang tertahan tidak terlihat siapa pun.
 
 6. **Batch pencairan** — pilih afiliator dan periode, sistem menarik semua komisi `approved` miliknya yang `payout_id`-nya masih NULL, hitung totalnya, lalu buat `affiliate_payouts` dan isi `payout_id` di komisi tersebut. Lanjutan: tandai lunas (isi `reference`, unggah bukti, set `paid_at`, semua komisinya jadi `paid`) atau batalkan (lepaskan kembali komisinya).
 
-7. **Laporan rekap per periode** — pemasukan kotor, total `tier1`, total `tier2`, total `internal` (KITA AI), total tertahan, dan net kantor. **Hanya di CMS.**
+7. **Laporan rekap per periode** — pemasukan kotor, total `tier1`, total `tier2`, total `internal` (KITA AI), total tertahan, dan net kantor, **dipecah per situs dan ada barisan totalnya**. **Hanya di CMS.**
 
 8. **Deteksi kecurangan sederhana** — daftar afiliator dengan rasio mencurigakan, misalnya banyak member direkrut tetapi hampir tidak ada yang pernah mengirim tulisan, atau beberapa pendaftaran dari pola email yang mirip.
 
@@ -187,15 +218,21 @@ Rekap satu periode:
 
 ```sql
 SELECT
-  SUM(CASE WHEN role = 'tier1'    THEN amount ELSE 0 END) AS tier1,
-  SUM(CASE WHEN role = 'tier2'    THEN amount ELSE 0 END) AS tier2,
-  SUM(CASE WHEN role = 'internal' THEN amount ELSE 0 END) AS kita_ai,
-  SUM(CASE WHEN status = 'unassigned' THEN amount ELSE 0 END) AS tertahan,
-  SUM(amount) AS total_keluar
-FROM affiliate_commissions
-WHERE created_at BETWEEN ? AND ?
-  AND status <> 'rejected';
+  np.type AS situs,
+  SUM(CASE WHEN c.role = 'tier1'    THEN c.amount ELSE 0 END) AS tier1,
+  SUM(CASE WHEN c.role = 'tier2'    THEN c.amount ELSE 0 END) AS tier2,
+  SUM(CASE WHEN c.role = 'internal' THEN c.amount ELSE 0 END) AS kita_ai,
+  SUM(CASE WHEN c.status = 'unassigned' THEN c.amount ELSE 0 END) AS tertahan,
+  SUM(c.amount) AS total_keluar
+FROM affiliate_commissions c
+JOIN payments p      ON p.id = c.payment_id
+JOIN news_package np ON np.id = p.package_id
+WHERE c.created_at BETWEEN ? AND ?
+  AND c.status <> 'rejected'
+GROUP BY np.type;
 ```
+
+Hilangkan `np.type` dan `GROUP BY` bila yang dibutuhkan angka gabungan seluruh situs.
 
 Komisi siap cair milik satu afiliator:
 
@@ -224,4 +261,6 @@ GROUP BY payout_id HAVING COUNT(DISTINCT affiliate_id) > 1;
 - Jangan menghapus baris afiliator yang sudah punya rekrutan atau komisi; database akan menolak (`restrict`). Pakai `status = 'inactive'`.
 - Refund setelah komisi tercatat **tidak otomatis**. Aplikasi publik tidak memproses callback refund untuk pembayaran yang sudah lunas, jadi pembatalannya dilakukan manual dari layar komisi (`reversed` + alasan).
 - Pemotongan pajak (PPh) belum ada di skema. Kalau keuangan mewajibkannya, sampaikan dulu supaya kolomnya ditambahkan aplikasi publik, jangan membuat kolom sendiri.
-- Skema yang sama akan dipakai `ajp.times.co.id` dengan database terpisah. Buat layar CMS ini tidak mengasumsikan satu situs saja bila nanti dipakai ulang.
+- **`ajp.times.co.id` ikut memakai tabel yang sama di database ini**, bukan database terpisah. Jadi satu afiliator bisa merekrut ke lebih dari satu situs, dan saldonya satu. Layar CMS **tidak boleh** mengasumsikan semua komisi berasal dari Kopi TIMES.
+- Situs asal sebuah komisi ditelusuri lewat paket yang dibeli: `affiliate_commissions.payment_id → payments.package_id → news_package.type`. Pemetaannya: `1` = AJP, `4` = Kopi TIMES, sisanya lini produk lain. Sediakan filter per `type` di daftar komisi dan laporan rekap.
+- Pencairan tetap satu batch per afiliator, mencakup komisi dari situs mana pun.

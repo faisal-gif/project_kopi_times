@@ -47,6 +47,17 @@ class ReferralAttributionTest extends TestCase
         $this->get('/?ref=DOSEN01')->assertPlainCookie(config('affiliate.cookie_name'), 'DOSEN01');
     }
 
+    public function test_cookie_domain_can_span_subdomains(): void
+    {
+        config(['affiliate.cookie_domain' => '.times.co.id']);
+
+        $cookie = collect($this->get('/?ref=DOSEN01')->headers->getCookies())
+            ->first(fn ($c) => $c->getName() === config('affiliate.cookie_name'));
+
+        $this->assertNotNull($cookie);
+        $this->assertSame('.times.co.id', $cookie->getDomain());
+    }
+
     public function test_existing_cookie_is_not_overwritten_by_another_ref(): void
     {
         $this->withUnencryptedCookie(config('affiliate.cookie_name'), 'PERTAMA')
