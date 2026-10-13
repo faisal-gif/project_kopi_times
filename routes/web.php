@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AffiliateApplicationController;
 use App\Http\Controllers\AffiliateController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MerchandiseShipmentController;
@@ -44,6 +45,18 @@ Route::get('/syarat-ketentuan', function () {
         ],
     ]);
 })->name('syarat-ketentuan');
+Route::get('/syarat-afiliasi', function () {
+    return Inertia::render('Afiliasi/SyaratKetentuan', [
+        'min_payout' => (int) config('affiliate.min_payout'),
+        'hold_days' => (int) config('affiliate.hold_days'),
+        'cookie_days' => (int) config('affiliate.cookie_days'),
+        'og' => [
+            'title'       => 'Syarat & Ketentuan Afiliasi — Kopi TIMES',
+            'description' => 'Ketentuan program afiliasi Kopi TIMES: komisi, masa tahan, pencairan, dan larangan.',
+            'url'         => route('afiliasi.syarat'),
+        ],
+    ]);
+})->name('afiliasi.syarat');
 
 
 
@@ -81,9 +94,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
     Route::get('/payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
 
-    // Tanpa middleware 'active': afiliator belum tentu member berbayar.
-    Route::get('/afiliasi', [AffiliateController::class, 'index'])
-        ->middleware('affiliate')->name('afiliasi.index');
+    // Tanpa middleware 'active': afiliator bentukan admin belum tentu member berbayar.
+    Route::get('/afiliasi', [AffiliateController::class, 'index'])->name('afiliasi.index');
+
+    // Pengajuan jadi afiliator hanya untuk member aktif.
+    Route::middleware('active')->group(function () {
+        Route::get('/afiliasi/daftar', [AffiliateApplicationController::class, 'create'])->name('afiliasi.daftar');
+        Route::post('/afiliasi/daftar', [AffiliateApplicationController::class, 'store']);
+    });
 });
 
 require __DIR__ . '/auth.php';

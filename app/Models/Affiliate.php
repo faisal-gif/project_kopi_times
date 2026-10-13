@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Affiliate extends Model
 {
@@ -22,11 +23,14 @@ class Affiliate extends Model
         'bank_account_name',
         'status',
         'approved_at',
+        'terms_accepted_at',
+        'applicant_note',
         'note',
     ];
 
     protected $casts = [
         'approved_at' => 'datetime',
+        'terms_accepted_at' => 'datetime',
     ];
 
     public const STATUSES = [
@@ -59,6 +63,25 @@ class Affiliate extends Model
         }
 
         return static::where('code', $code)->where('status', 'active')->first();
+    }
+
+    /**
+     * Kode referral unik dari nama: maksimal 6 huruf nama + 4 karakter acak.
+     * Formatnya mengikuti yang divalidasi middleware dan CMS: ^[A-Z0-9]{3,32}$
+     */
+    public static function generateCode(string $name): string
+    {
+        $prefix = substr(preg_replace('/[^A-Z]/', '', strtoupper($name)), 0, 6);
+
+        if (strlen($prefix) < 3) {
+            $prefix = 'KT' . $prefix;
+        }
+
+        do {
+            $code = $prefix . strtoupper(Str::random(4));
+        } while (static::where('code', $code)->exists());
+
+        return $code;
     }
 
     public function getReferralUrlAttribute(): string

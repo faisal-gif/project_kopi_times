@@ -145,7 +145,8 @@ export default function AuthenticatedLayout({ header, children }) {
                         </Link>
                     </li>
 
-                    {auth.is_affiliate && (
+                    {/* Afiliator (status apa pun) + member aktif yang belum mengajukan. */}
+                    {(auth.affiliate_status || user?.status === 1) && (
                         <li>
                             <Link
                                 href={route('afiliasi.index')}

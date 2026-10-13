@@ -246,6 +246,17 @@ Query: `AffiliateCommission::where('affiliate_id', $me->id)->whereIn('role', ['t
 
 **Sidebar** [AuthenticatedLayout.jsx](../resources/js/Layouts/AuthenticatedLayout.jsx): entri "Afiliasi" baru yang hanya muncul bila `is_affiliate` (shared prop lazy di `HandleInertiaRequests`). Sekalian sembunyikan menu khusus member saat `user.status !== 1`, supaya afiliator non-member tidak melihat lima menu yang semuanya memantul ke `/checkout`.
 
+## 5b. Pengajuan mandiri dan syarat & ketentuan
+
+Afiliator tidak lagi hanya dibuat admin. Member **aktif** bisa mengajukan diri lewat `/afiliasi/daftar` ([AffiliateApplicationController](../app/Http/Controllers/AffiliateApplicationController.php) + [AffiliateApplicationRequest](../app/Http/Requests/AffiliateApplicationRequest.php)).
+
+- Rute pengajuan memakai middleware `active`; `/afiliasi` sendiri tetap di luar `active` karena afiliator bentukan admin belum tentu member berbayar.
+- `AffiliateController@index` sekarang sadar status: belum punya baris → arahkan ke formulir; `pending` → halaman status tanpa angka apa pun; `active` → dashboard; `suspended`/`inactive` → dashboard dengan peringatan. Middleware `EnsureUserIsAffiliate` dihapus karena 403-nya justru menghalangi member yang ingin mengajukan.
+- Pengajuan menyimpan `terms_accepted_at`, `applicant_note`, data rekening (wajib), `status = 'pending'`, dan `upline_id = null` — upline ditetapkan admin.
+- Kode referral digenerate `Affiliate::generateCode()`: maksimal 6 huruf dari nama + 4 karakter acak, diulang sampai unik.
+- Halaman publik `/syarat-afiliasi` memuat ketentuan yang disetujui pemohon. **Nominal komisi ditulis sebagai angka, bukan persentase**, supaya pos internal 10% tidak terbaca publik; ada test yang menjaga aturan ini.
+- `config/affiliate.php` menambah `min_payout` (default Rp 50.000) sebagai sumber tunggal untuk S&K dan batch pencairan di CMS.
+
 ## 6. Rencana test
 
 **Hambatan yang harus dibereskan lebih dulu.** Test DB hanya berisi 8 migration; `wartawan`, `news_package`, dan `items_lainnya` tidak ada di sana, `UserFactory` masih bawaan Laravel (`name`, `remember_token`) sehingga tidak bisa insert ke `wartawan`, dan tabel `payments` di test kekurangan kolom hasil drift. Jalankan `php artisan test` dulu untuk melihat kondisi awal — jangan berasumsi baseline-nya hijau.

@@ -27,7 +27,6 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->alias([
             'active' => \App\Http\Middleware\EnsureUserIsActive::class,
-            'affiliate' => \App\Http\Middleware\EnsureUserIsAffiliate::class,
         ]);
 
         //

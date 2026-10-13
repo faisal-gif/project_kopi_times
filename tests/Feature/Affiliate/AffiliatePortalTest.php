@@ -41,19 +41,21 @@ class AffiliatePortalTest extends TestCase
         ]);
     }
 
-    public function test_non_affiliate_cannot_open_the_page(): void
+    public function test_non_affiliate_is_sent_to_the_application_form(): void
     {
         $this->actingAs(User::factory()->active()->create())
             ->get('/afiliasi')
-            ->assertForbidden();
+            ->assertRedirect(route('afiliasi.daftar'));
     }
 
-    public function test_suspended_affiliate_cannot_open_the_page(): void
+    public function test_suspended_affiliate_still_sees_own_history_with_a_warning(): void
     {
         $user = User::factory()->create();
         Affiliate::factory()->suspended()->create(['user_id' => $user->id]);
 
-        $this->actingAs($user)->get('/afiliasi')->assertForbidden();
+        $this->actingAs($user)->get('/afiliasi')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->where('affiliate.status', 'suspended'));
     }
 
     public function test_inactive_member_who_is_an_affiliate_can_open_the_page(): void

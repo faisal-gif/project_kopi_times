@@ -41,7 +41,9 @@ Semuanya sudah ada di codebase (ambil dari projek Kopi TIMES):
 | Atribusi saat daftar | `app/Http/Controllers/Auth/RegisteredUserController.php` + `resources/js/Pages/Auth/Register.jsx` |
 | Test | `tests/Feature/Affiliate/ReferralAttributionTest.php`, `tests/Concerns/CreatesLegacySchema.php` |
 
-Belum ada (masih dikerjakan di projek Kopi TIMES, nanti ikut ter-merge): **mesin komisi** di `TripayCallbackController` dan **halaman afiliator**. Begitu keduanya jadi di Kopi TIMES, AJP cukup menarik kodenya — tanpa perubahan apa pun.
+Ikut terbawa saat merge, tanpa langkah tambahan: **mesin komisi** di `TripayCallbackController`, **halaman afiliator** `/afiliasi`, **formulir pengajuan** `/afiliasi/daftar` (hanya untuk member aktif), dan **halaman syarat & ketentuan** `/syarat-afiliasi`. Karena tabel afiliasi dipakai bersama, pengajuan dari member AJP langsung masuk ke antrean yang sama di CMS.
+
+Catatan lama (sudah tidak berlaku, disimpan sebagai jejak): bagian ini sebelumnya menyebut mesin komisi dan halaman afiliator **belum ada**. Begitu keduanya jadi di Kopi TIMES, AJP cukup menarik kodenya — tanpa perubahan apa pun.
 
 Sisi admin (kelola afiliator, setujui komisi, pencairan) dibangun di **CMS**, lihat `INSTRUKSI_AFILIASI_CMS.md`. AJP tidak perlu membangun layar admin.
 

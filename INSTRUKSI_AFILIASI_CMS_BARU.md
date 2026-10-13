@@ -33,6 +33,24 @@ Tampilkan nama produknya, bukan angkanya, di daftar komisi dan laporan.
 
 Tidak ada perubahan skema. Keempat tabel, seluruh kolom, dan kedua state machine tetap sama persis seperti versi sebelumnya.
 
+### 2026-10-13 — member bisa mengajukan diri jadi afiliator
+
+Aplikasi publik kini punya formulir pengajuan. **Baris `affiliates` berstatus `pending` tidak lagi hanya datang dari admin — sekarang bisa datang dari member sendiri.** Layar CMS perlu menyiapkan antrean peninjauan.
+
+Dua kolom baru di `affiliates` (keduanya nullable, baris lama tetap valid):
+
+| Kolom | Tipe | Keterangan |
+|---|---|---|
+| `terms_accepted_at` | timestamp nullable | Waktu pemohon menyetujui syarat & ketentuan. Kosong untuk afiliator yang dibuat admin |
+| `applicant_note` | text nullable | Tulisan pemohon tentang audiens yang akan dijangkau. **Dibuat pemohon, jangan ditimpa** — catatan admin tetap di kolom `note` |
+
+Yang perlu disiapkan CMS:
+
+- **Antrean pengajuan**: daftar `status = 'pending'`, menampilkan `applicant_note`, data rekening, status membership pemohon, dan `terms_accepted_at`. Aksi: setujui (jadi `active`, isi `approved_at`) atau tolak (`inactive` atau `suspended`, isi `note`).
+- **Upline wajib ditetapkan manual.** Pengajuan mandiri selalu masuk dengan `upline_id` kosong. Selama kosong, komisi tingkat 2 dari afiliator itu tercatat `unassigned`, jadi laporan baris tertahan makin penting.
+- **Kode referral sudah digenerate** aplikasi publik saat pengajuan. Jangan dibuat ulang.
+- **Minimum pencairan Rp 50.000** (`config/affiliate.php`, `min_payout`). Nominal ini tertulis di syarat & ketentuan yang disetujui pemohon, jadi batch pencairan harus mengikutinya.
+
 ### 2026-10-08 — versi pertama
 
 ## Konteks
@@ -74,8 +92,10 @@ Jangan membuat migration untuk keempat tabel di bawah. Cukup bikin Model, Contro
 | `phone` | string(30) nullable | |
 | `payout_method` | enum `bank` \| `ewallet` | default `bank` |
 | `bank_name`, `bank_account_number`, `bank_account_name` | string nullable | wajib diisi sebelum pencairan pertama |
-| `status` | enum `pending` \| `active` \| `suspended` \| `inactive` | default `pending`. **Hanya `active` yang menghasilkan atribusi dan komisi baru** |
+| `status` | enum `pending` \| `active` \| `suspended` \| `inactive` | default `pending`. **Hanya `active` yang menghasilkan atribusi dan komisi baru**. `pending` bisa berasal dari admin maupun pengajuan mandiri member |
 | `approved_at` | timestamp nullable | isi saat status jadi `active` |
+| `terms_accepted_at` | timestamp nullable | waktu pemohon menyetujui S&K; kosong bila dibuat admin. **Jangan diubah** |
+| `applicant_note` | text nullable | tulisan pemohon. **Jangan diubah**; catatan admin pakai `note` |
 | `note` | text nullable | catatan admin |
 | `created_at`, `updated_at` | timestamp | |
 
@@ -170,6 +190,8 @@ Keduanya final. Kalau ada kekeliruan setelah `paid`, buat batch baru sebagai kor
 
 ## Yang harus dibangun
 
+0. **Antrean pengajuan** — daftar `status = 'pending'` berisi nama, email, kontak, `applicant_note`, data rekening, status membership pemohon, dan tanggal persetujuan S&K. Aksi: setujui (`active` + `approved_at`), tolak (`inactive`/`suspended` + `note`), dan tetapkan `upline_id` sekalian saat menyetujui.
+
 1. **Daftar afiliator** — kolom: nama, kode, status, upline, jumlah member direkrut, total komisi (tertahan / siap cair / sudah dibayar). Filter per status, pencarian nama/kode/email.
 
 2. **Tambah & ubah afiliator** — form: nama, email, phone, upline (pilih dari afiliator lain), status, metode dan data rekening, catatan.
@@ -185,7 +207,7 @@ Keduanya final. Kalau ada kekeliruan setelah `paid`, buat batch baru sebagai kor
 
 5. **Laporan baris tertahan** — daftar khusus `status = 'unassigned'` beserta `source_affiliate_id`. Tanpa layar ini, uang tertahan tidak terlihat siapa pun.
 
-6. **Batch pencairan** — pilih afiliator dan periode, sistem menarik semua komisi `approved` miliknya yang `payout_id`-nya masih NULL, hitung totalnya, lalu buat `affiliate_payouts` dan isi `payout_id` di komisi tersebut. Lanjutan: tandai lunas (isi `reference`, unggah bukti, set `paid_at`, semua komisinya jadi `paid`) atau batalkan (lepaskan kembali komisinya).
+6. **Batch pencairan** — pilih afiliator dan periode, sistem menarik semua komisi `approved` miliknya yang `payout_id`-nya masih NULL, hitung totalnya, lalu buat `affiliate_payouts` dan isi `payout_id` di komisi tersebut. **Totalnya minimal Rp 50.000**, sesuai syarat & ketentuan yang disetujui afiliator. Lanjutan: tandai lunas (isi `reference`, unggah bukti, set `paid_at`, semua komisinya jadi `paid`) atau batalkan (lepaskan kembali komisinya).
 
 7. **Laporan rekap per periode** — pemasukan kotor, total `tier1`, total `tier2`, total `internal` (KITA AI), total tertahan, dan net kantor, **dipecah per situs dan ada barisan totalnya**. **Hanya di CMS.**
 

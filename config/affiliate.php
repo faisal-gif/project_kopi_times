@@ -19,6 +19,10 @@ return [
     // Masa tahan sebelum komisi boleh disetujui untuk dicairkan.
     'hold_days' => (int) env('AFFILIATE_HOLD_DAYS', 7),
 
+    // Saldo minimum sebelum komisi bisa dicairkan. Dipakai di syarat & ketentuan,
+    // dan jadi acuan CMS saat menyusun batch pencairan.
+    'min_payout' => (int) env('AFFILIATE_MIN_PAYOUT', 50_000),
+
     /*
      * Label situs untuk laporan. Kopi TIMES dan AJP memakai codebase dan database
      * yang sama, jadi deployment-lah yang menyebutkan dirinya siapa.

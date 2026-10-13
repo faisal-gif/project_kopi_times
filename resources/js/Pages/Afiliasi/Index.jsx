@@ -4,7 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatDate, formatRupiah } from '@/Utils/formatter';
 import { Head } from '@inertiajs/react';
 import {
-    Banknote, Check, Clock, Copy, Share2, Users, Wallet, XCircle,
+    AlertTriangle, Banknote, Check, Clock, Copy, Share2, Users, Wallet, XCircle,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -73,12 +73,49 @@ function ReferralLink({ url }) {
     );
 }
 
-export default function Index({ affiliate, summary, commissions, payouts = [] }) {
+function PendingState({ affiliate }) {
+    return (
+        <AuthenticatedLayout>
+            <Head title="Afiliasi" />
+
+            <Card className="border-base-200 shadow-sm">
+                <div className="flex flex-col items-center py-10 text-center">
+                    <div className="grid h-14 w-14 place-items-center rounded-2xl bg-orange-100 text-orange-700">
+                        <Clock className="h-7 w-7" />
+                    </div>
+                    <h3 className="mt-4 text-lg font-bold">Pengajuan sedang ditinjau</h3>
+                    <p className="mt-2 max-w-md text-sm text-muted-foreground">
+                        Terima kasih, {affiliate.name}. Tim kami sedang meninjau pengajuan Anda yang dikirim pada{' '}
+                        {formatDate(affiliate.applied_at)}. Link referral dan komisi muncul di halaman ini setelah
+                        pengajuan disetujui.
+                    </p>
+                </div>
+            </Card>
+        </AuthenticatedLayout>
+    );
+}
+
+export default function Index({ affiliate, summary, commissions, payouts = [], min_payout }) {
+    if (affiliate.status === 'pending') {
+        return <PendingState affiliate={affiliate} />;
+    }
+
+    const suspended = affiliate.status !== 'active';
+
     return (
         <AuthenticatedLayout>
             <Head title="Afiliasi" />
 
             <div className="space-y-6">
+                {suspended && (
+                    <div className="alert alert-warning">
+                        <AlertTriangle className="h-5 w-5 shrink-0" />
+                        <span>
+                            Status afiliasi Anda: <strong>{affiliate.status_label}</strong>. Komisi baru tidak dicatat
+                            selama status ini berlaku. Hubungi tim kami bila ada pertanyaan.
+                        </span>
+                    </div>
+                )}
                 <Card className="border-base-200 shadow-sm">
                     <h3 className="mb-1 flex items-center gap-2 text-lg font-bold">
                         <Share2 className="h-5 w-5 text-primary" /> Link Referral Anda
@@ -96,6 +133,10 @@ export default function Index({ affiliate, summary, commissions, payouts = [] })
                     <StatCard icon={Wallet} label="Siap Dicairkan" value={formatRupiah(summary.payable)} tone="bg-blue-100 text-blue-700" />
                     <StatCard icon={Banknote} label="Sudah Dibayar" value={formatRupiah(summary.paid)} tone="bg-green-100 text-green-700" />
                 </div>
+
+                <p className="text-sm text-muted-foreground">
+                    Komisi bisa dicairkan setelah melewati masa tahan dan saldo mencapai {formatRupiah(min_payout)}.
+                </p>
 
                 <Card className="border-base-200 shadow-sm">
                     <h3 className="mb-4 flex items-center gap-2 text-lg font-bold">
