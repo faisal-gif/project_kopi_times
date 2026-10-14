@@ -255,7 +255,7 @@ Afiliator tidak lagi hanya dibuat admin. Member **aktif** bisa mengajukan diri l
 - `AffiliateController@index` sekarang sadar status: belum punya baris → arahkan ke formulir; `pending` → halaman status tanpa angka apa pun; `active` → dashboard; `suspended`/`inactive` → dashboard dengan peringatan. Middleware `EnsureUserIsAffiliate` dihapus karena 403-nya justru menghalangi member yang ingin mengajukan.
 - Pengajuan menyimpan `terms_accepted_at`, `applicant_note`, data rekening (wajib), `status = 'pending'`, dan `upline_id = null` — upline ditetapkan admin.
 - Kode referral digenerate `Affiliate::generateCode()`: maksimal 6 huruf dari nama + 4 karakter acak, diulang sampai unik.
-- Halaman publik `/syarat-afiliasi` memuat ketentuan yang disetujui pemohon. **Nominal komisi ditulis sebagai angka, bukan persentase**, supaya pos internal 10% tidak terbaca publik; ada test yang menjaga aturan ini.
+- Halaman publik `/syarat-afiliasi` memuat ketentuan yang disetujui pemohon. Tarif ditulis sebagai **persentase** (20% dari harga, 5% dari sisa) supaya ikut harga paket, ditambah satu contoh nominal. Angkanya dikirim dari `config/affiliate.php` lewat props `tier1_bps` dan `tier2_bps`; **pos internal tidak pernah ikut dikirim**, dan ada test yang menjaganya.
 - `config/affiliate.php` menambah `min_payout` (default Rp 50.000) sebagai sumber tunggal untuk S&K dan batch pencairan di CMS.
 
 ## 6. Rencana test

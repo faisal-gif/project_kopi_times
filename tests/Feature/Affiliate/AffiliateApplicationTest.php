@@ -140,12 +140,16 @@ class AffiliateApplicationTest extends TestCase
             ->assertRedirect(route('afiliasi.daftar'));
     }
 
-    public function test_terms_page_is_public_and_hides_percentages(): void
+    public function test_terms_page_shows_commission_rates_but_never_the_internal_one(): void
     {
-        $response = $this->get('/syarat-afiliasi')->assertOk();
-
-        $this->assertStringNotContainsString('20%', $response->getContent());
-        $this->assertStringNotContainsString('10%', $response->getContent());
-        $this->assertStringNotContainsString('5%', $response->getContent());
+        // Halaman Inertia dirender di browser, jadi yang diperiksa adalah props-nya.
+        $this->get('/syarat-afiliasi')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Afiliasi/SyaratKetentuan')
+                ->where('tier1_bps', 2000)
+                ->where('tier2_bps', 500)
+                ->missing('internal_bps')      // pos internal tidak pernah dikirim ke publik
+            );
     }
 }

@@ -2,10 +2,11 @@ import LandingLayout from '@/Layouts/LandingLayout';
 import { formatRupiah } from '@/Utils/formatter';
 import { Head, Link } from '@inertiajs/react';
 
-// Nominal komisi sengaja ditulis sebagai angka, bukan persentase: pembagian internal
-// bukan informasi publik. Angka di bawah berlaku untuk paket pendaftaran Rp 48.000.
-const TIER1 = 9600;
-const TIER2 = 1920;
+// Komisi ditulis sebagai persentase supaya ikut harga paket, ditambah satu contoh angka.
+// Pos internal 10% tidak pernah disebut di halaman publik.
+const CONTOH_HARGA = 48000;
+const CONTOH_TIER1 = 9600;
+const CONTOH_TIER2 = 1920;
 const BERLAKU = '13 Oktober 2026';
 
 function Pasal({ nomor, judul, children }) {
@@ -20,7 +21,11 @@ function Pasal({ nomor, judul, children }) {
     );
 }
 
-export default function SyaratKetentuan({ min_payout, hold_days, cookie_days }) {
+export default function SyaratKetentuan({ min_payout, hold_days, cookie_days, tier1_bps, tier2_bps }) {
+    // Tarif datang dari config lewat props, bukan diketik di halaman.
+    const TIER1_PERSEN = (tier1_bps / 100) + '%';
+    const TIER2_PERSEN = (tier2_bps / 100) + '%';
+
     return (
         <>
             <Head title="Syarat & Ketentuan Afiliasi" />
@@ -62,16 +67,21 @@ export default function SyaratKetentuan({ min_payout, hold_days, cookie_days }) 
                                 <p>
                                     Untuk setiap pendaftar baru yang masuk melalui link referral Anda dan menyelesaikan
                                     pembayaran paket pendaftaran, Anda memperoleh komisi{' '}
-                                    <span className="kt-mark font-bold text-ink">{formatRupiah(TIER1)}</span>.
+                                    <span className="kt-mark font-bold text-ink">{TIER1_PERSEN} dari harga paket</span>.
                                 </p>
                                 <p>
                                     Bila afiliator yang Anda rekrut memperoleh pendaftar baru, Anda memperoleh komisi
-                                    jaringan sebesar <strong>{formatRupiah(TIER2)}</strong> untuk setiap pendaftar tersebut.
+                                    jaringan sebesar <strong>{TIER2_PERSEN} dari sisa setelah komisi tingkat 1</strong>{' '}
+                                    untuk setiap pendaftar tersebut.
                                 </p>
                                 <p>
-                                    Nominal di atas berlaku untuk harga paket pendaftaran yang berlaku saat ini. Perubahan
-                                    harga paket mengubah nominal komisi untuk transaksi berikutnya, tanpa mengubah komisi
-                                    yang sudah tercatat.
+                                    Contoh pada harga paket {formatRupiah(CONTOH_HARGA)}: komisi langsung{' '}
+                                    {formatRupiah(CONTOH_TIER1)} dan komisi jaringan {formatRupiah(CONTOH_TIER2)}.
+                                </p>
+                                <p>
+                                    Karena berupa persentase, komisi mengikuti harga yang benar-benar dibayarkan.
+                                    Perubahan harga paket mengubah nominal komisi untuk transaksi berikutnya, tanpa
+                                    mengubah komisi yang sudah tercatat.
                                 </p>
                             </Pasal>
 

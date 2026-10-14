@@ -55,7 +55,7 @@ export default function Daftar({ profile, terms_url, min_payout }) {
                     <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
                         {[
                             { icon: Users, title: 'Link referral sendiri', body: 'Pendaftar yang masuk lewat link Anda tercatat otomatis.' },
-                            { icon: Wallet, title: 'Komisi dua tingkat', body: 'Dari rekrutan Anda sendiri dan dari jaringan di bawahnya.' },
+                            { icon: Wallet, title: 'Komisi dua tingkat', body: '20% dari harga paket untuk rekrutan Anda, plus komisi dari jaringan di bawahnya.' },
                             { icon: Banknote, title: 'Transfer ke rekening', body: `Pencairan mulai ${formatRupiah(min_payout)}.` },
                         ].map((item) => (
                             <div key={item.title} className="rounded-xl bg-base-200/60 p-4">

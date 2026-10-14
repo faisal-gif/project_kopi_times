@@ -50,6 +50,9 @@ Route::get('/syarat-afiliasi', function () {
         'min_payout' => (int) config('affiliate.min_payout'),
         'hold_days' => (int) config('affiliate.hold_days'),
         'cookie_days' => (int) config('affiliate.cookie_days'),
+        // Tarif yang boleh dilihat publik. Pos internal sengaja tidak ikut dikirim.
+        'tier1_bps' => (int) config('affiliate.tier1_bps'),
+        'tier2_bps' => (int) config('affiliate.tier2_bps'),
         'og' => [
             'title'       => 'Syarat & Ketentuan Afiliasi — Kopi TIMES',
             'description' => 'Ketentuan program afiliasi Kopi TIMES: komisi, masa tahan, pencairan, dan larangan.',
