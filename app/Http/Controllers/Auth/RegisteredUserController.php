@@ -118,6 +118,7 @@ class RegisteredUserController extends Controller
         }
 
         AffiliateReferral::create([
+            'type' => (int) config('affiliate.site_type'),
             'user_id' => $user->id,
             'affiliate_id' => $affiliate->id,
             'code' => $affiliate->code,

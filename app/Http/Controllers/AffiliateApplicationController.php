@@ -39,6 +39,8 @@ class AffiliateApplicationController extends Controller
         $user = $request->user();
 
         Affiliate::create([
+            // Situs tempat ia mendaftar; menentukan dari pendaftar mana ia berkomisi.
+            'type' => (int) config('affiliate.site_type'),
             'user_id' => $user->id,
             // Upline sengaja kosong: ditetapkan admin saat meninjau.
             'upline_id' => null,

@@ -63,6 +63,17 @@ class AffiliateApplicationTest extends TestCase
         $this->assertNotNull($affiliate->terms_accepted_at);
         $this->assertSame('Mahasiswa di kampus tempat saya mengajar.', $affiliate->applicant_note);
         $this->assertSame('BCA', $affiliate->bank_name);
+        $this->assertSame(4, (int) $affiliate->type);      // situs tempat ia mendaftar
+    }
+
+    public function test_application_on_another_deployment_is_tagged_with_that_site(): void
+    {
+        config(['affiliate.site_type' => 1]);               // deployment AJP
+
+        $this->actingAs(User::factory()->active()->create())
+            ->post('/afiliasi/daftar', $this->payload());
+
+        $this->assertSame(1, (int) Affiliate::sole()->type);
     }
 
     public function test_generated_code_is_unique_and_well_formed(): void

@@ -33,6 +33,21 @@ Tampilkan nama produknya, bukan angkanya, di daftar komisi dan laporan.
 
 Tidak ada perubahan skema. Keempat tabel, seluruh kolom, dan kedua state machine tetap sama persis seperti versi sebelumnya.
 
+### 2026-10-13 (2) — afiliator terikat satu situs
+
+**Mengoreksi catatan 2026-10-12.** Afiliator kini **tidak** lintas situs. Keempat tabel afiliasi mendapat kolom `type` (1 = AJP, 4 = Kopi TIMES, mengikuti kolom `type` sistem lama):
+
+| Hal | Catatan 2026-10-12 | Yang benar sekarang |
+|---|---|---|
+| Afiliator | Satu afiliator untuk semua situs | Terikat satu situs lewat `affiliates.type` |
+| Komisi | Dari situs mana pun | **Hanya dari pendaftar di situs yang sama**; lintas situs tidak berkomisi |
+| Saldo & pencairan | Satu batch gabungan | **Terpisah per situs**: satu batch hanya berisi komisi dengan `type` yang sama |
+| Situs asal komisi | Dijoin ke `news_package` | Cukup baca `affiliate_commissions.type` |
+
+Konsekuensinya untuk layar CMS: daftar afiliator, daftar komisi, dan penyusun batch pencairan **harus memfilter per `type`**. Laporan rekap cukup mengelompokkan `affiliate_commissions.type`, tidak perlu join lagi.
+
+Catatan: referral lintas situs **tetap tercatat** di `affiliate_referrals` (dengan `type` situs tempat pendaftaran terjadi), hanya saja tidak menghasilkan komisi. Jadi mungkin ada afiliator dengan rekrutan tercatat tapi komisi nol — itu bukan bug.
+
 ### 2026-10-13 — member bisa mengajukan diri jadi afiliator
 
 Aplikasi publik kini punya formulir pengajuan. **Baris `affiliates` berstatus `pending` tidak lagi hanya datang dari admin — sekarang bisa datang dari member sendiri.** Layar CMS perlu menyiapkan antrean peninjauan.
@@ -84,6 +99,7 @@ Jangan membuat migration untuk keempat tabel di bawah. Cukup bikin Model, Contro
 | Kolom | Tipe | Aturan |
 |---|---|---|
 | `id` | bigint PK | |
+| `type` | tinyint | situs afiliator: 1 = AJP, 4 = Kopi TIMES. **Jangan diubah** setelah dibuat |
 | `user_id` | bigint nullable **unik** | id di tabel `wartawan`. Diisi kalau afiliator perlu login ke portal afiliasi. Boleh NULL untuk afiliator yang hanya dibayar transfer |
 | `upline_id` | bigint nullable | id afiliator lain di tabel ini. Inilah tingkat kedua. Tidak boleh menunjuk dirinya sendiri atau membentuk lingkaran |
 | `code` | string(32) **unik** | huruf besar + angka. Ini yang dipakai di `?ref=`. Generate otomatis, tawarkan tombol salin |
@@ -106,6 +122,7 @@ Dicatat aplikasi publik saat member mendaftar. CMS **tidak boleh** insert, updat
 | Kolom | Tipe | Keterangan |
 |---|---|---|
 | `id` | bigint PK | |
+| `type` | tinyint | situs tempat pendaftaran terjadi |
 | `user_id` | bigint unik | member yang direkrut (id di `wartawan`) |
 | `affiliate_id` | bigint | perekrutnya |
 | `code` | string(32) | kode yang benar-benar dipakai saat itu |
@@ -119,6 +136,7 @@ Koreksi atribusi yang salah adalah pengecualian manual yang harus dicatat, bukan
 | Kolom | Tipe | Keterangan | Boleh ditulis CMS |
 |---|---|---|---|
 | `id` | bigint PK | | — |
+| `type` | tinyint | situs asal komisi (1 = AJP, 4 = Kopi TIMES) | **tidak** |
 | `payment_id` | bigint | pembayaran sumber (`payments.id`) | **tidak** |
 | `user_id` | bigint | member yang membayar | **tidak** |
 | `role` | enum `tier1` \| `tier2` \| `internal` | pos pembagian | **tidak** |
@@ -143,6 +161,7 @@ Ada unique index `(payment_id, role)`. Jangan pernah mencoba menyisipkan baris k
 | Kolom | Tipe | Aturan |
 |---|---|---|
 | `id` | bigint PK | |
+| `type` | tinyint | situs batch ini; satu batch hanya berisi komisi dengan `type` yang sama |
 | `affiliate_id` | bigint | satu batch untuk satu afiliator |
 | `period_start`, `period_end` | date nullable | periode yang dicairkan |
 | `amount` | bigint | **wajib sama dengan** jumlah `amount` seluruh komisi yang `payout_id`-nya menunjuk batch ini |
@@ -240,27 +259,25 @@ Rekap satu periode:
 
 ```sql
 SELECT
-  np.type AS situs,
+  c.type AS situs,
   SUM(CASE WHEN c.role = 'tier1'    THEN c.amount ELSE 0 END) AS tier1,
   SUM(CASE WHEN c.role = 'tier2'    THEN c.amount ELSE 0 END) AS tier2,
   SUM(CASE WHEN c.role = 'internal' THEN c.amount ELSE 0 END) AS kita_ai,
   SUM(CASE WHEN c.status = 'unassigned' THEN c.amount ELSE 0 END) AS tertahan,
   SUM(c.amount) AS total_keluar
 FROM affiliate_commissions c
-JOIN payments p      ON p.id = c.payment_id
-JOIN news_package np ON np.id = p.package_id
 WHERE c.created_at BETWEEN ? AND ?
   AND c.status <> 'rejected'
-GROUP BY np.type;
+GROUP BY c.type;
 ```
 
-Hilangkan `np.type` dan `GROUP BY` bila yang dibutuhkan angka gabungan seluruh situs.
+Hilangkan `c.type` dan `GROUP BY` bila yang dibutuhkan angka gabungan seluruh situs.
 
 Komisi siap cair milik satu afiliator:
 
 ```sql
 SELECT * FROM affiliate_commissions
-WHERE affiliate_id = ? AND status = 'approved' AND payout_id IS NULL;
+WHERE affiliate_id = ? AND type = ? AND status = 'approved' AND payout_id IS NULL;
 ```
 
 Dua invariant yang wajib dijaga CMS (tidak dipaksakan database, periksa berkala):
@@ -271,10 +288,10 @@ SELECT p.id FROM affiliate_payouts p
 LEFT JOIN affiliate_commissions c ON c.payout_id = p.id
 GROUP BY p.id HAVING p.amount <> COALESCE(SUM(c.amount), 0);
 
--- 2. satu batch hanya boleh berisi komisi milik satu afiliator
+-- 2. satu batch hanya boleh berisi komisi milik satu afiliator, dari satu situs
 SELECT payout_id FROM affiliate_commissions
 WHERE payout_id IS NOT NULL
-GROUP BY payout_id HAVING COUNT(DISTINCT affiliate_id) > 1;
+GROUP BY payout_id HAVING COUNT(DISTINCT affiliate_id) > 1 OR COUNT(DISTINCT type) > 1;
 ```
 
 ## Catatan
@@ -283,6 +300,6 @@ GROUP BY payout_id HAVING COUNT(DISTINCT affiliate_id) > 1;
 - Jangan menghapus baris afiliator yang sudah punya rekrutan atau komisi; database akan menolak (`restrict`). Pakai `status = 'inactive'`.
 - Refund setelah komisi tercatat **tidak otomatis**. Aplikasi publik tidak memproses callback refund untuk pembayaran yang sudah lunas, jadi pembatalannya dilakukan manual dari layar komisi (`reversed` + alasan).
 - Pemotongan pajak (PPh) belum ada di skema. Kalau keuangan mewajibkannya, sampaikan dulu supaya kolomnya ditambahkan aplikasi publik, jangan membuat kolom sendiri.
-- **`ajp.times.co.id` ikut memakai tabel yang sama di database ini**, bukan database terpisah. Jadi satu afiliator bisa merekrut ke lebih dari satu situs, dan saldonya satu. Layar CMS **tidak boleh** mengasumsikan semua komisi berasal dari Kopi TIMES.
-- Situs asal sebuah komisi ditelusuri lewat paket yang dibeli: `affiliate_commissions.payment_id → payments.package_id → news_package.type`. Pemetaannya: `1` = AJP, `4` = Kopi TIMES, sisanya lini produk lain. Sediakan filter per `type` di daftar komisi dan laporan rekap.
-- Pencairan tetap satu batch per afiliator, mencakup komisi dari situs mana pun.
+- **`ajp.times.co.id` ikut memakai tabel yang sama di database ini**, bukan database terpisah. Layar CMS **tidak boleh** mengasumsikan semua baris berasal dari Kopi TIMES: filter per `type` di mana pun ada daftar.
+- Situs asal tersimpan langsung di kolom `type` tiap tabel afiliasi: `1` = AJP, `4` = Kopi TIMES, sisanya lini produk lain. Tidak perlu join ke `payments` atau `news_package` lagi.
+- Pencairan **terpisah per situs**: satu batch hanya boleh berisi komisi milik satu afiliator dengan satu `type`.

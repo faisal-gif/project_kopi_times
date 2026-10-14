@@ -2,7 +2,7 @@
 
 Dokumen ini merinci implementasi di repo `kopi.times.co.id`. Keputusan dan alasannya ada di [ADR 0001](adr/0001-afiliasi-2-tingkat.md). Sisi admin dikerjakan CMS dengan kontrak di [INSTRUKSI_AFILIASI_CMS.md](../INSTRUKSI_AFILIASI_CMS.md).
 
-> **AJP memakai database dan codebase yang sama.** Tabel, afiliator, kode referral, ledger, dan saldo di dokumen ini otomatis berlaku untuk kedua situs; pembedanya `news_package.type` (**1 = AJP, 4 = Kopi TIMES**, 2 dan 3 lini produk lain). AJP tidak membuat tabel sendiri — lihat [INSTRUKSI_AFILIASI_AJP.md](../INSTRUKSI_AFILIASI_AJP.md) dan keputusan 7a di ADR.
+> **AJP memakai database dan codebase yang sama, tapi datanya terpisah per situs.** Keempat tabel punya kolom `type` (**1 = AJP, 4 = Kopi TIMES**, 2 dan 3 lini produk lain) yang diisi dari `config('affiliate.site_type')`. Afiliator hanya berkomisi dari pendaftar di situsnya sendiri, dan pencairan disusun terpisah per situs. AJP tidak membuat tabel sendiri — lihat [INSTRUKSI_AFILIASI_AJP.md](../INSTRUKSI_AFILIASI_AJP.md) serta keputusan 7a dan 7b di ADR.
 
 ## 0. Ringkasan rumus
 
@@ -195,6 +195,7 @@ Diletakkan sebelum mutasi user supaya deteksi member baru tidak terganggu oleh `
 1. `config('affiliate.enabled')` false → berhenti.
 2. Ambil `affiliate_referrals` milik `payment.user_id`. Tidak ada → berhenti, **tanpa baris apa pun, termasuk pos internal**. (Tanpa afiliator tidak ada potongan 20%, jadi Rp 48.000 utuh ke kantor.)
 3. Afiliator bukan `active` → berhenti.
+3b. `type` afiliator berbeda dengan `type` paket yang dibeli → berhenti dan catat di log. Referral lintas situs tetap tercatat, tapi tidak berkomisi.
 4. **Deteksi member baru**, dua syarat dan keduanya wajib:
    ```php
    (int) $payment->newsPackage?->level === 1

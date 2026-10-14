@@ -76,6 +76,21 @@ class AffiliateCommissionService
             return 0;
         }
 
+        // Afiliator hanya berkomisi dari pendaftar di situs yang sama dengan type-nya.
+        // 1 = AJP, 4 = Kopi TIMES. Referral lintas situs tetap tercatat, tapi tidak berkomisi.
+        $siteType = (int) $payment->newsPackage?->type;
+
+        if ((int) $referral->affiliate->type !== $siteType) {
+            Log::info('Komisi dilewati: situs afiliator berbeda dengan paket yang dibeli.', [
+                'payment_id' => $payment->id,
+                'affiliate_id' => $referral->affiliate_id,
+                'affiliate_type' => $referral->affiliate->type,
+                'package_type' => $siteType,
+            ]);
+
+            return 0;
+        }
+
         $source = $referral->affiliate;
         $upline = $source->upline;
         $availableAt = ($payment->paid_at ?? now())->copy()->addDays((int) config('affiliate.hold_days'));
@@ -92,6 +107,7 @@ class AffiliateCommissionService
             };
 
             $rows[] = $position + [
+                'type' => $siteType,
                 'payment_id' => $payment->id,
                 'user_id' => $payment->user_id,
                 'affiliate_id' => $payee,

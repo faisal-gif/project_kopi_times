@@ -77,6 +77,7 @@ class ReferralAttributionTest extends TestCase
         $this->assertSame($affiliate->id, $referral->affiliate_id);
         $this->assertSame('DOSEN01', $referral->code);
         $this->assertSame('link', $referral->source);
+        $this->assertSame(4, (int) $referral->type);        // situs tempat pendaftaran terjadi
         $this->assertSame(User::sole()->id, $referral->user_id);
     }
 

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class AffiliateReferral extends Model
 {
     protected $fillable = [
+        'type',
         'user_id',
         'affiliate_id',
         'code',

@@ -29,6 +29,13 @@ return [
      */
     'site' => env('AFFILIATE_SITE', 'kopi'),
 
+    /*
+     * Penanda situs yang disimpan di seluruh tabel afiliasi, memakai kolom `type`
+     * yang sudah dipakai sistem lama: 1 = AJP, 4 = Kopi TIMES.
+     * Afiliator hanya berkomisi dari pendaftar di situs yang sama dengan type-nya.
+     */
+    'site_type' => (int) env('AFFILIATE_SITE_TYPE', 4),
+
     // Cookie atribusi: sentuhan pertama yang menang.
     'cookie_name' => 'kt_ref',
     'cookie_days' => 30,

@@ -72,11 +72,21 @@ Alasan: kebutuhan yang disampaikan adalah "skema yang sama", bukan "saldo yang s
 
 ### 7a. AJP ikut memakai tabel afiliasi yang sama (pengganti keputusan 7)
 
+> **DIKOREKSI 2026-10-13.** Kalimat "satu afiliator dan satu saldo untuk semua situs" tidak lagi berlaku; lihat keputusan 7b. Tabelnya tetap satu, tapi datanya dipisah per situs.
+
 Satu tabel afiliator, satu kode referral, satu ledger, dan satu saldo untuk semua situs di database bersama. AJP tidak membuat migration apa pun dan tidak membangun portal afiliator sendiri; cukup mengambil kode yang sama dan mengisi `AFFILIATE_SITE` serta tarif di `.env`. Arahannya ada di [INSTRUKSI_AFILIASI_AJP.md](../../INSTRUKSI_AFILIASI_AJP.md).
 
 Laporan per situs tetap bisa dipecah lewat `news_package.type` (dijoin dari `payments.package_id`), jadi ledger tidak perlu kolom situs. Atribusi lintas subdomain tersedia sebagai pilihan lewat `AFFILIATE_COOKIE_DOMAIN`, mati secara default.
 
 Alasan: database sudah bersama, jadi memisahkan ledger justru menciptakan dua kebenaran untuk satu afiliator, dan pencairan harus dilakukan dua kali untuk orang yang sama.
+
+### 7b. Afiliator terikat satu situs lewat kolom `type`
+
+Keempat tabel afiliasi mendapat kolom `type` (1 = AJP, 4 = Kopi TIMES), diisi dari `config('affiliate.site_type')` milik deployment tempat baris itu dibuat. Afiliator hanya memperoleh komisi dari pendaftar di situs yang sama, dan pencairan disusun terpisah per situs.
+
+Alasan: tiap situs punya unit bisnis, kas, dan pembukuannya sendiri. Satu saldo gabungan membuat komisi AJP dibayar dari kas Kopi TIMES, dan laporan per unit jadi perlu pembongkaran ulang setiap periode.
+
+Konsekuensi yang disadari: orang yang ingin aktif di dua situs harus punya dua baris afiliator dengan dua kode berbeda, dan menerima dua kali transfer. Referral lintas situs tetap dicatat tetapi tidak berkomisi — ini terlihat sebagai rekrutan tanpa komisi, jadi perlu dijelaskan ke afiliator.
 
 ### 8. Komisi hanya untuk pembayaran member baru yang berafiliasi
 

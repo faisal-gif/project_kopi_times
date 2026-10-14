@@ -13,6 +13,7 @@ class AffiliateFactory extends Factory
     public function definition(): array
     {
         return [
+            'type' => (int) config('affiliate.site_type'),
             'code' => strtoupper(Str::random(8)),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),

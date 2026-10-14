@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class AffiliateCommission extends Model
 {
     protected $fillable = [
+        'type',
         'payment_id',
         'user_id',
         'role',

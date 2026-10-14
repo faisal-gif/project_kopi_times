@@ -1,8 +1,11 @@
 # Instruksi: Ikut Program Afiliasi (untuk projek AJP)
 
-Program afiliasi 2 tingkat dibangun di projek **Kopi TIMES** (`kopi.times.co.id`). Dokumen ini untuk projek **AJP** (`ajp.times.co.id`) agar ikut program yang sama.
+> **STATUS 14 Oktober 2026 — sudah diimplementasikan langsung di `D:\Developer\Project\project_ajp`.**
+> AJP adalah projek terpisah (bukan fork repo ini) dengan UI sendiri, tapi stack-nya sama: Laravel 12 + Inertia React, database sama (`timesindo_ajp`). Fitur afiliasi sudah ditanam di sana: model, config, middleware atribusi, mesin komisi di callback Tripay, halaman afiliator, formulir pengajuan, dan halaman syarat & ketentuan. 42 test afiliasi lulus di projek AJP.
+>
+> Dokumen ini kini berfungsi sebagai **rujukan aturan dan setelan**, bukan daftar pekerjaan. Bagian "Yang harus dilakukan projek AJP" di bawah tinggal dipakai untuk memeriksa setelan `.env` dan larangan yang tetap berlaku.
 
-> Prinsip: hampir tidak ada kode baru. Codebase dan database kedua projek sama, jadi tugas AJP adalah **mengambil kode yang sudah ada dan mengisi konfigurasi** — bukan membangun ulang.
+Program afiliasi 2 tingkat dibangun lebih dulu di projek **Kopi TIMES** (`kopi.times.co.id`), lalu ditanam di projek **AJP** (`ajp.times.co.id`).
 
 ## Konteks
 
@@ -16,17 +19,17 @@ Program afiliasi 2 tingkat dibangun di projek **Kopi TIMES** (`kopi.times.co.id`
 | **4** | **Kopi TIMES** |
 - Satu akun hanya bisa membeli produk satu situs, dan `app/Http/Requests/Auth/LoginRequest.php` sudah memblokir login silang.
 
-**Karena databasenya satu, afiliasi lintas situs otomatis terjadi:**
+**Tabelnya satu, tapi datanya dipisah per situs lewat kolom `type`:**
 
 | Hal | Jadinya |
 |---|---|
-| Afiliator | Satu tabel `affiliates` untuk semua situs |
-| Kode referral | Satu kode milik afiliator, berlaku di situs mana pun |
-| Ledger komisi | Satu tabel `affiliate_commissions` |
-| Saldo & pencairan | Satu saldo, satu batch transfer |
-| Laporan | Tetap bisa dipecah per situs lewat `type` |
+| Tabel | Satu tabel `affiliates`, `affiliate_referrals`, `affiliate_commissions`, `affiliate_payouts` untuk semua situs |
+| Afiliator | **Terikat satu situs** lewat `affiliates.type`. Orang yang sama boleh mendaftar di dua situs, tapi jadi dua baris afiliator dengan kode berbeda |
+| Komisi | **Hanya dari pendaftar di situs yang sama** dengan `type` afiliator. Referral lintas situs tetap tercatat, tapi tidak berkomisi |
+| Saldo & pencairan | **Terpisah per situs**; satu batch hanya berisi komisi dengan satu `type` |
+| Laporan | Kelompokkan `type` saja, tanpa join |
 
-Jadi afiliator yang merekrut ke Kopi TIMES dan ke AJP tetap satu orang dengan satu saldo. Tidak ada layanan terpusat, tidak ada API antar situs, tidak ada sinkronisasi.
+Tidak ada layanan terpusat, tidak ada API antar situs, tidak ada sinkronisasi. Yang dibagi hanya tabelnya.
 
 ## Yang sudah tersedia — jangan dibangun ulang
 
@@ -49,8 +52,10 @@ Sisi admin (kelola afiliator, setujui komisi, pencairan) dibangun di **CMS**, li
 
 ## Yang harus dilakukan projek AJP
 
-### 1. Ambil kodenya
-Merge atau cherry-pick perubahan afiliasi dari projek Kopi TIMES. Kalau kedua repo sudah lama berpisah, ambil per file sesuai tabel di atas.
+### 1. ~~Ambil kodenya~~ (sudah dikerjakan)
+Kode afiliasi sudah ditanam di projek AJP. **Jangan merge atau fork repo Kopi TIMES** — kedua projek punya UI dan sejarah sendiri. Perubahan berikutnya disalin per bagian, bukan lewat git.
+
+Yang sudah ada di projek AJP: 4 model + 6 file migration (nama identik dengan repo ini supaya tercatat sudah dijalankan di database bersama), `config/affiliate.php` dengan `site_type = 1`, middleware `CaptureReferralCode`, `AffiliateCommissionService`, `AffiliateController`, `AffiliateApplicationController`, halaman `Pages/Afiliasi/{Index,Daftar,SyaratKetentuan}.jsx`, entri sidebar, dan 42 test.
 
 ### 2. JANGAN jalankan migration afiliasi
 Database sama, dan tabel `migrations` juga sama. Setelah Kopi TIMES menjalankannya sekali, keempat tabel sudah ada untuk kedua situs. Menjalankan `php artisan migrate` di AJP akan dilewati karena sudah tercatat — dan **jangan sekali-kali** membuat migration baru dengan nama lain untuk tabel yang sama.
@@ -68,6 +73,8 @@ Kalau belum muncul, tunggu projek Kopi TIMES menjalankan migration-nya. Jangan m
 ```env
 AFFILIATE_ENABLED=true
 AFFILIATE_SITE=ajp
+# WAJIB. Penanda situs di seluruh tabel afiliasi; isi dengan nilai `type` milik AJP.
+AFFILIATE_SITE_TYPE=1
 
 # Isi hanya bila tarif AJP berbeda dari Kopi TIMES (default: 20% / 5% / 10%)
 # AFFILIATE_TIER1_BPS=2000

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class AffiliatePayout extends Model
 {
     protected $fillable = [
+        'type',
         'affiliate_id',
         'period_start',
         'period_end',

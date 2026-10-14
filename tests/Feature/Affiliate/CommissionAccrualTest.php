@@ -161,6 +161,29 @@ class CommissionAccrualTest extends TestCase
         $this->assertSame(0, AffiliateCommission::count());
     }
 
+    public function test_affiliate_from_another_site_earns_nothing(): void
+    {
+        // Afiliator AJP (type 1), pembeli mengambil paket Kopi TIMES (type 4).
+        $affiliate = Affiliate::factory()->create(['type' => 1]);
+        $user = $this->member();
+        $this->refer($user, $affiliate);
+
+        $this->sendCallback($this->payment($user))->assertOk();
+
+        $this->assertSame(0, AffiliateCommission::count());
+    }
+
+    public function test_commission_rows_carry_the_site_type(): void
+    {
+        $affiliate = Affiliate::factory()->create(['type' => 4]);
+        $user = $this->member();
+        $this->refer($user, $affiliate);
+
+        $this->sendCallback($this->payment($user))->assertOk();
+
+        $this->assertSame(3, AffiliateCommission::where('type', 4)->count());
+    }
+
     public function test_member_without_referral_earns_nothing(): void
     {
         $this->sendCallback($this->payment($this->member()))->assertOk();
