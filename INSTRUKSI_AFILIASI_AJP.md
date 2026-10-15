@@ -48,7 +48,7 @@ Ikut terbawa saat merge, tanpa langkah tambahan: **mesin komisi** di `TripayCall
 
 Catatan lama (sudah tidak berlaku, disimpan sebagai jejak): bagian ini sebelumnya menyebut mesin komisi dan halaman afiliator **belum ada**. Begitu keduanya jadi di Kopi TIMES, AJP cukup menarik kodenya — tanpa perubahan apa pun.
 
-Sisi admin (kelola afiliator, setujui komisi, pencairan) dibangun di **CMS**, lihat `INSTRUKSI_AFILIASI_CMS.md`. AJP tidak perlu membangun layar admin.
+Sisi admin (kelola afiliator, setujui komisi, pencairan) dibangun di **CMS**, lihat `INSTRUKSI_AFILIASI_CMS_BARU.md`. AJP tidak perlu membangun layar admin.
 
 ## Yang harus dilakukan projek AJP
 

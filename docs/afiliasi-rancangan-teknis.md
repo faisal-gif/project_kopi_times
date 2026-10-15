@@ -1,12 +1,14 @@
 # Rancangan Teknis: Afiliasi 2 Tingkat
 
-Dokumen ini merinci implementasi di repo `kopi.times.co.id`. Keputusan dan alasannya ada di [ADR 0001](adr/0001-afiliasi-2-tingkat.md). Sisi admin dikerjakan CMS dengan kontrak di [INSTRUKSI_AFILIASI_CMS.md](../INSTRUKSI_AFILIASI_CMS.md).
+Dokumen ini merinci implementasi di repo `kopi.times.co.id`. Keputusan dan alasannya ada di [ADR 0001](adr/0001-afiliasi-2-tingkat.md). Sisi admin dikerjakan CMS dengan kontrak di [INSTRUKSI_AFILIASI_CMS_BARU.md](../INSTRUKSI_AFILIASI_CMS_BARU.md).
 
 > **AJP memakai database dan codebase yang sama, tapi datanya terpisah per situs.** Keempat tabel punya kolom `type` (**1 = AJP, 4 = Kopi TIMES**, 2 dan 3 lini produk lain) yang diisi dari `config('affiliate.site_type')`. Afiliator hanya berkomisi dari pendaftar di situsnya sendiri, dan pencairan disusun terpisah per situs. AJP tidak membuat tabel sendiri — lihat [INSTRUKSI_AFILIASI_AJP.md](../INSTRUKSI_AFILIASI_AJP.md) serta keputusan 7a dan 7b di ADR.
 
 ## 0. Ringkasan rumus
 
-Berlaku hanya untuk pembayaran **member baru yang punya perekrut**.
+Berlaku untuk pembayaran **member baru** saja. Perpanjangan tidak pernah menghasilkan baris apa pun.
+
+Member baru **yang punya perekrut berhak**:
 
 ```
 Tier 1 (perekrut langsung)  = 20% x 48.000 = 9.600
@@ -14,6 +16,14 @@ sisa (gross)                = 48.000 - 9.600 = 38.400
 Tier 2 (upline perekrut)    =  5% x 38.400 =  1.920
 Internal KITA AI (hidden)   = 10% x 38.400 =  3.840
 Net kantor                  = 48.000 - 15.360 = 32.640
+```
+
+Member baru **tanpa perekrut berhak** — hanya pos internal yang terbit, dan dasarnya
+harga utuh karena tidak ada potongan tier1 yang benar-benar terjadi:
+
+```
+Internal KITA AI (hidden)   = 10% x 48.000 =  4.800
+Net kantor                  = 48.000 - 4.800 = 43.200
 ```
 
 Net kantor **tidak disimpan sebagai baris ledger**; selalu `payment.amount - SUM(amount komisi)`. Dengan begitu sisa pembulatan otomatis jadi milik kantor dan jumlah baris tidak akan pernah melebihi nilai pembayaran.
@@ -193,9 +203,13 @@ Diletakkan sebelum mutasi user supaya deteksi member baru tidak terganggu oleh `
 **Alur `accrue()`:**
 
 1. `config('affiliate.enabled')` false → berhenti.
-2. Ambil `affiliate_referrals` milik `payment.user_id`. Tidak ada → berhenti, **tanpa baris apa pun, termasuk pos internal**. (Tanpa afiliator tidak ada potongan 20%, jadi Rp 48.000 utuh ke kantor.)
-3. Afiliator bukan `active` → berhenti.
-3b. `type` afiliator berbeda dengan `type` paket yang dibeli → berhenti dan catat di log. Referral lintas situs tetap tercatat, tapi tidak berkomisi.
+2. **Deteksi member baru** (lihat langkah 4). Bukan member baru → berhenti tanpa baris apa pun. Ini pintu pertama karena berlaku untuk semua pos, pos internal sekalipun.
+3. Tentukan **perekrut yang berhak** lewat `perekrutBerhakKomisi()`. Mengembalikan null bila salah satu dari tiga hal ini terjadi:
+   - tidak ada baris `affiliate_referrals` untuk `payment.user_id`;
+   - afiliatornya bukan `active` (dicatat di log);
+   - `type` afiliator berbeda dengan `type` paket yang dibeli (dicatat di log; referral lintas situs tetap tercatat tapi tidak berkomisi).
+
+   Ketiganya diperlakukan sama: kantor menyimpan harga utuh, jadi **pos internal tetap terbit** dan hanya tier1 serta tier2 yang hilang.
 4. **Deteksi member baru**, dua syarat dan keduanya wajib:
    ```php
    (int) $payment->newsPackage?->level === 1
@@ -203,11 +217,13 @@ Diletakkan sebelum mutasi user supaya deteksi member baru tidak terganggu oleh `
             ->where('status', 'paid')->whereKeyNot($payment->id)->exists();
    ```
    Syarat `level` saja tidak cukup: member lama yang sudah lewat masa aktif bisa memilih paket level 1 lagi dan akan menghasilkan komisi kedua. Kolom snapshot di `payments` juga ditolak, karena tabel itu sudah mengalami drift skema dan flag yang ditulis saat checkout bisa basi bila invoice lama dibayar belakangan.
-5. Hitung `split((int) $payment->amount)` dan tentukan penerima:
+5. Hitung `split((int) $payment->amount, $adaPerekrut)` dan tentukan penerima:
    - `tier1` → afiliator perekrut, `status = accrued`
    - `tier2` → `upline_id` perekrut. Tidak ada upline → `affiliate_id = null`, `status = unassigned`
    - `internal` → `affiliate_id = null`, `status = accrued`
-   - semua baris: `source_affiliate_id` = perekrut, `available_at = now() + hold_days`
+   - semua baris: `source_affiliate_id` = perekrut (**null** bila tidak ada perekrut berhak), `available_at = now() + hold_days`
+
+   Tanpa perekrut berhak, `split()` hanya mengembalikan pos internal dengan `base_amount` = harga utuh.
 6. Simpan sekaligus dengan `DB::table('affiliate_commissions')->insertOrIgnore($rows)`. Dengan unique `(payment_id, role)`, callback ganda menjadi no-op diam-diam, bukan exception yang membuat callback 500 dan membuat Tripay mengulang terus.
 
 Pembayaran kedua dan seterusnya dari user yang sama tidak pernah menghasilkan komisi, karena syarat nomor 4 gagal.
@@ -268,6 +284,7 @@ Afiliator tidak lagi hanya dibuat admin. Member **aktif** bisa mengajukan diri l
 1. `split(48000)` tepat 9.600 / 1.920 / 3.840 dengan base 48.000 / 38.400 / 38.400.
 2. `sum(amount) + 32.640 === 48.000`.
 3. Harga ganjil (mis. 47.777): semua hasil `int`, `sum <= price`, sisa tidak dibagi-bagi.
+3b. `split(48000, adaPerekrut: false)` → tepat satu baris `internal`, base 48.000, nominal 4.800, sisa kantor 43.200.
 
 **Atribusi:**
 4. `GET /?ref=ABC` memasang cookie 30 hari.
@@ -281,7 +298,9 @@ Afiliator tidak lagi hanya dibuat admin. Member **aktif** bisa mengajukan diri l
 10. Callback lunas, paket level 1, ada perekrut **dan** upline → tepat 3 baris dengan nominal benar, dan `sum(amount) + 32.640 == payment.amount`.
 11. Perekrut tanpa upline → baris tier 2 `unassigned`, `affiliate_id` null, `source_affiliate_id` terisi.
 12. Member direkrut tapi beli paket level 2 → nol baris.
-13. Member baru tanpa perekrut → nol baris, termasuk tidak ada baris internal.
+13. Member baru tanpa perekrut → tepat satu baris `internal` 4.800 dengan base 48.000, `affiliate_id` dan `source_affiliate_id` null.
+13b. Afiliator `suspended` atau afiliator situs lain → tier1 dan tier2 tidak terbit, baris `internal` 4.800 tetap terbit.
+13c. Perpanjangan tanpa perekrut → nol baris, pos internal sekalipun.
 14. Callback dikirim dua kali → tetap 3 baris, dua-duanya HTTP 200.
 15. Pembayaran lunas kedua user yang sama di paket level 1 → tidak ada baris baru.
 16. Pembagian memakai `payment.amount`, bukan harga paket terkini (ubah harga paket di antara checkout dan callback).

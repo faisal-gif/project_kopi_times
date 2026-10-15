@@ -40,6 +40,17 @@ class AffiliateSplitTest extends TestCase
         $this->assertLessThan(47_777, array_sum(array_column($rows, 'amount')));
     }
 
+    public function test_without_a_recruiter_only_the_internal_position_remains(): void
+    {
+        $rows = AffiliateCommissionService::split(48_000, adaPerekrut: false);
+
+        $this->assertCount(1, $rows);
+        $this->assertSame('internal', $rows[0]['role']);
+        $this->assertSame(48_000, $rows[0]['base_amount']);   // tidak ada potongan tier1
+        $this->assertSame(4_800, $rows[0]['amount']);
+        $this->assertSame(43_200, 48_000 - $rows[0]['amount']);
+    }
+
     public function test_rates_come_from_config(): void
     {
         config(['affiliate.tier1_bps' => 1000]);

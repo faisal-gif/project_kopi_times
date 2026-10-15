@@ -17,6 +17,13 @@ Pembagian per pembayaran member baru yang berafiliasi:
 | Internal KITA AI / tim IT (tidak ditampilkan ke publik) | 38.400 | 10% | 3.840 |
 | Net kantor | — | sisa | 32.640 |
 
+Pembayaran member baru **tanpa** perekrut hanya menerbitkan pos internal, dengan dasar harga utuh (lihat keputusan 8a):
+
+| Pos | Dasar | Tarif | Nominal |
+|---|---|---|---|
+| Internal KITA AI / tim IT | 48.000 | 10% | 4.800 |
+| Net kantor | — | sisa | 43.200 |
+
 Keadaan sistem saat keputusan ini dibuat:
 
 - Aplikasi ini tidak memiliki UI admin, role, gate, maupun policy. Administrasi berjalan di **CMS terpisah yang berbagi database** `timesindo_ajp`. Pola kerjanya sudah tertulis di `INSTRUKSI_MANAGE_PUBLIC_EVENT.md`: repo ini pemilik migration, CMS pemilik layar admin.
@@ -90,7 +97,21 @@ Konsekuensi yang disadari: orang yang ingin aktif di dua situs harus punya dua b
 
 ### 8. Komisi hanya untuk pembayaran member baru yang berafiliasi
 
+> **DIKOREKSI 2026-10-15.** Kalimat terakhir tidak lagi berlaku untuk pos internal; lihat keputusan 8a. Syarat "member baru" tetap berlaku untuk semua pos.
+
 Penentuannya memakai dua syarat sekaligus: paket `level = 1` **dan** user belum punya pembayaran lunas lain. Member baru tanpa referral tidak menghasilkan baris komisi apa pun, termasuk pos internal.
+
+### 8a. Pos internal terbit untuk setiap member baru, ada perekrut atau tidak (pengganti bagian keputusan 8)
+
+Pos `internal` (KITA AI / tim IT) dicatat untuk **setiap** pendaftaran member baru. Tanpa perekrut yang berhak, hanya pos itu yang terbit: tidak ada tier1 dan tidak ada tier2.
+
+Dasarnya harga utuh, karena tidak ada potongan tier1 yang benar-benar terjadi: **48.000 × 10% = 4.800**, sisa kantor 43.200. Angkanya memang lebih besar daripada 3.840 pada penjualan berafiliasi — di sana 10% dihitung dari 38.400 setelah komisi perekrut diambil. Tarifnya satu, dasarnya yang berbeda, dan `base_amount` tiap baris selalu angka yang benar-benar terjadi pada penjualan itu.
+
+Alasan: tim IT membangun dan merawat seluruh jalur pembayaran, dan beban kerjanya tidak berkurang ketika pembeli datang tanpa kode referral. Mengikat bagian mereka pada keberadaan perekrut membuat penghasilan tim bergantung pada hal yang di luar kendali mereka.
+
+"Perekrut yang berhak" berarti satu hal yang sama untuk ketiga kasus gagal — tidak ada referral, afiliatornya tidak aktif, atau afiliatornya milik situs lain. Ketiganya diperlakukan identik: kantor menyimpan harga utuh, jadi pos internal tetap terbit. Tanpa penyamaan ini, afiliator yang ditangguhkan akan ikut menghapus bagian tim IT.
+
+Konsekuensi yang disadari: `affiliate_commissions` sekarang punya baris untuk pembayaran yang sama sekali tidak berkaitan dengan afiliator mana pun, dan baris itu ber-`source_affiliate_id` NULL. Laporan rekap CMS sudah menghitungnya dengan benar karena pos internal dijumlahkan per `role`, bukan per afiliator.
 
 ### 9. Tier 2 tanpa upline tetap dicatat sebagai pos tertahan
 
@@ -129,6 +150,6 @@ Alasan: memberi jeda untuk mendeteksi pendaftaran fiktif, dan menghindari integr
 
 - Pencairan tetap pekerjaan manual; biaya operasionalnya naik seiring jumlah afiliator.
 - Refund setelah komisi tercatat harus dibatalkan manual lewat CMS, karena callback hari ini tidak memproses refund pada pembayaran yang sudah lunas.
-- Tidak ada lapisan API yang memaksa CMS menaati kontrak database; kepatuhannya bergantung pada dokumen `INSTRUKSI_AFILIASI_CMS.md`.
+- Tidak ada lapisan API yang memaksa CMS menaati kontrak database; kepatuhannya bergantung pada dokumen `INSTRUKSI_AFILIASI_CMS_BARU.md`.
 - Transisi status `held` → `payable` dijalankan CMS saat menyusun batch, bukan oleh job harian, karena scheduler belum ada.
 - Fitur ini menambah logika uang kedua di atas codebase yang skema intinya belum ada di migration dan cakupan test-nya nyaris nol. Lihat audit tech debt: pekerjaan migration dan test sebaiknya didahulukan atau dikerjakan bersamaan.

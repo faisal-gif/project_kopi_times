@@ -161,7 +161,7 @@ class CommissionAccrualTest extends TestCase
         $this->assertSame(0, AffiliateCommission::count());
     }
 
-    public function test_affiliate_from_another_site_earns_nothing(): void
+    public function test_affiliate_from_another_site_earns_nothing_but_internal_still_accrues(): void
     {
         // Afiliator AJP (type 1), pembeli mengambil paket Kopi TIMES (type 4).
         $affiliate = Affiliate::factory()->create(['type' => 1]);
@@ -170,7 +170,10 @@ class CommissionAccrualTest extends TestCase
 
         $this->sendCallback($this->payment($user))->assertOk();
 
-        $this->assertSame(0, AffiliateCommission::count());
+        $internal = AffiliateCommission::sole();
+        $this->assertSame('internal', $internal->role);
+        $this->assertSame(4800, (int) $internal->amount);
+        $this->assertNull($internal->source_affiliate_id);
     }
 
     public function test_commission_rows_carry_the_site_type(): void
@@ -184,20 +187,45 @@ class CommissionAccrualTest extends TestCase
         $this->assertSame(3, AffiliateCommission::where('type', 4)->count());
     }
 
-    public function test_member_without_referral_earns_nothing(): void
+    /** Tanpa kode referral tim IT tetap dapat bagiannya; kantor menyimpan sisanya. */
+    public function test_member_without_referral_still_funds_the_internal_pot(): void
     {
-        $this->sendCallback($this->payment($this->member()))->assertOk();
+        $payment = $this->payment($this->member());
 
-        $this->assertSame(0, AffiliateCommission::count());
+        $this->sendCallback($payment)->assertOk();
+
+        $internal = AffiliateCommission::sole();
+        $this->assertSame('internal', $internal->role);
+        $this->assertSame(4800, (int) $internal->amount);       // 10% dari 48.000 utuh
+        $this->assertSame(48000, (int) $internal->base_amount); // tidak ada potongan tier1
+        $this->assertSame(1000, (int) $internal->rate_bps);
+        $this->assertSame('accrued', $internal->status);
+        $this->assertSame(4, (int) $internal->type);
+        $this->assertNull($internal->affiliate_id);
+        $this->assertNull($internal->source_affiliate_id);
+
+        // Net kantor tetap sisa, bukan baris.
+        $this->assertSame(43200, (int) $payment->fresh()->amount - 4800);
     }
 
-    public function test_suspended_affiliate_earns_nothing(): void
+    public function test_suspended_affiliate_earns_nothing_but_internal_still_accrues(): void
     {
         $affiliate = Affiliate::factory()->suspended()->create();
         $user = $this->member();
         $this->refer($user, $affiliate);
 
         $this->sendCallback($this->payment($user))->assertOk();
+
+        $internal = AffiliateCommission::sole();
+        $this->assertSame('internal', $internal->role);
+        $this->assertSame(4800, (int) $internal->amount);
+        $this->assertNull($internal->source_affiliate_id);
+    }
+
+    /** Perpanjangan tidak menghasilkan baris apa pun, pos internal sekalipun. */
+    public function test_renewal_without_referral_earns_nothing_at_all(): void
+    {
+        $this->sendCallback($this->payment($this->member(), packageId: 2))->assertOk();
 
         $this->assertSame(0, AffiliateCommission::count());
     }
