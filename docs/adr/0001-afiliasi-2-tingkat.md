@@ -119,6 +119,18 @@ Baris tier 2 tetap dibuat dengan status `unassigned` dan tanpa penerima, bukan d
 
 Alasan: angkanya tetap terlihat di laporan, dan manajemen bisa memutuskan peruntukannya belakangan tanpa menghitung ulang data lama.
 
+### 9a. Upline pengajuan mandiri diturunkan dari perekrut membernya
+
+Saat member mengajukan diri jadi afiliator, `upline_id` diisi otomatis dengan afiliator yang dulu merekrut orang itu jadi member — dibaca dari `affiliate_referrals`, bukan dari input pemohon. Dilewati bila tidak ada baris referral, perekrutnya bukan `active`, atau perekrutnya milik situs lain.
+
+Alasan: tanpa ini jaringan tetap rata dan **setiap** komisi tingkat 2 lahir berstatus `unassigned` — uang tanpa pemilik yang menumpuk sampai ada yang memutuskan. Padahal jawabannya sudah ada di data: orang yang membawa dia masuk. Menetapkannya manual satu per satu adalah pekerjaan yang jawabannya sudah diketahui sistem.
+
+Pemohon tidak boleh memilih uplinenya sendiri; itu akan membuat rantai bisa diatur demi komisi. Admin tetap berwenang menimpa, dan nilai otomatis hanya jadi pilihan awal di antrean pengajuan.
+
+Lingkaran tidak diperiksa di jalur ini karena tidak mungkin terbentuk: baris afiliator yang baru dibuat belum ditunjuk siapa pun sebagai upline, dan relasi "direkrut oleh" mengikuti urutan pendaftaran sehingga tidak bisa menutup. Perubahan upline belakangan tetap dijaga pemeriksaan lingkaran di CMS.
+
+Konsekuensi yang disadari: afiliator yang sudah ada sebelum program referral berjalan — termasuk karyawan yang mendaftar jauh sebelumnya — tidak punya baris referral, jadi uplinenya tetap harus ditetapkan manual.
+
 ### 10. Komisi ditahan 7 hari, pencairan manual
 
 Komisi baru bisa masuk batch pencairan setelah `available_at` (lunas + 7 hari) terlewati. Pencairan dilakukan admin lewat transfer manual, lalu ditandai lunas dengan bukti.

@@ -59,11 +59,69 @@ class AffiliateApplicationTest extends TestCase
         $affiliate = Affiliate::sole();
         $this->assertSame($user->id, $affiliate->user_id);
         $this->assertSame('pending', $affiliate->status);
-        $this->assertNull($affiliate->upline_id);          // upline ditetapkan admin
+        $this->assertNull($affiliate->upline_id);          // tanpa perekrut: ditetapkan admin
         $this->assertNotNull($affiliate->terms_accepted_at);
         $this->assertSame('Mahasiswa di kampus tempat saya mengajar.', $affiliate->applicant_note);
         $this->assertSame('BCA', $affiliate->bank_name);
         $this->assertSame(4, (int) $affiliate->type);      // situs tempat ia mendaftar
+    }
+
+    /** Perekrut member otomatis jadi upline — inilah yang membentuk tingkat kedua. */
+    public function test_recruiter_becomes_the_upline_automatically(): void
+    {
+        $perekrut = Affiliate::factory()->create(['type' => 4]);
+        $user = User::factory()->active()->create();
+        $this->refer($user, $perekrut);
+
+        $this->actingAs($user)->post('/afiliasi/daftar', $this->payload());
+
+        $this->assertSame($perekrut->id, Affiliate::where('user_id', $user->id)->value('upline_id'));
+    }
+
+    public function test_suspended_recruiter_does_not_become_upline(): void
+    {
+        $perekrut = Affiliate::factory()->suspended()->create(['type' => 4]);
+        $user = User::factory()->active()->create();
+        $this->refer($user, $perekrut);
+
+        $this->actingAs($user)->post('/afiliasi/daftar', $this->payload());
+
+        $this->assertNull(Affiliate::where('user_id', $user->id)->value('upline_id'));
+    }
+
+    /** Komisi tingkat 2 tidak boleh melintasi situs, jadi uplinenya pun tidak boleh. */
+    public function test_recruiter_from_another_site_does_not_become_upline(): void
+    {
+        $perekrut = Affiliate::factory()->create(['type' => 1]);   // afiliator AJP
+        $user = User::factory()->active()->create();
+        $this->refer($user, $perekrut);
+
+        $this->actingAs($user)->post('/afiliasi/daftar', $this->payload());
+
+        $this->assertNull(Affiliate::where('user_id', $user->id)->value('upline_id'));
+    }
+
+    /** Perekrut yang masih menunggu persetujuan belum boleh memperoleh tingkat kedua. */
+    public function test_pending_recruiter_does_not_become_upline(): void
+    {
+        $perekrut = Affiliate::factory()->create(['type' => 4, 'status' => 'pending']);
+        $user = User::factory()->active()->create();
+        $this->refer($user, $perekrut);
+
+        $this->actingAs($user)->post('/afiliasi/daftar', $this->payload());
+
+        $this->assertNull(Affiliate::where('user_id', $user->id)->value('upline_id'));
+    }
+
+    private function refer(User $user, Affiliate $affiliate): void
+    {
+        \App\Models\AffiliateReferral::create([
+            'type' => $affiliate->type,
+            'user_id' => $user->id,
+            'affiliate_id' => $affiliate->id,
+            'code' => $affiliate->code,
+            'source' => 'link',
+        ]);
     }
 
     public function test_application_on_another_deployment_is_tagged_with_that_site(): void
