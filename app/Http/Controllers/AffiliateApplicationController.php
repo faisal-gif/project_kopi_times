@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AffiliateApplicationRequest;
 use App\Models\Affiliate;
+use App\Models\AffiliateReferral;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -42,20 +43,9 @@ class AffiliateApplicationController extends Controller
             // Situs tempat ia mendaftar; menentukan dari pendaftar mana ia berkomisi.
             'type' => (int) config('affiliate.site_type'),
             'user_id' => $user->id,
-            /*
-             * SENGAJA kosong: upline menentukan siapa menerima komisi tingkat 2 (5%),
-             * dan itu keputusan admin, bukan kesimpulan sistem.
-             *
-             * Pernah diisi otomatis dari afiliator yang merekrut orang ini jadi member
-             * (2026-10-19), lalu dibatalkan sehari kemudian atas permintaan pemilik
-             * produk: penerima 5% harus ditentukan admin. Jangan dihidupkan lagi tanpa
-             * keputusan baru — lihat ADR 0001 keputusan 9a.
-             *
-             * Konsekuensinya: selama upline kosong, setiap komisi tingkat 2 dari
-             * afiliator ini lahir berstatus `unassigned` dan menunggu admin, jadi layar
-             * Baris Tertahan di CMS wajib dipantau.
-             */
-            'upline_id' => null,
+            // Diturunkan dari pengundangnya, tapi HANYA bila akun itu dicentang admin
+            // sebagai berhak menerima komisi 5%. Lihat uplineDariPengundang().
+            'upline_id' => $this->uplineDariPengundang($user),
             'code' => Affiliate::generateCode($request->name),
             'name' => $request->name,
             'email' => $request->email,
@@ -71,5 +61,42 @@ class AffiliateApplicationController extends Controller
 
         return redirect()->route('afiliasi.index')
             ->with('success', 'Pengajuan terkirim. Tim kami akan meninjau dalam beberapa hari kerja.');
+    }
+
+    /**
+     * Upline pemohon: afiliator yang dulu mengundang orang ini jadi member.
+     *
+     * Yang ditentukan admin BUKAN siapa uplinenya, melainkan akun mana yang berhak
+     * menerima komisi tingkat 2 — lewat penanda `affiliates.tier2_eligible` di CMS.
+     * Rantainya sendiri diturunkan dari data referral, karena hanya data itu yang tahu
+     * siapa benar-benar mengundang siapa.
+     *
+     * Null — tidak ada upline, dan jaringan orang ini tidak menghasilkan 5% bagi
+     * siapa pun — bila pengundangnya:
+     *   - tidak ada (mendaftar tanpa link referral);
+     *   - TIDAK dicentang sebagai berhak menerima komisi 5%;
+     *   - bukan afiliator `active`;
+     *   - milik situs lain, karena komisi tingkat 2 tidak boleh melintasi situs.
+     *
+     * Lingkaran tidak perlu diperiksa: baris yang baru dibuat belum ditunjuk siapa pun
+     * sebagai upline, jadi rantainya tidak bisa menutup.
+     */
+    private function uplineDariPengundang($user): ?int
+    {
+        $pengundang = AffiliateReferral::where('user_id', $user->id)->first()?->affiliate;
+
+        if (! $pengundang || ! $pengundang->tier2_eligible) {
+            return null;
+        }
+
+        if (! $pengundang->isActive()) {
+            return null;
+        }
+
+        if ((int) $pengundang->type !== (int) config('affiliate.site_type')) {
+            return null;
+        }
+
+        return $pengundang->id;
     }
 }

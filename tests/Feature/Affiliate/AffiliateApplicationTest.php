@@ -66,18 +66,50 @@ class AffiliateApplicationTest extends TestCase
         $this->assertSame(4, (int) $affiliate->type);      // situs tempat ia mendaftar
     }
 
-    /**
-     * Upline adalah keputusan admin, bukan kesimpulan sistem.
-     *
-     * Sengaja diuji dengan perekrut yang SEMPURNA memenuhi syarat — aktif, situs sama,
-     * baris referralnya ada — supaya test ini gagal kalau pengisian otomatis dihidupkan
-     * lagi tanpa keputusan baru. Penerima komisi 5% tidak boleh berubah diam-diam.
-     */
-    public function test_upline_is_left_for_the_admin_even_when_a_recruiter_exists(): void
+    /** Dicentang admin = pengundangnya jadi upline, dan kelak menerima komisi 5%. */
+    public function test_eligible_inviter_becomes_the_upline(): void
     {
-        $perekrut = Affiliate::factory()->create(['type' => 4]);
+        $pengundang = Affiliate::factory()->create(['type' => 4, 'tier2_eligible' => true]);
         $user = User::factory()->active()->create();
-        $this->refer($user, $perekrut);
+        $this->refer($user, $pengundang);
+
+        $this->actingAs($user)->post('/afiliasi/daftar', $this->payload());
+
+        $this->assertSame($pengundang->id, Affiliate::where('user_id', $user->id)->value('upline_id'));
+    }
+
+    /**
+     * Inti keputusan admin: TANPA centang, tidak ada upline sama sekali — walau
+     * pengundangnya aktif, sesama situs, dan baris referralnya lengkap.
+     */
+    public function test_inviter_without_the_flag_does_not_become_upline(): void
+    {
+        $pengundang = Affiliate::factory()->create(['type' => 4, 'tier2_eligible' => false]);
+        $user = User::factory()->active()->create();
+        $this->refer($user, $pengundang);
+
+        $this->actingAs($user)->post('/afiliasi/daftar', $this->payload());
+
+        $this->assertNull(Affiliate::where('user_id', $user->id)->value('upline_id'));
+    }
+
+    public function test_suspended_inviter_does_not_become_upline_even_when_flagged(): void
+    {
+        $pengundang = Affiliate::factory()->suspended()->create(['type' => 4, 'tier2_eligible' => true]);
+        $user = User::factory()->active()->create();
+        $this->refer($user, $pengundang);
+
+        $this->actingAs($user)->post('/afiliasi/daftar', $this->payload());
+
+        $this->assertNull(Affiliate::where('user_id', $user->id)->value('upline_id'));
+    }
+
+    /** Komisi tingkat 2 tidak boleh melintasi situs, jadi uplinenya pun tidak boleh. */
+    public function test_flagged_inviter_from_another_site_does_not_become_upline(): void
+    {
+        $pengundang = Affiliate::factory()->create(['type' => 1, 'tier2_eligible' => true]);
+        $user = User::factory()->active()->create();
+        $this->refer($user, $pengundang);
 
         $this->actingAs($user)->post('/afiliasi/daftar', $this->payload());
 

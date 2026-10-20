@@ -14,6 +14,7 @@ class Affiliate extends Model
         'type',
         'user_id',
         'upline_id',
+        'tier2_eligible',
         'code',
         'name',
         'email',
@@ -30,6 +31,7 @@ class Affiliate extends Model
     ];
 
     protected $casts = [
+        'tier2_eligible' => 'boolean',
         'approved_at' => 'datetime',
         'terms_accepted_at' => 'datetime',
     ];

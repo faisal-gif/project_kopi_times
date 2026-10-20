@@ -135,6 +135,8 @@ Konsekuensi yang disadari: afiliator yang sudah ada sebelum program referral ber
 
 ### 9b. Upline sepenuhnya ditetapkan admin (pengganti keputusan 9a)
 
+> **DIGANTI 2026-10-20, beberapa jam setelah diterapkan.** Lihat keputusan 9c. Dropdown upline di CMS sudah dihapus.
+
 `upline_id` pada pengajuan mandiri **selalu** masuk kosong. Tidak ada pengisian otomatis dari sumber mana pun.
 
 Alasan: upline menentukan siapa menerima komisi tingkat 2 (5%), dan pemilik produk menghendaki penerima uang itu menjadi keputusan manusia, bukan kesimpulan sistem dari data referral. Rantai komisi adalah urusan kebijakan — siapa pantas memperoleh 5% dari jaringan seseorang bisa berbeda dari siapa yang secara teknis membawa orang itu masuk.
@@ -143,7 +145,25 @@ Mekanisme komisinya sendiri **tidak berubah** dan memang sudah sesuai yang dikeh
 
 Konsekuensi yang disadari dan diterima: selama upline seorang afiliator kosong, **setiap** komisi tingkat 2 dari jaringannya lahir berstatus `unassigned` — uang tanpa pemilik. Layar Baris Tertahan di CMS karena itu bukan laporan pelengkap, melainkan antrean kerja yang harus dipantau, dan menetapkan upline sedini mungkin adalah tugas admin saat menyetujui pengajuan.
 
-Pembatalan 9a disengaja dan dikunci dengan test: `test_upline_is_left_for_the_admin_even_when_a_recruiter_exists` memakai perekrut yang sempurna memenuhi syarat, sehingga menghidupkan kembali pengisian otomatis akan menggagalkan test — penerima uang tidak boleh berubah diam-diam.
+Pembatalan 9a disengaja dan dikunci dengan test: memakai perekrut yang sempurna memenuhi syarat, sehingga menghidupkan kembali pengisian otomatis akan menggagalkan test — penerima uang tidak boleh berubah diam-diam.
+
+### 9c. Admin menentukan siapa BERHAK, sistem menurunkan rantainya (pengganti 9a dan 9b)
+
+Kolom baru `affiliates.tier2_eligible`. Admin mencentang akun mana yang boleh menerima komisi tingkat 2; `upline_id` lalu diturunkan sistem dari afiliator yang mengundang si pemohon jadi member — **tetapi hanya bila akun pengundang itu dicentang.** Dropdown pemilihan upline di CMS dihapus.
+
+Alasan: dua percobaan sebelumnya masing-masing salah di satu sisi. Keputusan 9a mengisi upline untuk semua orang tanpa kendali, sehingga siapa pun yang kebetulan mengundang orang lain langsung memperoleh 5% tanpa persetujuan. Keputusan 9b menyerahkan semuanya ke admin, tetapi admin tidak punya informasi yang dibutuhkan — hanya `affiliate_referrals` yang tahu siapa benar-benar mengundang siapa, dan memilih dari dropdown berarti menebak atau menyalin data itu dengan tangan.
+
+Pembagian yang benar: **kebijakan ke admin, fakta ke sistem.** Siapa yang berhak memperoleh 5% adalah kebijakan. Siapa mengundang siapa adalah fakta yang sudah tercatat.
+
+Yang tidak berubah: mekanisme komisinya. Akun A yang mengundang B memperoleh 20% dari pendaftaran B; bila B kemudian mengundang C, A memperoleh 5% dari pendaftaran C. Komisi 20% dari pendaftar langsung **tidak** bergantung pada penanda ini — penanda hanya mengatur terbentuknya tingkat kedua.
+
+Konsekuensi yang disadari:
+
+- **Tidak berlaku ke belakang.** Penanda dibaca saat pengajuan afiliator dibuat. Mencentang sebuah akun hari ini tidak membentuk rantai dari orang-orang yang sudah jadi afiliator sebelumnya; uplinenya tetap seperti saat itu.
+- **Admin tidak lagi bisa menyusun rantai bebas.** Rantai hanya mengikuti data referral. Koreksi satu-satunya adalah menetapkan penerima per baris komisi di layar Baris Tertahan, yang memang sudah ada.
+- Enam afiliator yang ada saat keputusan ini dibuat belum punya baris referral sama sekali, jadi rantai pertama baru akan terbentuk dari pengajuan berikutnya.
+
+Dikunci dengan test: `RantaiTier2Test` menelusuri A→B→C ujung ke ujung untuk kedua keadaan penanda (dicentang dan tidak), plus empat test pada `AffiliateApplicationTest` untuk pengundang yang tidak dicentang, ditangguhkan, dan milik situs lain.
 
 ### 10. Komisi ditahan 7 hari, pencairan manual
 
