@@ -42,15 +42,19 @@ class AffiliateCommissionService
 
         $internal = ['role' => 'internal', 'base_amount' => $gross, 'rate_bps' => $internalBps, 'amount' => intdiv($gross * $internalBps, 10_000)];
 
-        if (! $adaPerekrut) {
-            return [$internal];
-        }
+        $posisi = $adaPerekrut
+            ? [
+                ['role' => 'tier1', 'base_amount' => $amount, 'rate_bps' => $tier1Bps, 'amount' => $tier1],
+                ['role' => 'tier2', 'base_amount' => $gross, 'rate_bps' => $tier2Bps, 'amount' => intdiv($gross * $tier2Bps, 10_000)],
+                $internal,
+            ]
+            : [$internal];
 
-        return [
-            ['role' => 'tier1', 'base_amount' => $amount, 'rate_bps' => $tier1Bps, 'amount' => $tier1],
-            ['role' => 'tier2', 'base_amount' => $gross, 'rate_bps' => $tier2Bps, 'amount' => intdiv($gross * $tier2Bps, 10_000)],
-            $internal,
-        ];
+        // Tarif 0 berarti pos itu tidak berlaku di situs ini — AJP satu tingkat, jadi
+        // tier2_bps 0. Posnya dibuang, bukan dicatat sebagai baris bernilai nol:
+        // baris nol akan muncul di laporan, menumpuk sebagai `unassigned` saat tidak
+        // ada upline, dan minta disetujui admin padahal tidak ada uang di dalamnya.
+        return array_values(array_filter($posisi, fn ($p) => $p['rate_bps'] > 0));
     }
 
     /**

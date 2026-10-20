@@ -44,6 +44,24 @@ return [
      * Kosong = cookie hanya berlaku di domain situs ini (atribusi terpisah per situs).
      * Diisi '.times.co.id' = satu klik berlaku di seluruh subdomain TIMES.
      * Nama cookie sengaja sama di semua situs supaya opsi ini bisa dinyalakan kapan saja.
+     *
+     * Nilainya DINORMALKAN, bukan dipakai apa adanya. Pada 2026-10-20 produksi terisi
+     * 'https://kopi.times.co.id/' — URL penuh, bukan nama domain. Atribut domain yang
+     * tidak sah membuat browser menolak cookie TANPA pesan error apa pun: tidak ada
+     * yang masuk log, dan seluruh atribusi referral mati diam-diam selama berminggu-
+     * minggu. Kegagalan sesenyap itu pada jalur uang pantas ditahan di sini, bukan
+     * diserahkan ke kedisiplinan mengisi .env.
+     *
+     * Hasilnya: URL penuh diambil host-nya, '.times.co.id' dibiarkan utuh beserta
+     * titik depannya, dan kosong tetap null (Laravel lalu jatuh ke session.domain).
      */
-    'cookie_domain' => env('AFFILIATE_COOKIE_DOMAIN'),
+    'cookie_domain' => (static function () {
+        $nilai = trim((string) env('AFFILIATE_COOKIE_DOMAIN'));
+
+        if ($nilai === '') {
+            return null;
+        }
+
+        return parse_url($nilai, PHP_URL_HOST) ?: rtrim($nilai, '/');
+    })(),
 ];
