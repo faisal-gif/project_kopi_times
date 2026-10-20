@@ -14,15 +14,15 @@ Pembagian per pembayaran member baru yang berafiliasi:
 |---|---|---|---|
 | Tier 1 — perekrut langsung | 48.000 | 20% | 9.600 |
 | Tier 2 — upline perekrut | 38.400 | 5% | 1.920 |
-| Internal KITA AI / tim IT (tidak ditampilkan ke publik) | 38.400 | 10% | 3.840 |
-| Net kantor | — | sisa | 32.640 |
+| Internal staff IT (tidak ditampilkan ke publik) | 38.400 | 10% + Rp 1.000 | 4.840 |
+| Net kantor | — | sisa | 31.640 |
 
 Pembayaran member baru **tanpa** perekrut hanya menerbitkan pos internal, dengan dasar harga utuh (lihat keputusan 8a):
 
 | Pos | Dasar | Tarif | Nominal |
 |---|---|---|---|
-| Internal KITA AI / tim IT | 48.000 | 10% | 4.800 |
-| Net kantor | — | sisa | 43.200 |
+| Internal staff IT | 48.000 | 10% + Rp 1.000 | 5.800 |
+| Net kantor | — | sisa | 42.200 |
 
 Keadaan sistem saat keputusan ini dibuat:
 
@@ -103,7 +103,7 @@ Penentuannya memakai dua syarat sekaligus: paket `level = 1` **dan** user belum 
 
 ### 8a. Pos internal terbit untuk setiap member baru, ada perekrut atau tidak (pengganti bagian keputusan 8)
 
-Pos `internal` (KITA AI / tim IT) dicatat untuk **setiap** pendaftaran member baru. Tanpa perekrut yang berhak, hanya pos itu yang terbit: tidak ada tier1 dan tidak ada tier2.
+Pos `internal` (staff IT) dicatat untuk **setiap** pendaftaran member baru. Tanpa perekrut yang berhak, hanya pos itu yang terbit: tidak ada tier1 dan tidak ada tier2.
 
 Dasarnya harga utuh, karena tidak ada potongan tier1 yang benar-benar terjadi: **48.000 × 10% = 4.800**, sisa kantor 43.200. Angkanya memang lebih besar daripada 3.840 pada penjualan berafiliasi — di sana 10% dihitung dari 38.400 setelah komisi perekrut diambil. Tarifnya satu, dasarnya yang berbeda, dan `base_amount` tiap baris selalu angka yang benar-benar terjadi pada penjualan itu.
 

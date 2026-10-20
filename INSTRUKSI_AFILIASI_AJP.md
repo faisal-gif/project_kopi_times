@@ -125,7 +125,7 @@ Ledger tidak punya kolom situs, dan memang tidak perlu — situs bisa ditelusuri
 SELECT np.type AS situs,
        SUM(CASE WHEN c.role = 'tier1'    THEN c.amount ELSE 0 END) AS tier1,
        SUM(CASE WHEN c.role = 'tier2'    THEN c.amount ELSE 0 END) AS tier2,
-       SUM(CASE WHEN c.role = 'internal' THEN c.amount ELSE 0 END) AS kita_ai,
+       SUM(CASE WHEN c.role = 'internal' THEN c.amount ELSE 0 END) AS staff_it,
        SUM(c.amount) AS total
 FROM affiliate_commissions c
 JOIN payments p      ON p.id = c.payment_id

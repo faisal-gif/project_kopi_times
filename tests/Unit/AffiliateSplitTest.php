@@ -13,7 +13,7 @@ class AffiliateSplitTest extends TestCase
 
         $this->assertSame(9_600, $rows['tier1']['amount']);
         $this->assertSame(1_920, $rows['tier2']['amount']);
-        $this->assertSame(3_840, $rows['internal']['amount']);
+        $this->assertSame(4_840, $rows['internal']['amount']);   // 3.840 + flat 1.000
 
         $this->assertSame(48_000, $rows['tier1']['base_amount']);
         $this->assertSame(38_400, $rows['tier2']['base_amount']);
@@ -24,8 +24,8 @@ class AffiliateSplitTest extends TestCase
     {
         $total = collect(AffiliateCommissionService::split(48_000))->sum('amount');
 
-        $this->assertSame(15_360, $total);
-        $this->assertSame(32_640, 48_000 - $total);
+        $this->assertSame(16_360, $total);
+        $this->assertSame(31_640, 48_000 - $total);
     }
 
     public function test_odd_price_floors_every_position_and_never_overspends(): void
@@ -47,8 +47,8 @@ class AffiliateSplitTest extends TestCase
         $this->assertCount(1, $rows);
         $this->assertSame('internal', $rows[0]['role']);
         $this->assertSame(48_000, $rows[0]['base_amount']);   // tidak ada potongan tier1
-        $this->assertSame(4_800, $rows[0]['amount']);
-        $this->assertSame(43_200, 48_000 - $rows[0]['amount']);
+        $this->assertSame(5_800, $rows[0]['amount']);            // 4.800 + flat 1.000
+        $this->assertSame(42_200, 48_000 - $rows[0]['amount']);
     }
 
     public function test_rates_come_from_config(): void
@@ -59,5 +59,40 @@ class AffiliateSplitTest extends TestCase
 
         $this->assertSame(4_800, $rows['tier1']['amount']);
         $this->assertSame(43_200, $rows['tier2']['base_amount']);
+    }
+
+    /**
+     * Komponen tetap tidak boleh membuat kantor membayar lebih dari yang diterima.
+     *
+     * Selama semua pos berupa persentase hal ini mustahil. Rp 1.000 yang datar
+     * merusak jaminan itu pada harga paket kecil, jadi yang dipangkas hanya komponen
+     * tetapnya — persentase milik afiliator tidak pernah dikurangi.
+     */
+    public function test_flat_component_never_makes_the_office_pay_more_than_it_received(): void
+    {
+        foreach ([1_000, 2_000, 3_000, 5_000, 10_000] as $harga) {
+            $rows = AffiliateCommissionService::split($harga);
+            $keluar = array_sum(array_column($rows, 'amount'));
+
+            $this->assertLessThanOrEqual($harga, $keluar, "harga {$harga} membuat net kantor negatif");
+
+            // Persentase perekrut tetap utuh; hanya flat yang boleh dipangkas.
+            $tier1 = collect($rows)->firstWhere('role', 'tier1');
+            $this->assertSame(intdiv($harga * 2000, 10_000), $tier1['amount']);
+        }
+    }
+
+    /** Setiap baris harus bisa dihitung ulang dari snapshotnya sendiri. */
+    public function test_every_position_can_be_recomputed_from_its_own_snapshot(): void
+    {
+        foreach ([AffiliateCommissionService::split(48_000), AffiliateCommissionService::split(48_000, adaPerekrut: false)] as $rows) {
+            foreach ($rows as $row) {
+                $this->assertSame(
+                    intdiv($row['base_amount'] * $row['rate_bps'], 10_000) + $row['flat_amount'],
+                    $row['amount'],
+                    "pos {$row['role']} tidak cocok dengan base x rate + flat",
+                );
+            }
+        }
     }
 }

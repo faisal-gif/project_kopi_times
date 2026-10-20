@@ -36,16 +36,25 @@ class AffiliateCommissionService
         $tier1Bps = (int) config('affiliate.tier1_bps');
         $tier2Bps = (int) config('affiliate.tier2_bps');
         $internalBps = (int) config('affiliate.internal_bps');
+        $internalFlat = (int) config('affiliate.internal_flat');
 
         $tier1 = $adaPerekrut ? intdiv($amount * $tier1Bps, 10_000) : 0;
         $gross = $amount - $tier1;
 
-        $internal = ['role' => 'internal', 'base_amount' => $gross, 'rate_bps' => $internalBps, 'amount' => intdiv($gross * $internalBps, 10_000)];
+        // Pos internal = persentase + komponen tetap. flat_amount di-snapshot supaya
+        // barisnya tetap bisa dihitung ulang: base*rate/10000 + flat = amount.
+        $internal = [
+            'role' => 'internal',
+            'base_amount' => $gross,
+            'rate_bps' => $internalBps,
+            'flat_amount' => $internalFlat,
+            'amount' => intdiv($gross * $internalBps, 10_000) + $internalFlat,
+        ];
 
         $posisi = $adaPerekrut
             ? [
-                ['role' => 'tier1', 'base_amount' => $amount, 'rate_bps' => $tier1Bps, 'amount' => $tier1],
-                ['role' => 'tier2', 'base_amount' => $gross, 'rate_bps' => $tier2Bps, 'amount' => intdiv($gross * $tier2Bps, 10_000)],
+                ['role' => 'tier1', 'base_amount' => $amount, 'rate_bps' => $tier1Bps, 'flat_amount' => 0, 'amount' => $tier1],
+                ['role' => 'tier2', 'base_amount' => $gross, 'rate_bps' => $tier2Bps, 'flat_amount' => 0, 'amount' => intdiv($gross * $tier2Bps, 10_000)],
                 $internal,
             ]
             : [$internal];
@@ -54,7 +63,42 @@ class AffiliateCommissionService
         // tier2_bps 0. Posnya dibuang, bukan dicatat sebagai baris bernilai nol:
         // baris nol akan muncul di laporan, menumpuk sebagai `unassigned` saat tidak
         // ada upline, dan minta disetujui admin padahal tidak ada uang di dalamnya.
-        return array_values(array_filter($posisi, fn ($p) => $p['rate_bps'] > 0));
+        $posisi = array_values(array_filter($posisi, fn ($p) => $p['rate_bps'] > 0));
+
+        return self::jagaNetKantor($posisi, $amount);
+    }
+
+    /**
+     * Net kantor tidak boleh negatif.
+     *
+     * Selama semua pos berupa persentase, totalnya mustahil melebihi nilai pembayaran.
+     * Komponen tetap merusak jaminan itu: pada harga paket kecil, Rp 1.000 bisa membuat
+     * total pos melampaui yang dibayar pembeli — artinya kantor membayar lebih dari
+     * yang diterima. Jadi yang dipangkas HANYA komponen tetapnya, bukan persentase
+     * milik afiliator, dan hanya sebesar kelebihannya.
+     *
+     * Pada harga yang berlaku sekarang (48.000 dan 250.000) ini tidak pernah aktif.
+     */
+    private static function jagaNetKantor(array $posisi, int $amount): array
+    {
+        $kelebihan = array_sum(array_column($posisi, 'amount')) - $amount;
+
+        if ($kelebihan <= 0) {
+            return $posisi;
+        }
+
+        foreach ($posisi as $i => $pos) {
+            if ($kelebihan <= 0 || $pos['flat_amount'] <= 0) {
+                continue;
+            }
+
+            $pangkas = min($kelebihan, $pos['flat_amount']);
+            $posisi[$i]['flat_amount'] -= $pangkas;
+            $posisi[$i]['amount'] -= $pangkas;
+            $kelebihan -= $pangkas;
+        }
+
+        return $posisi;
     }
 
     /**

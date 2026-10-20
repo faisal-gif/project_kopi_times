@@ -14,16 +14,16 @@ Member baru **yang punya perekrut berhak**:
 Tier 1 (perekrut langsung)  = 20% x 48.000 = 9.600
 sisa (gross)                = 48.000 - 9.600 = 38.400
 Tier 2 (upline perekrut)    =  5% x 38.400 =  1.920
-Internal KITA AI (hidden)   = 10% x 38.400 =  3.840
-Net kantor                  = 48.000 - 15.360 = 32.640
+Internal staff IT (hidden)  = 10% x 38.400 + 1.000 =  4.840
+Net kantor                  = 48.000 - 16.360 = 31.640
 ```
 
 Member baru **tanpa perekrut berhak** — hanya pos internal yang terbit, dan dasarnya
 harga utuh karena tidak ada potongan tier1 yang benar-benar terjadi:
 
 ```
-Internal KITA AI (hidden)   = 10% x 48.000 =  4.800
-Net kantor                  = 48.000 - 4.800 = 43.200
+Internal staff IT (hidden)  = 10% x 48.000 + 1.000 =  5.800
+Net kantor                  = 48.000 - 5.800 = 42.200
 ```
 
 Net kantor **tidak disimpan sebagai baris ledger**; selalu `payment.amount - SUM(amount komisi)`. Dengan begitu sisa pembulatan otomatis jadi milik kantor dan jumlah baris tidak akan pernah melebihi nilai pembayaran.
