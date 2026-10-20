@@ -66,45 +66,16 @@ class AffiliateApplicationTest extends TestCase
         $this->assertSame(4, (int) $affiliate->type);      // situs tempat ia mendaftar
     }
 
-    /** Perekrut member otomatis jadi upline — inilah yang membentuk tingkat kedua. */
-    public function test_recruiter_becomes_the_upline_automatically(): void
+    /**
+     * Upline adalah keputusan admin, bukan kesimpulan sistem.
+     *
+     * Sengaja diuji dengan perekrut yang SEMPURNA memenuhi syarat — aktif, situs sama,
+     * baris referralnya ada — supaya test ini gagal kalau pengisian otomatis dihidupkan
+     * lagi tanpa keputusan baru. Penerima komisi 5% tidak boleh berubah diam-diam.
+     */
+    public function test_upline_is_left_for_the_admin_even_when_a_recruiter_exists(): void
     {
         $perekrut = Affiliate::factory()->create(['type' => 4]);
-        $user = User::factory()->active()->create();
-        $this->refer($user, $perekrut);
-
-        $this->actingAs($user)->post('/afiliasi/daftar', $this->payload());
-
-        $this->assertSame($perekrut->id, Affiliate::where('user_id', $user->id)->value('upline_id'));
-    }
-
-    public function test_suspended_recruiter_does_not_become_upline(): void
-    {
-        $perekrut = Affiliate::factory()->suspended()->create(['type' => 4]);
-        $user = User::factory()->active()->create();
-        $this->refer($user, $perekrut);
-
-        $this->actingAs($user)->post('/afiliasi/daftar', $this->payload());
-
-        $this->assertNull(Affiliate::where('user_id', $user->id)->value('upline_id'));
-    }
-
-    /** Komisi tingkat 2 tidak boleh melintasi situs, jadi uplinenya pun tidak boleh. */
-    public function test_recruiter_from_another_site_does_not_become_upline(): void
-    {
-        $perekrut = Affiliate::factory()->create(['type' => 1]);   // afiliator AJP
-        $user = User::factory()->active()->create();
-        $this->refer($user, $perekrut);
-
-        $this->actingAs($user)->post('/afiliasi/daftar', $this->payload());
-
-        $this->assertNull(Affiliate::where('user_id', $user->id)->value('upline_id'));
-    }
-
-    /** Perekrut yang masih menunggu persetujuan belum boleh memperoleh tingkat kedua. */
-    public function test_pending_recruiter_does_not_become_upline(): void
-    {
-        $perekrut = Affiliate::factory()->create(['type' => 4, 'status' => 'pending']);
         $user = User::factory()->active()->create();
         $this->refer($user, $perekrut);
 

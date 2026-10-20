@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AffiliateApplicationRequest;
 use App\Models\Affiliate;
-use App\Models\AffiliateReferral;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -38,15 +37,25 @@ class AffiliateApplicationController extends Controller
     public function store(AffiliateApplicationRequest $request): RedirectResponse
     {
         $user = $request->user();
-        $siteType = (int) config('affiliate.site_type');
 
         Affiliate::create([
             // Situs tempat ia mendaftar; menentukan dari pendaftar mana ia berkomisi.
-            'type' => $siteType,
+            'type' => (int) config('affiliate.site_type'),
             'user_id' => $user->id,
-            // Diisi otomatis dari perekrut member ini; null bila tidak memenuhi syarat.
-            // Admin tetap bisa menimpanya di CMS — ini hanya nilai awal.
-            'upline_id' => $this->uplineDariPerekrut($user, $siteType),
+            /*
+             * SENGAJA kosong: upline menentukan siapa menerima komisi tingkat 2 (5%),
+             * dan itu keputusan admin, bukan kesimpulan sistem.
+             *
+             * Pernah diisi otomatis dari afiliator yang merekrut orang ini jadi member
+             * (2026-10-19), lalu dibatalkan sehari kemudian atas permintaan pemilik
+             * produk: penerima 5% harus ditentukan admin. Jangan dihidupkan lagi tanpa
+             * keputusan baru — lihat ADR 0001 keputusan 9a.
+             *
+             * Konsekuensinya: selama upline kosong, setiap komisi tingkat 2 dari
+             * afiliator ini lahir berstatus `unassigned` dan menunggu admin, jadi layar
+             * Baris Tertahan di CMS wajib dipantau.
+             */
+            'upline_id' => null,
             'code' => Affiliate::generateCode($request->name),
             'name' => $request->name,
             'email' => $request->email,
@@ -62,34 +71,5 @@ class AffiliateApplicationController extends Controller
 
         return redirect()->route('afiliasi.index')
             ->with('success', 'Pengajuan terkirim. Tim kami akan meninjau dalam beberapa hari kerja.');
-    }
-
-    /**
-     * Upline awal: afiliator yang dulu membawa orang ini mendaftar jadi member.
-     *
-     * Mengembalikan null — dan uplinenya tetap ditetapkan admin — bila:
-     *   - orang ini tidak mendaftar lewat link referral siapa pun;
-     *   - perekrutnya bukan afiliator `active` (pending, ditangguhkan, nonaktif);
-     *   - perekrutnya milik situs lain, karena komisi tingkat 2 tidak boleh melintasi situs.
-     *
-     * Tidak ada pemeriksaan lingkaran di sini, dan memang tidak perlu: baris afiliator
-     * yang baru dibuat belum ditunjuk siapa pun sebagai upline, jadi rantainya tidak
-     * bisa menutup. Menunjuk diri sendiri juga mustahil karena
-     * AffiliateApplicationRequest::authorize() menolak user yang sudah punya baris
-     * afiliator. Perubahan upline belakangan tetap dijaga pemeriksaan lingkaran di CMS.
-     */
-    private function uplineDariPerekrut($user, int $siteType): ?int
-    {
-        $perekrut = AffiliateReferral::where('user_id', $user->id)->first()?->affiliate;
-
-        if (! $perekrut || ! $perekrut->isActive()) {
-            return null;
-        }
-
-        if ((int) $perekrut->type !== $siteType) {
-            return null;
-        }
-
-        return $perekrut->id;
     }
 }

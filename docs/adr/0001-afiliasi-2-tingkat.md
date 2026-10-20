@@ -121,6 +121,8 @@ Alasan: angkanya tetap terlihat di laporan, dan manajemen bisa memutuskan perunt
 
 ### 9a. Upline pengajuan mandiri diturunkan dari perekrut membernya
 
+> **DIBATALKAN 2026-10-20, satu hari setelah diterapkan.** Keputusan ini tidak lagi berlaku; lihat keputusan 9b. Kodenya sudah dicabut dari `AffiliateApplicationController::store()` di kedua aplikasi publik.
+
 Saat member mengajukan diri jadi afiliator, `upline_id` diisi otomatis dengan afiliator yang dulu merekrut orang itu jadi member — dibaca dari `affiliate_referrals`, bukan dari input pemohon. Dilewati bila tidak ada baris referral, perekrutnya bukan `active`, atau perekrutnya milik situs lain.
 
 Alasan: tanpa ini jaringan tetap rata dan **setiap** komisi tingkat 2 lahir berstatus `unassigned` — uang tanpa pemilik yang menumpuk sampai ada yang memutuskan. Padahal jawabannya sudah ada di data: orang yang membawa dia masuk. Menetapkannya manual satu per satu adalah pekerjaan yang jawabannya sudah diketahui sistem.
@@ -130,6 +132,18 @@ Pemohon tidak boleh memilih uplinenya sendiri; itu akan membuat rantai bisa diat
 Lingkaran tidak diperiksa di jalur ini karena tidak mungkin terbentuk: baris afiliator yang baru dibuat belum ditunjuk siapa pun sebagai upline, dan relasi "direkrut oleh" mengikuti urutan pendaftaran sehingga tidak bisa menutup. Perubahan upline belakangan tetap dijaga pemeriksaan lingkaran di CMS.
 
 Konsekuensi yang disadari: afiliator yang sudah ada sebelum program referral berjalan — termasuk karyawan yang mendaftar jauh sebelumnya — tidak punya baris referral, jadi uplinenya tetap harus ditetapkan manual.
+
+### 9b. Upline sepenuhnya ditetapkan admin (pengganti keputusan 9a)
+
+`upline_id` pada pengajuan mandiri **selalu** masuk kosong. Tidak ada pengisian otomatis dari sumber mana pun.
+
+Alasan: upline menentukan siapa menerima komisi tingkat 2 (5%), dan pemilik produk menghendaki penerima uang itu menjadi keputusan manusia, bukan kesimpulan sistem dari data referral. Rantai komisi adalah urusan kebijakan — siapa pantas memperoleh 5% dari jaringan seseorang bisa berbeda dari siapa yang secara teknis membawa orang itu masuk.
+
+Mekanisme komisinya sendiri **tidak berubah** dan memang sudah sesuai yang dikehendaki: akun A yang mengundang B memperoleh 20% dari pendaftaran B; bila B kemudian mengundang C, A memperoleh 5% dari pendaftaran C. Yang berubah hanya cara `upline_id` milik B terisi — kini hanya lewat CMS.
+
+Konsekuensi yang disadari dan diterima: selama upline seorang afiliator kosong, **setiap** komisi tingkat 2 dari jaringannya lahir berstatus `unassigned` — uang tanpa pemilik. Layar Baris Tertahan di CMS karena itu bukan laporan pelengkap, melainkan antrean kerja yang harus dipantau, dan menetapkan upline sedini mungkin adalah tugas admin saat menyetujui pengajuan.
+
+Pembatalan 9a disengaja dan dikunci dengan test: `test_upline_is_left_for_the_admin_even_when_a_recruiter_exists` memakai perekrut yang sempurna memenuhi syarat, sehingga menghidupkan kembali pengisian otomatis akan menggagalkan test — penerima uang tidak boleh berubah diam-diam.
 
 ### 10. Komisi ditahan 7 hari, pencairan manual
 
