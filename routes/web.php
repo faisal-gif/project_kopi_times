@@ -74,6 +74,22 @@ Route::post('/kirim-berita/{event:slug}', [PublicNewsController::class, 'store']
 Route::get('/checkout', [PendingController::class, 'index'])->middleware('auth')->name('checkout');
 Route::post('/checkout/payment', [PaymentController::class, 'store'])->middleware('auth')->name('checkout.payment');
 
+/*
+ * Halaman pembayaran sendiri — pengganti halaman checkout milik Tripay.
+ * Di luar middleware 'active' karena justru dipakai user yang belum aktif.
+ * Dicari lewat merchant_ref (ULID) dan dibatasi pemiliknya di controller.
+ */
+Route::middleware('auth')->group(function () {
+    Route::get('/pembayaran/{merchantRef}', [PaymentController::class, 'instruksi'])->name('pembayaran.instruksi');
+    // Dibatasi karena halamannya ikut memanggil otomatis selama terbuka.
+    Route::post('/pembayaran/{merchantRef}/cek', [PaymentController::class, 'cekStatus'])
+        ->middleware('throttle:20,1')
+        ->name('pembayaran.cek');
+    Route::post('/pembayaran/{merchantRef}/ulang', [PaymentController::class, 'buatUlang'])
+        ->middleware('throttle:10,1')
+        ->name('pembayaran.ulang');
+});
+
 
 Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

@@ -21,11 +21,17 @@ class Payments extends Model
         'amount_recived',
         'status',
         'checkout_url',
+        'pay_code',
+        'pay_url',
+        'qr_url',
+        'payment_name',
+        'instructions',
         'paid_at',
         'expired_at',
     ];
 
     protected $casts = [
+        'instructions' => 'array',
         'paid_at'    => 'datetime',
         'expired_at' => 'datetime',
     ];

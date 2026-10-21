@@ -42,6 +42,17 @@ class HandleInertiaRequests extends Middleware
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
+            /*
+             * Pesan flash. Sebelum ini tidak pernah dibagikan, sehingga setiap
+             * `back()->with('error', ...)` di aplikasi ini — termasuk kegagalan
+             * membuat transaksi Tripay di PaymentController::store() — tidak pernah
+             * terlihat user. Halaman pembayaran bergantung pada ini.
+             */
+            'flash' => fn () => [
+                'success' => $request->session()->get('success'),
+                'error' => $request->session()->get('error'),
+                'info' => $request->session()->get('info'),
+            ],
         ];
     }
 }

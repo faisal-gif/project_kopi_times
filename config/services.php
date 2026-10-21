@@ -34,6 +34,8 @@ return [
     ],
 
     'tripay' => [
+        // Produksi: https://tripay.co.id/api — sandbox: https://tripay.co.id/api-sandbox
+        'base_url' => env('TRIPAY_BASE_URL', 'https://tripay.co.id/api'),
         'api_key' => env('TRIPAY_API_KEY'),
         'merchant_code' => env('TRIPAY_MERCHANT_CODE'),
         'private_key' => env('TRIPAY_PRIVATE_KEY'),

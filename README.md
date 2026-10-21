@@ -6,6 +6,7 @@ Aplikasi membership penulis **Kopi TIMES** (Kolom Opini TIMES Indonesia). Penuli
 - Sistem visual halaman publik: [DESIGN.md](DESIGN.md)
 - Spesifikasi manage event untuk CMS redaksi: [INSTRUKSI_MANAGE_PUBLIC_EVENT.md](INSTRUKSI_MANAGE_PUBLIC_EVENT.md)
 - Program afiliasi 2 tingkat: [ADR](docs/adr/0001-afiliasi-2-tingkat.md) · [rancangan teknis](docs/afiliasi-rancangan-teknis.md) · [spesifikasi CMS](INSTRUKSI_AFILIASI_CMS_BARU.md) · [arahan projek AJP](INSTRUKSI_AFILIASI_AJP.md)
+- Halaman pembayaran sendiri (bukan halaman Tripay): [ADR](docs/adr/0002-halaman-pembayaran-sendiri.md)
 
 ## Stack
 
