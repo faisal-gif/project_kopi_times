@@ -287,4 +287,20 @@ class PaymentPageTest extends TestCase
                 ->where('payment.checkout_url', 'https://tripay.test/checkout/DEV-T0001')
             );
     }
+
+    /** Tripay bisa menjawab sukses dengan data tidak lengkap; jangan sampai 500. */
+    public function test_incomplete_tripay_response_fails_gracefully(): void
+    {
+        $user = User::factory()->create(['status' => 0]);
+
+        Http::fake(['*/transaction/create' => Http::response(['success' => true, 'data' => []])]);
+
+        $this->actingAs($user)
+            ->post(route('checkout.payment'), ['package_id' => 1, 'paymentMethod' => 'BRIVA'])
+            ->assertRedirect();
+
+        // Tanpa reference, callback tidak akan pernah bisa dicocokkan: lebih baik
+        // tidak ada baris sama sekali daripada pembayaran yatim.
+        $this->assertSame(0, Payments::count());
+    }
 }

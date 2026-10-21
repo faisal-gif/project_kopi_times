@@ -9,6 +9,7 @@ use App\Services\TripayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -204,7 +205,17 @@ class PaymentController extends Controller
             return $response['message'] ?? 'Gagal membuat transaksi pembayaran. Coba lagi.';
         }
 
-        $data = $response['data'];
+        $data = $response['data'] ?? [];
+
+        // `success: true` dengan data tidak lengkap pernah terjadi saat menguji, dan
+        // tanpa penjagaan ini halamannya mati 500 di tengah checkout. Tanpa `reference`
+        // kita tidak akan pernah bisa mencocokkan callback-nya, jadi barisnya lebih baik
+        // tidak dibuat sama sekali daripada menjadi pembayaran yatim.
+        if (empty($data['reference'])) {
+            Log::warning('Tripay: respons create tanpa reference.', ['merchant_ref' => $merchantRef]);
+
+            return 'Penyedia pembayaran mengembalikan data tidak lengkap. Coba lagi sebentar.';
+        }
 
         // Catat payment hanya setelah Tripay menerima transaksi.
         return Payments::create([
