@@ -113,8 +113,8 @@ class RantaiTier2Test extends TestCase
         $komisiB = AffiliateCommission::get()->keyBy('role');
         $this->assertSame(9600, (int) $komisiB['tier1']->amount, 'A harus dapat 20% dari pendaftaran B');
         $this->assertSame($a->id, $komisiB['tier1']->affiliate_id);
-        // B belum punya upline, jadi tier2 dari pendaftaran B tertahan — itu wajar.
-        $this->assertSame('unassigned', $komisiB['tier2']->status);
+        // B belum punya upline, jadi tier2 dari pendaftaran B tidak terbit sama sekali.
+        $this->assertFalse($komisiB->has('tier2'));
 
         // --- B jadi afiliator: uplinenya harus A, otomatis
         $afiliatorB = $this->ajukanJadiAfiliator($b, 'Akun B');
@@ -149,7 +149,6 @@ class RantaiTier2Test extends TestCase
 
         $komisi = AffiliateCommission::get()->keyBy('role');
         $this->assertSame($afiliatorB->id, $komisi['tier1']->affiliate_id, 'B tetap dapat 20%');
-        $this->assertNull($komisi['tier2']->affiliate_id, 'tidak ada yang menerima 5%');
-        $this->assertSame('unassigned', $komisi['tier2']->status);
+        $this->assertFalse($komisi->has('tier2'), 'tanpa upline, pos 5% tidak diterbitkan');
     }
 }

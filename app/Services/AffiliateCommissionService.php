@@ -128,11 +128,28 @@ class AffiliateCommissionService
 
         $rows = [];
         foreach (self::split((int) $payment->amount, $source !== null) as $position) {
-            // tier1 ke perekrut; tier2 ke uplinenya, atau tertahan bila tidak ada;
-            // internal tidak pernah punya penerima.
+            /*
+             * Tier 2 tanpa upline TIDAK diterbitkan sama sekali.
+             *
+             * Sampai 2026-10-21 barisnya tetap dibuat berstatus `unassigned` supaya
+             * uangnya terlihat dan bisa ditetapkan belakangan (ADR 0001 keputusan 9).
+             * Dibatalkan atas permintaan pemilik produk: baris tanpa penerima lebih
+             * sering membingungkan daripada membantu — di layar ia berdampingan dengan
+             * nama perekrut, sehingga terbaca seolah perekrut menerima dua pos, dan
+             * ikut terhitung di "komisi keluar" padahal uangnya tidak ke mana-mana.
+             *
+             * Konsekuensi yang disadari: 5% itu kini diam-diam tinggal di kantor dan
+             * tidak muncul di laporan mana pun. Kalau nanti ingin dilacak lagi,
+             * hidupkan kembali di sini — bukan di tempat lain.
+             */
+            if ($position['role'] === 'tier2' && ! $upline) {
+                continue;
+            }
+
+            // tier1 ke perekrut; tier2 ke uplinenya; internal tidak pernah punya penerima.
             $payee = match ($position['role']) {
                 'tier1' => $source->id,
-                'tier2' => $upline?->id,
+                'tier2' => $upline->id,
                 default => null,
             };
 
@@ -142,7 +159,7 @@ class AffiliateCommissionService
                 'user_id' => $payment->user_id,
                 'affiliate_id' => $payee,
                 'source_affiliate_id' => $source?->id,
-                'status' => ($position['role'] === 'tier2' && ! $upline) ? 'unassigned' : 'accrued',
+                'status' => 'accrued',
                 'available_at' => $availableAt,
                 'created_at' => $now,
                 'updated_at' => $now,

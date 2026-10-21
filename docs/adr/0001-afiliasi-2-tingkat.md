@@ -115,6 +115,8 @@ Konsekuensi yang disadari: `affiliate_commissions` sekarang punya baris untuk pe
 
 ### 9. Tier 2 tanpa upline tetap dicatat sebagai pos tertahan
 
+> **DIBATALKAN 2026-10-21.** Keputusan ini tidak lagi berlaku; lihat keputusan 9d.
+
 Baris tier 2 tetap dibuat dengan status `unassigned` dan tanpa penerima, bukan dihapus dan bukan dialihkan ke afiliator.
 
 Alasan: angkanya tetap terlihat di laporan, dan manajemen bisa memutuskan peruntukannya belakangan tanpa menghitung ulang data lama.
@@ -164,6 +166,18 @@ Konsekuensi yang disadari:
 - Enam afiliator yang ada saat keputusan ini dibuat belum punya baris referral sama sekali, jadi rantai pertama baru akan terbentuk dari pengajuan berikutnya.
 
 Dikunci dengan test: `RantaiTier2Test` menelusuri A→B→C ujung ke ujung untuk kedua keadaan penanda (dicentang dan tidak), plus empat test pada `AffiliateApplicationTest` untuk pengundang yang tidak dicentang, ditangguhkan, dan milik situs lain.
+
+### 9d. Tier 2 tanpa upline tidak diterbitkan sama sekali (pengganti keputusan 9)
+
+Bila perekrut tidak punya upline, pos tier 2 **tidak dibuat**. Tidak ada lagi baris `unassigned` yang lahir dari pencatatan komisi.
+
+Alasan: baris tanpa penerima ternyata lebih membingungkan daripada membantu. Di layar ia berdampingan dengan nama perekrut lewat `source_affiliate_id`, sehingga terbaca seolah perekrut menerima dua pos sekaligus — keluhan yang benar-benar muncul dari pemilik produk saat melihat daftar transaksi. Baris itu juga ikut terhitung dalam "komisi keluar", membuat net kantor tampak lebih kecil daripada kenyataan, padahal uangnya tidak berpindah ke mana pun.
+
+Konsekuensi yang disadari dan diterima: **5% itu kini tinggal di kantor tanpa jejak baris apa pun.** Tidak ada laporan yang bisa menjawab "berapa potensi komisi tingkat 2 yang tidak tersalurkan bulan ini", karena angkanya tidak pernah dicatat. Itu persis yang hendak dicegah keputusan 9; manajemen memilih kejelasan layar di atas keterlacakan angka itu.
+
+Status `unassigned` dan layar **Baris Tertahan** di CMS tetap ada — dipakai baris lama yang sudah terlanjur terbit, dan tetap menjadi jalur koreksi manual.
+
+Kalau suatu saat ingin dilacak lagi, hidupkan kembali di `AffiliateCommissionService::accrue()`; tempat itu satu-satunya yang memutuskan hal ini.
 
 ### 10. Komisi ditahan 7 hari, pencairan manual
 

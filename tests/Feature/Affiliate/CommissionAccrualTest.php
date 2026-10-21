@@ -109,19 +109,31 @@ class CommissionAccrualTest extends TestCase
         $this->assertSame(31640, (int) $payment->fresh()->amount - (int) AffiliateCommission::sum('amount'));
     }
 
-    public function test_affiliate_without_upline_leaves_tier2_unassigned(): void
+    /**
+     * Tanpa upline, pos tier 2 TIDAK diterbitkan.
+     *
+     * Dulu barisnya tetap dibuat berstatus `unassigned` supaya uangnya terlihat.
+     * Dibatalkan 2026-10-21: baris tanpa penerima lebih membingungkan daripada
+     * membantu. 5%-nya kini tinggal di kantor tanpa jejak baris apa pun.
+     */
+    public function test_affiliate_without_upline_produces_no_tier2_row(): void
     {
         $affiliate = Affiliate::factory()->create(['upline_id' => null]);
         $user = $this->member();
         $this->refer($user, $affiliate);
 
-        $this->sendCallback($this->payment($user))->assertOk();
+        $payment = $this->payment($user);
+        $this->sendCallback($payment)->assertOk();
 
-        $tier2 = AffiliateCommission::where('role', 'tier2')->sole();
-        $this->assertSame('unassigned', $tier2->status);
-        $this->assertNull($tier2->affiliate_id);
-        $this->assertSame($affiliate->id, $tier2->source_affiliate_id);
-        $this->assertSame(1920, (int) $tier2->amount);
+        $this->assertSame(0, AffiliateCommission::where('role', 'tier2')->count());
+        $this->assertSame(0, AffiliateCommission::where('status', 'unassigned')->count());
+
+        // Perekrut tetap dapat 20%, staff IT tetap dapat bagiannya, sisanya ke kantor.
+        $rows = AffiliateCommission::get()->keyBy('role');
+        $this->assertCount(2, $rows);
+        $this->assertSame(9600, (int) $rows['tier1']->amount);
+        $this->assertSame(4840, (int) $rows['internal']->amount);
+        $this->assertSame(33560, (int) $payment->fresh()->amount - (int) AffiliateCommission::sum('amount'));
     }
 
     public function test_duplicate_callback_does_not_duplicate_commissions(): void
@@ -134,8 +146,8 @@ class CommissionAccrualTest extends TestCase
         $this->sendCallback($payment)->assertOk();
         $this->sendCallback($payment)->assertOk();
 
-        $this->assertSame(3, AffiliateCommission::count());
-        $this->assertSame(16360, (int) AffiliateCommission::sum('amount'));
+        $this->assertSame(2, AffiliateCommission::count());   // tanpa upline: tier2 tidak terbit
+        $this->assertSame(14440, (int) AffiliateCommission::sum('amount'));
     }
 
     public function test_renewal_package_earns_nothing(): void
@@ -184,7 +196,7 @@ class CommissionAccrualTest extends TestCase
 
         $this->sendCallback($this->payment($user))->assertOk();
 
-        $this->assertSame(3, AffiliateCommission::where('type', 4)->count());
+        $this->assertSame(2, AffiliateCommission::where('type', 4)->count());
     }
 
     /** Tanpa kode referral tim IT tetap dapat bagiannya; kantor menyimpan sisanya. */
@@ -271,8 +283,8 @@ class CommissionAccrualTest extends TestCase
         $reversed = app(\App\Services\AffiliateCommissionService::class)
             ->reverse($payment->fresh(), 'Refund manual');
 
-        $this->assertSame(3, $reversed);
-        $this->assertSame(3, AffiliateCommission::where('status', 'reversed')->count());
+        $this->assertSame(2, $reversed);
+        $this->assertSame(2, AffiliateCommission::where('status', 'reversed')->count());
         $this->assertSame('Refund manual', AffiliateCommission::first()->status_note);
     }
 }

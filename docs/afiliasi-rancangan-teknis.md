@@ -219,7 +219,7 @@ Diletakkan sebelum mutasi user supaya deteksi member baru tidak terganggu oleh `
    Syarat `level` saja tidak cukup: member lama yang sudah lewat masa aktif bisa memilih paket level 1 lagi dan akan menghasilkan komisi kedua. Kolom snapshot di `payments` juga ditolak, karena tabel itu sudah mengalami drift skema dan flag yang ditulis saat checkout bisa basi bila invoice lama dibayar belakangan.
 5. Hitung `split((int) $payment->amount, $adaPerekrut)` dan tentukan penerima:
    - `tier1` → afiliator perekrut, `status = accrued`
-   - `tier2` → `upline_id` perekrut. Tidak ada upline → `affiliate_id = null`, `status = unassigned`
+   - `tier2` → `upline_id` perekrut. **Tidak ada upline → posnya tidak diterbitkan sama sekali** (ADR keputusan 9d); 5%-nya tinggal di kantor tanpa baris
    - `internal` → `affiliate_id = null`, `status = accrued`
    - semua baris: `source_affiliate_id` = perekrut (**null** bila tidak ada perekrut berhak), `available_at = now() + hold_days`
 
@@ -270,7 +270,7 @@ Afiliator tidak lagi hanya dibuat admin. Member **aktif** bisa mengajukan diri l
 - Rute pengajuan memakai middleware `active`; `/afiliasi` sendiri tetap di luar `active` karena afiliator bentukan admin belum tentu member berbayar.
 - `AffiliateController@index` sekarang sadar status: belum punya baris → arahkan ke formulir; `pending` → halaman status tanpa angka apa pun; `active` → dashboard; `suspended`/`inactive` → dashboard dengan peringatan. Middleware `EnsureUserIsAffiliate` dihapus karena 403-nya justru menghalangi member yang ingin mengajukan.
 - Pengajuan menyimpan `terms_accepted_at`, `applicant_note`, data rekening (wajib), dan `status = 'pending'`.
-- `upline_id` diisi `AffiliateApplicationController::uplineDariPengundang()`: afiliator yang mengundang pemohon jadi member, dibaca dari `affiliate_referrals` — **tapi hanya bila akun itu bertanda `tier2_eligible`**, yang dicentang admin di CMS. Null bila pengundangnya tidak ada, tidak dicentang, bukan `active`, atau milik situs lain. Pembagiannya: kebijakan (siapa berhak) ke admin, fakta (siapa mengundang siapa) ke sistem — lihat [ADR 0001 keputusan 9c](adr/0001-afiliasi-2-tingkat.md), yang menggantikan dua percobaan sebelumnya di hari yang sama. Selama upline kosong, komisi tingkat 2 dari afiliator itu lahir `unassigned` dan menunggu admin di layar Baris Tertahan.
+- `upline_id` diisi `AffiliateApplicationController::uplineDariPengundang()`: afiliator yang mengundang pemohon jadi member, dibaca dari `affiliate_referrals` — **tapi hanya bila akun itu bertanda `tier2_eligible`**, yang dicentang admin di CMS. Null bila pengundangnya tidak ada, tidak dicentang, bukan `active`, atau milik situs lain. Pembagiannya: kebijakan (siapa berhak) ke admin, fakta (siapa mengundang siapa) ke sistem — lihat [ADR 0001 keputusan 9c](adr/0001-afiliasi-2-tingkat.md), yang menggantikan dua percobaan sebelumnya di hari yang sama. Selama upline kosong, komisi tingkat 2 dari afiliator itu **tidak terbit sama sekali** — lihat keputusan 9d.
 - Kode referral digenerate `Affiliate::generateCode()`: maksimal 6 huruf dari nama + 4 karakter acak, diulang sampai unik.
 - Halaman publik `/syarat-afiliasi` memuat ketentuan yang disetujui pemohon. Tarif ditulis sebagai **persentase** (20% dari harga, 5% dari sisa) supaya ikut harga paket, ditambah satu contoh nominal. Angkanya dikirim dari `config/affiliate.php` lewat props `tier1_bps` dan `tier2_bps`; **pos internal tidak pernah ikut dikirim**, dan ada test yang menjaganya.
 - `config/affiliate.php` menambah `min_payout` (default Rp 50.000) sebagai sumber tunggal untuk S&K dan batch pencairan di CMS.
@@ -297,7 +297,7 @@ Afiliator tidak lagi hanya dibuat admin. Member **aktif** bisa mengajukan diri l
 
 **Mesin komisi:**
 10. Callback lunas, paket level 1, ada perekrut **dan** upline → tepat 3 baris dengan nominal benar, dan `sum(amount) + 32.640 == payment.amount`.
-11. Perekrut tanpa upline → baris tier 2 `unassigned`, `affiliate_id` null, `source_affiliate_id` terisi.
+11. Perekrut tanpa upline → **nol baris tier 2**; hanya tier1 dan internal yang terbit.
 12. Member direkrut tapi beli paket level 2 → nol baris.
 13. Member baru tanpa perekrut → tepat satu baris `internal` 4.800 dengan base 48.000, `affiliate_id` dan `source_affiliate_id` null.
 13b. Afiliator `suspended` atau afiliator situs lain → tier1 dan tier2 tidak terbit, baris `internal` 4.800 tetap terbit.
@@ -318,7 +318,7 @@ Afiliator tidak lagi hanya dibuat admin. Member **aktif** bisa mengajukan diri l
 2. **Afiliator ditangguhkan setelah komisi tercatat.** Asumsi: penangguhan menghentikan atribusi baru, tidak membatalkan komisi lama. Pembatalan massal adalah keputusan admin di CMS. Konfirmasikan ke pemilik produk.
 3. **Harga berubah di tengah jalan.** Aman: yang dibagi `payment.amount`, dan `base_amount`/`rate_bps` disimpan per baris.
 4. **Kecurangan afiliator.** Penolakan self-referral hanya mencocokkan email; afiliator yang memakai email kedua tidak terdeteksi di kode. Masa tahan 7 hari memberi jeda, deteksi polanya ada di CMS.
-5. **Tier 2 tertahan menumpuk.** Tidak ada mekanisme kedaluwarsa. CMS wajib punya laporan `status = unassigned`, kalau tidak uang itu tidak terlihat siapa pun.
+5. ~~**Tier 2 tertahan menumpuk.**~~ Tidak berlaku sejak keputusan 9d: baris tanpa penerima tidak lagi diterbitkan. Layar Baris Tertahan tetap ada untuk baris lama dan koreksi manual.
 6. **Zona waktu.** Aplikasi memakai `Asia/Jakarta` dan MySQL menyimpan datetime polos. Kalau CMS berjalan di UTC, setiap batas bulan bergeser 7 jam. Ini tertulis juga di dokumen CMS.
 7. **Cache halaman publik.** Middleware memasang cookie per request. Kalau nanti `/` dipasang cache penuh atau CDN, atribusi akan hilang.
 8. **Belum ada scheduler.** Transisi "sudah lewat masa tahan" dievaluasi CMS lewat `available_at <= now()` saat menyusun batch.
