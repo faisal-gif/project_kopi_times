@@ -6,6 +6,14 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import Dropdown from '@/Components/Dropdown';
 
 
+// Satu daftar untuk menu atas (desktop + mobile) dan tautan footer, supaya tiga
+// tempat itu tidak pernah berselisih isinya.
+const AFILIASI_MENU = [
+    { label: 'Panduan Afiliasi', href: '/panduan-afiliasi' },
+    { label: 'Komisi Jaringan', href: '/panduan-jaringan' },
+    { label: 'Syarat Afiliasi', href: '/syarat-afiliasi' },
+];
+
 function LandingLayout({ children }) {
     const currentYear = new Date().getFullYear();
     const { auth } = usePage().props;
@@ -33,6 +41,16 @@ function LandingLayout({ children }) {
                                 <li><Link href={"/"}>Beranda</Link></li>
                                 <li><Link href={"/tentang"}>Tentang</Link></li>
                                 <li><Link href={"/harga"}>Harga</Link></li>
+                                <li>
+                                    <details>
+                                        <summary>Afiliasi</summary>
+                                        <ul>
+                                            {AFILIASI_MENU.map((m) => (
+                                                <li key={m.href}><Link href={m.href}>{m.label}</Link></li>
+                                            ))}
+                                        </ul>
+                                    </details>
+                                </li>
                             </ul>
                         </div>
 
@@ -48,6 +66,16 @@ function LandingLayout({ children }) {
                             <li><Link href={"/"}>Beranda</Link></li>
                             <li><Link href={"/tentang"}>Tentang</Link></li>
                             <li><Link href={"/harga"}>Harga</Link></li>
+                            <li>
+                                <details>
+                                    <summary>Afiliasi</summary>
+                                    <ul className="z-[1] w-56 rounded-box bg-base-100 p-2 shadow">
+                                        {AFILIASI_MENU.map((m) => (
+                                            <li key={m.href}><Link href={m.href}>{m.label}</Link></li>
+                                        ))}
+                                    </ul>
+                                </details>
+                            </li>
                         </ul>
                     </div>
 
@@ -101,6 +129,7 @@ function LandingLayout({ children }) {
                                     { label: "Tentang Kami", href: "/tentang" },
                                     { label: "Harga", href: "/harga" },
                                     { label: "Mulai Menulis", href: "/register" },
+                                    ...AFILIASI_MENU,
                                 ].map((link) => (
                                     <li key={link.href}>
                                         <Link

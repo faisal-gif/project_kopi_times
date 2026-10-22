@@ -147,7 +147,11 @@ export default function Panduan({ min_payout, hold_days, cookie_days, tier1_bps,
                                     <p>
                                         Afiliator yang ditunjuk itu juga mendapat tautan undangan di halaman
                                         afiliasinya untuk mengajak member lain jadi afiliator — merekalah yang
-                                        nantinya menjadi jaringannya.
+                                        nantinya menjadi jaringannya. Rinciannya ada di{' '}
+                                        <Link href="/panduan-jaringan" className="font-print font-extrabold text-pen underline decoration-2 underline-offset-4 hover:text-desk">
+                                            Panduan Komisi Jaringan
+                                        </Link>
+                                        .
                                     </p>
                                     </>
                                 )}

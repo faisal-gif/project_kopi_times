@@ -205,7 +205,7 @@ Rutenya publik dan sengaja bodoh: ia hanya menitipkan kode ke cookie `kt_undanga
 
 Konsekuensi yang disadari: **upline kini bisa tidak cocok dengan data referral.** Di CMS akan muncul afiliator yang uplinenya bukan perekrut membernya, dan tidak ada kolom yang menjelaskan asalnya — `affiliates.upline_id` hanya menyimpan hasilnya, bukan jalannya. Kalau nanti perlu dibedakan, tambahkan kolom sumber; untuk sekarang perbedaan itu tidak dipakai di layar mana pun.
 
-Di AJP tautan ini **tidak ditampilkan** selama `AFFILIATE_TIER2_BPS` masih 0: uplinenya tetap terisi, tapi pos tier2 tidak pernah terbit, jadi mengundang di sana belum menghasilkan apa pun.
+Sejak 22 Oktober 2026 AJP ikut dua tingkat (`AFFILIATE_TIER2_BPS=500`), jadi tautan ini berlaku sama di kedua situs. Sakelar `tier2_bps = 0` tetap ada dan tetap menyembunyikan tautannya, tapi tidak dipakai situs mana pun sekarang.
 
 ### 10. Komisi ditahan 7 hari, pencairan manual
 

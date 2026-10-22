@@ -31,5 +31,18 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <!--
+            Tarif afiliasi dipatok di sini supaya hasil test tidak ikut berubah bila
+            .env seorang pengembang berisi tarif lain. Angka-angka di test afiliasi
+            adalah angka tetap, jadi tanpa patokan ini test bisa gagal di satu mesin
+            dan lulus di mesin lain tanpa ada kode yang berubah.
+        -->
+        <env name="AFFILIATE_TIER1_BPS" value="2000"/>
+        <env name="AFFILIATE_TIER2_BPS" value="500"/>
+        <env name="AFFILIATE_INTERNAL_BPS" value="1000"/>
+        <env name="AFFILIATE_INTERNAL_FLAT" value="5000"/>
+        <env name="AFFILIATE_HOLD_DAYS" value="7"/>
+        <env name="AFFILIATE_MIN_PAYOUT" value="50000"/>
+        <env name="AFFILIATE_COOKIE_DOMAIN" value=""/>
     </php>
 </phpunit>

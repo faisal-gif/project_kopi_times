@@ -138,7 +138,8 @@ export default function Index({ affiliate, summary, commissions, payouts = [], m
                         </h3>
                         <p className="mb-4 text-sm text-muted-foreground">
                             Bagikan tautan ini ke member yang ingin jadi afiliator. Begitu pengajuannya disetujui,
-                            Anda menerima komisi tingkat 2 dari setiap pendaftar yang ia bawa dengan kodenya sendiri.
+                            Anda menerima komisi tingkat 2 dari setiap pendaftar yang ia bawa dengan kodenya sendiri.{' '}
+                            <Link href="/panduan-jaringan" className="link link-primary">Baca panduan komisi jaringan</Link>.
                         </p>
                         <ReferralLink url={affiliate.invite_url} />
                     </Card>

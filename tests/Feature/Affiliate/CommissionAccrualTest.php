@@ -208,7 +208,7 @@ class CommissionAccrualTest extends TestCase
 
         $internal = AffiliateCommission::sole();
         $this->assertSame('internal', $internal->role);
-        $this->assertSame(9800, (int) $internal->amount);       // 10% dari 48.000 utuh + flat 1.000
+        $this->assertSame(9800, (int) $internal->amount);       // 10% dari 48.000 utuh + flat 5.000
         $this->assertSame(48000, (int) $internal->base_amount); // tidak ada potongan tier1
         $this->assertSame(1000, (int) $internal->rate_bps);
         $this->assertSame('accrued', $internal->status);

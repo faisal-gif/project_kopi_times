@@ -59,8 +59,8 @@ class AffiliateCommissionService
             ]
             : [$internal];
 
-        // Tarif 0 berarti pos itu tidak berlaku di situs ini — AJP satu tingkat, jadi
-        // tier2_bps 0. Posnya dibuang, bukan dicatat sebagai baris bernilai nol:
+        // Tarif 0 berarti pos itu tidak berlaku di situs ini — sakelar per-situs yang
+        // sekarang tidak dipakai siapa pun. Posnya dibuang, bukan dicatat sebagai nol:
         // baris nol akan muncul di laporan, menumpuk sebagai `unassigned` saat tidak
         // ada upline, dan minta disetujui admin padahal tidak ada uang di dalamnya.
         $posisi = array_values(array_filter($posisi, fn ($p) => $p['rate_bps'] > 0));

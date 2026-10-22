@@ -8,6 +8,23 @@ Bangun layar **admin program afiliasi**: kelola afiliator, tinjau komisi, dan ca
 
 **Sudah memegang versi sebelumnya? Baca bagian ini dulu, sisanya hanya penajaman.**
 
+### 2026-10-22 (3) — AJP ikut dua tingkat, mekanismenya sama persis dengan Kopi TIMES
+
+`AFFILIATE_TIER2_BPS` di AJP berubah dari **0** jadi **500**. Sejak sekarang pos `tier2` terbit di AJP persis seperti di Kopi TIMES: 5% dari sisa setelah tier1, hanya bila perekrutnya punya upline yang dicentang `tier2_eligible`.
+
+Pembagian per pembayaran member baru **sama di kedua situs** (harga 48.000):
+
+| Pos (`role`) | Penerima | Dasar | Tarif | Nominal |
+|---|---|---|---|---|
+| `tier1` | perekrut langsung | 48.000 | 20% | **9.600** |
+| `tier2` | upline si perekrut | 38.400 | 5% | **1.920** |
+| `internal` | Staff IT | 38.400 | 10% + Rp 5.000 | **8.840** |
+| — | net kantor | | sisa | **27.640** |
+
+**Untuk CMS tidak ada yang perlu dibangun atau diubah.** Layar afiliasi AJP memang sudah punya kolom dan filter pos `tier2` sejak awal — selama ini saja isinya selalu kosong karena tarifnya 0. Yang berubah hanya: baris `tier2` bertipe `type = 1` mulai bermunculan, dan angka "komisi keluar" serta net kantor AJP ikut bergeser.
+
+Satu hal yang perlu diantisipasi di laporan: **baris lama tidak dihitung ulang.** Pembayaran AJP sebelum 22 Oktober 2026 memang tidak punya baris `tier2`, dan itu benar — uangnya waktu itu tinggal di kantor. Jangan menambalnya belakangan.
+
 ### 2026-10-22 (2) — undangan jadi afiliator: upline bisa tidak cocok dengan data referral
 
 Afiliator yang dicentang `tier2_eligible` kini punya tautan undangan **`/undang-afiliator/{kode}`** di halaman afiliasinya. Member mana pun yang mengajukan diri jadi afiliator lewat tautan itu langsung memakai si pengundang sebagai `upline_id`.
@@ -25,9 +42,9 @@ Urutannya bila keduanya ada: undangan menang atas rantai referral; bila pengunda
 
 **Komponen tetap Staff IT naik dari Rp 1.000 jadi Rp 5.000 di kedua situs** (`AFFILIATE_INTERNAL_FLAT` di masing-masing aplikasi publik). Persentasenya tetap 10%.
 
-Pada harga paket 48.000 — Kopi TIMES (dua tingkat): `internal` = 3.840 + 5.000 = **8.840**, net kantor **27.640**. AJP (satu tingkat): `internal` **8.840**, net kantor **29.560**. Tanpa perekrut di kedua situs: 4.800 + 5.000 = **9.800**.
+Pada harga paket 48.000 di kedua situs: `internal` = 3.840 + 5.000 = **8.840**, net kantor **27.640**. Tanpa perekrut: 4.800 + 5.000 = **9.800**, net kantor **38.200**.
 
-**Akibatnya untuk CMS: jangan pernah menuliskan tarif sebagai teks di layar.** Label seperti "Staff IT (10% + Rp 1.000)" langsung usang begitu tarifnya diubah, dan label "Tier 2 — upline (5%)" memang sudah salah untuk AJP yang tidak punya tingkat kedua. Label di dropdown pos dan di kartu Rincian Pos sudah dipangkas jadi "Tier 1 — perekrut", "Tier 2 — upline", "Staff IT" saja.
+**Akibatnya untuk CMS: jangan pernah menuliskan tarif sebagai teks di layar.** Label seperti "Staff IT (10% + Rp 1.000)" langsung usang begitu tarifnya diubah — dan tarif di sini sudah berubah tiga kali dalam satu minggu. Label di dropdown pos dan di kartu Rincian Pos sudah dipangkas jadi "Tier 1 — perekrut", "Tier 2 — upline", "Staff IT" saja.
 
 Nominal yang ditampilkan tetap benar tanpa label itu: tiap baris `affiliate_commissions` menyimpan `base_amount`, `rate_bps`, dan `flat_amount` sendiri, jadi `amount = intdiv(base_amount × rate_bps, 10000) + flat_amount` selalu bisa dihitung ulang dari barisnya sendiri — termasuk baris lama yang terbit saat tarifnya masih berbeda.
 
