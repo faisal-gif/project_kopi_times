@@ -2,7 +2,7 @@ import Card from '@/Components/Card';
 import PaginationDaisy from '@/Components/PaginationDaisy';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatDate, formatRupiah } from '@/Utils/formatter';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import {
     AlertTriangle, Banknote, Check, Clock, Copy, Share2, Users, Wallet, XCircle,
 } from 'lucide-react';
@@ -125,6 +125,10 @@ export default function Index({ affiliate, summary, commissions, payouts = [], m
                         Kode Anda: <span className="font-semibold text-foreground">{affiliate.code}</span>
                     </p>
                     <ReferralLink url={affiliate.referral_url} />
+                    <p className="mt-3 text-sm text-muted-foreground">
+                        Belum yakin cara memakainya?{' '}
+                        <Link href="/panduan-afiliasi" className="link link-primary">Baca panduan afiliasi</Link>.
+                    </p>
                 </Card>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

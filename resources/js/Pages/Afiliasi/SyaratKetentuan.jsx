@@ -159,6 +159,13 @@ export default function SyaratKetentuan({ min_payout, hold_days, cookie_days, ti
                                     </a>
                                 </p>
                                 <p className="mt-6 font-type text-sm text-ink/70">
+                                    Penjelasan langkah demi langkah ada di{' '}
+                                    <Link href="/panduan-afiliasi" className="text-pen underline underline-offset-4">
+                                        Panduan Afiliasi
+                                    </Link>
+                                    .
+                                </p>
+                                <p className="mt-6 font-type text-sm text-ink/70">
                                     Lihat juga{' '}
                                     <Link href="/syarat-ketentuan" className="text-pen underline underline-offset-4">
                                         Syarat &amp; Ketentuan layanan

@@ -60,6 +60,21 @@ Route::get('/syarat-afiliasi', function () {
         ],
     ]);
 })->name('afiliasi.syarat');
+Route::get('/panduan-afiliasi', function () {
+    return Inertia::render('Afiliasi/Panduan', [
+        'min_payout' => (int) config('affiliate.min_payout'),
+        'hold_days' => (int) config('affiliate.hold_days'),
+        'cookie_days' => (int) config('affiliate.cookie_days'),
+        // Tarif yang boleh dilihat publik. Pos internal sengaja tidak ikut dikirim.
+        'tier1_bps' => (int) config('affiliate.tier1_bps'),
+        'tier2_bps' => (int) config('affiliate.tier2_bps'),
+        'og' => [
+            'title'       => 'Panduan Afiliasi — Kopi TIMES',
+            'description' => 'Cara kerja program afiliasi Kopi TIMES: mendaftar, membagikan tautan referral, komisi, dan pencairan.',
+            'url'         => route('afiliasi.panduan'),
+        ],
+    ]);
+})->name('afiliasi.panduan');
 
 
 
