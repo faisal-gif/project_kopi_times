@@ -72,7 +72,7 @@ class AffiliateCommissionService
      * Net kantor tidak boleh negatif.
      *
      * Selama semua pos berupa persentase, totalnya mustahil melebihi nilai pembayaran.
-     * Komponen tetap merusak jaminan itu: pada harga paket kecil, Rp 1.000 bisa membuat
+     * Komponen tetap merusak jaminan itu: pada harga paket kecil, flat Rp 5.000 bisa membuat
      * total pos melampaui yang dibayar pembeli — artinya kantor membayar lebih dari
      * yang diterima. Jadi yang dipangkas HANYA komponen tetapnya, bukan persentase
      * milik afiliator, dan hanya sebesar kelebihannya.

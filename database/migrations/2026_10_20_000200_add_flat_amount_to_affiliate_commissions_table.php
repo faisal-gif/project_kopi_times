@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Komponen TETAP sebuah pos komisi, di atas persentasenya.
  *
- * Pos internal (staff IT) berubah dari "10% dari sisa" menjadi "10% dari sisa + Rp 1.000".
+ * Pos internal (staff IT) berubah dari "10% dari sisa" menjadi "10% dari sisa + nilai tetap"
+ * (Rp 5.000; lihat config/affiliate.php).
  * Tanpa kolom ini baris internal berhenti bisa dihitung ulang: orang yang mengaudit akan
  * melihat base 38.400 dengan rate 1000 bps tapi amount 4.840, lalu menyimpulkan ada bug.
  *

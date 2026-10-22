@@ -19,13 +19,13 @@ return [
     /*
      * Komponen TETAP pos internal (staff IT), ditambahkan di atas persentase:
      * internal = internal_bps% x sisa setelah tier1  +  internal_flat.
-     * Default 48.000 -> 3.840 + 1.000 = 4.840.
+     * Default 48.000 -> 3.840 + 5.000 = 8.840.
      *
      * Karena ini bukan persentase, nilainya di-snapshot per baris di kolom
      * `affiliate_commissions.flat_amount` supaya tiap baris tetap bisa dihitung
      * ulang: amount = intdiv(base_amount * rate_bps, 10000) + flat_amount.
      */
-    'internal_flat' => (int) env('AFFILIATE_INTERNAL_FLAT', 1000),
+    'internal_flat' => (int) env('AFFILIATE_INTERNAL_FLAT', 5000),
 
     // Masa tahan sebelum komisi boleh disetujui untuk dicairkan.
     'hold_days' => (int) env('AFFILIATE_HOLD_DAYS', 7),

@@ -131,7 +131,7 @@ class RantaiTier2Test extends TestCase
         $this->assertSame(1920, (int) $komisiC['tier2']->amount);
         $this->assertSame($a->id, $komisiC['tier2']->affiliate_id, 'A dapat 5% dari jaringannya');
         $this->assertSame('accrued', $komisiC['tier2']->status);
-        $this->assertSame(4840, (int) $komisiC['internal']->amount);
+        $this->assertSame(8840, (int) $komisiC['internal']->amount);
     }
 
     public function test_tanpa_centang_rantai_tidak_terbentuk(): void

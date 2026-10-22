@@ -14,15 +14,15 @@ Pembagian per pembayaran member baru yang berafiliasi:
 |---|---|---|---|
 | Tier 1 — perekrut langsung | 48.000 | 20% | 9.600 |
 | Tier 2 — upline perekrut | 38.400 | 5% | 1.920 |
-| Internal staff IT (tidak ditampilkan ke publik) | 38.400 | 10% + Rp 1.000 | 4.840 |
-| Net kantor | — | sisa | 31.640 |
+| Internal staff IT (tidak ditampilkan ke publik) | 38.400 | 10% + Rp 5.000 | 8.840 |
+| Net kantor | — | sisa | 27.640 |
 
 Pembayaran member baru **tanpa** perekrut hanya menerbitkan pos internal, dengan dasar harga utuh (lihat keputusan 8a):
 
 | Pos | Dasar | Tarif | Nominal |
 |---|---|---|---|
-| Internal staff IT | 48.000 | 10% + Rp 1.000 | 5.800 |
-| Net kantor | — | sisa | 42.200 |
+| Internal staff IT | 48.000 | 10% + Rp 5.000 | 9.800 |
+| Net kantor | — | sisa | 38.200 |
 
 Keadaan sistem saat keputusan ini dibuat:
 

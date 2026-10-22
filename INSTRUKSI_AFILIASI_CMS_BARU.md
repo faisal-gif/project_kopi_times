@@ -8,6 +8,16 @@ Bangun layar **admin program afiliasi**: kelola afiliator, tinjau komisi, dan ca
 
 **Sudah memegang versi sebelumnya? Baca bagian ini dulu, sisanya hanya penajaman.**
 
+### 2026-10-22 — komponen tetap Staff IT naik jadi Rp 5.000, dan label tarif dicabut dari layar
+
+**Komponen tetap Staff IT naik dari Rp 1.000 jadi Rp 5.000 di kedua situs** (`AFFILIATE_INTERNAL_FLAT` di masing-masing aplikasi publik). Persentasenya tetap 10%.
+
+Pada harga paket 48.000 — Kopi TIMES (dua tingkat): `internal` = 3.840 + 5.000 = **8.840**, net kantor **27.640**. AJP (satu tingkat): `internal` **8.840**, net kantor **29.560**. Tanpa perekrut di kedua situs: 4.800 + 5.000 = **9.800**.
+
+**Akibatnya untuk CMS: jangan pernah menuliskan tarif sebagai teks di layar.** Label seperti "Staff IT (10% + Rp 1.000)" langsung usang begitu tarifnya diubah, dan label "Tier 2 — upline (5%)" memang sudah salah untuk AJP yang tidak punya tingkat kedua. Label di dropdown pos dan di kartu Rincian Pos sudah dipangkas jadi "Tier 1 — perekrut", "Tier 2 — upline", "Staff IT" saja.
+
+Nominal yang ditampilkan tetap benar tanpa label itu: tiap baris `affiliate_commissions` menyimpan `base_amount`, `rate_bps`, dan `flat_amount` sendiri, jadi `amount = intdiv(base_amount × rate_bps, 10000) + flat_amount` selalu bisa dihitung ulang dari barisnya sendiri — termasuk baris lama yang terbit saat tarifnya masih berbeda.
+
 ### 2026-10-21 — tier 2 tanpa upline tidak lagi diterbitkan
 
 **Mengoreksi aturan "baris tier2 tetap dibuat berstatus `unassigned`".** Bila perekrut tidak punya upline, pos tingkat 2 kini **tidak dibuat sama sekali**.
