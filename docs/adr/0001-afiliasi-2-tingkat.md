@@ -67,6 +67,8 @@ Konsekuensi yang disadari dan diterima: afiliator bisa kehilangan atribusi yang 
 
 Yang tidak berubah: begitu orang mendaftar, baris `affiliate_referrals` terkunci dan tidak bisa dipindahkan. Kode yang diketik manual di formulir pendaftaran tetap mengalahkan cookie.
 
+Sebagai pengimbang, pendaftar diberi jalan keluar: halaman pendaftaran menampilkan tombol "Daftar tanpa kode ini" yang mengosongkan field `ref`. Karena itu `recordReferral()` kini memperlakukan field `ref` yang terkirim sebagai penentu — termasuk saat kosong — dan hanya jatuh ke cookie bila field itu sama sekali tidak ada. Tanpa aturan ini tombolnya tidak berarti apa-apa, sebab cookie akan tetap mencatatkan komisi.
+
 ### 5. Tarif ada di config, nilainya di-snapshot per baris
 
 `config/affiliate.php` memegang tarif berjalan dalam basis poin. Setiap baris komisi menyimpan `base_amount` dan `rate_bps` saat kejadian.
