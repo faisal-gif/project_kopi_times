@@ -58,13 +58,42 @@ class ReferralAttributionTest extends TestCase
         $this->assertSame('.times.co.id', $cookie->getDomain());
     }
 
-    public function test_existing_cookie_is_not_overwritten_by_another_ref(): void
+    /** Sentuhan terakhir yang menang: link terbaru menimpa kode yang sudah tersimpan. */
+    public function test_newest_ref_overwrites_the_existing_cookie(): void
     {
         $this->withUnencryptedCookie(config('affiliate.cookie_name'), 'PERTAMA')
             ->get('/?ref=KEDUA')
-            ->assertCookieMissing(config('affiliate.cookie_name'));
+            ->assertPlainCookie(config('affiliate.cookie_name'), 'KEDUA');
     }
 
+
+    /**
+     * Pendaftar boleh melepas ajakan yang terdeteksi.
+     *
+     * Form mengirim ref kosong; cookie yang masih ada sengaja diabaikan, kalau tidak
+     * tombol "Daftar tanpa kode ini" tidak akan ada artinya.
+     */
+    public function test_empty_ref_field_detaches_the_cookie_referral(): void
+    {
+        Affiliate::factory()->create(['code' => 'DOSEN01']);
+
+        $this->withUnencryptedCookie(config('affiliate.cookie_name'), 'DOSEN01')
+            ->post('/register', $this->registrationPayload(['ref' => '']))
+            ->assertRedirect(route('dashboard', absolute: false));
+
+        $this->assertSame(1, User::count());
+        $this->assertSame(0, AffiliateReferral::count());
+    }
+
+    /** Tanpa pelepasan, ref dari form tetap mencatat seperti biasa. */
+    public function test_ref_field_from_the_form_records_the_referral(): void
+    {
+        $affiliate = Affiliate::factory()->create(['code' => 'DOSEN01']);
+
+        $this->post('/register', $this->registrationPayload(['ref' => 'DOSEN01']));
+
+        $this->assertSame($affiliate->id, AffiliateReferral::sole()->affiliate_id);
+    }
     public function test_registration_with_cookie_records_the_referral(): void
     {
         $affiliate = Affiliate::factory()->create(['code' => 'DOSEN01']);

@@ -156,7 +156,7 @@ if ($code !== '' && preg_match('/^[A-Z0-9]{3,32}$/', $code) && ! $request->cooki
 }
 ```
 
-- **Sentuhan pertama yang menang**: cookie yang sudah ada tidak ditimpa.
+- **Sentuhan terakhir yang menang**: cookie ditimpa tiap kali `?ref=` baru dibuka, dan masa berlakunya dihitung ulang (lihat ADR 0001 keputusan 4a).
 - Tidak ada tulisan ke database saat orang mengklik link. Belum ada pencatatan klik; tambahkan kalau nanti diminta.
 - Cookie terenkripsi Laravel dan hanya dibaca di server.
 

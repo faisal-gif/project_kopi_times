@@ -117,9 +117,10 @@ export default function Panduan({ min_payout, hold_days, cookie_days, tier1_bps,
                                     Anda.
                                 </p>
                                 <p>
-                                    Kalau calon pendaftar pernah membuka tautan dua afiliator berbeda,{' '}
-                                    <strong>yang pertama yang berlaku</strong>. Ia juga bisa mengetik kode Anda secara
-                                    manual di kolom kode referral saat mendaftar.
+                                    Kalau ia membuka tautan afiliator lain sesudah tautan Anda,{' '}
+                                    <strong>yang terakhir dibuka itulah yang berlaku</strong>, dan hitungan harinya ikut
+                                    dimulai ulang dari klik terakhir. Ia juga bisa mengetik kode Anda secara manual di
+                                    kolom kode referral saat mendaftar.
                                 </p>
                             </Langkah>
 
@@ -177,7 +178,7 @@ export default function Panduan({ min_payout, hold_days, cookie_days, tier1_bps,
                                     <p>Biasanya salah satu dari ini:</p>
                                     <ul className="list-disc space-y-1 pl-5">
                                         <li>
-                                            ia sudah pernah membuka tautan afiliator lain lebih dulu — yang pertama yang
+                                            ia membuka tautan afiliator lain sesudah tautan Anda — yang terakhir yang
                                             berlaku;
                                         </li>
                                         <li>lewat dari {cookie_days} hari sejak ia membuka tautan Anda;</li>
@@ -186,6 +187,7 @@ export default function Panduan({ min_payout, hold_days, cookie_days, tier1_bps,
                                             tautan;
                                         </li>
                                         <li>riwayat perambannya dibersihkan sebelum ia mendaftar.</li>
+                                        <li>ia menekan &quot;Daftar tanpa kode ini&quot; di halaman pendaftaran.</li>
                                     </ul>
                                     <p>
                                         Cara paling aman: minta ia mengetik kode Anda langsung di kolom kode referral saat

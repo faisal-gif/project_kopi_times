@@ -102,9 +102,12 @@ class RegisteredUserController extends Controller
         $typed = $request->input('referral_code');
         $source = filled($typed) ? 'manual' : 'link';
 
+        // Form pendaftaran selalu mengirim 'ref', jadi nilainya yang menentukan — termasuk
+        // saat kosong, karena pendaftar boleh melepas ajakan yang terdeteksi. Cookie hanya
+        // dipakai bila field itu sama sekali tidak ikut terkirim.
         $code = filled($typed)
             ? $typed
-            : ($request->input('ref') ?: $request->cookie(config('affiliate.cookie_name')));
+            : ($request->has('ref') ? $request->input('ref') : $request->cookie(config('affiliate.cookie_name')));
 
         $affiliate = Affiliate::resolveByCode($code);
 

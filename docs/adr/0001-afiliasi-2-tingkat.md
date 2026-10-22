@@ -57,6 +57,16 @@ Tabel `affiliate_referrals` mencatat siapa merekrut member mana, kode yang dipak
 
 Alasan: menambah kolom `referred_by` ke `wartawan` berarti mengubah tabel milik CMS. Tabel terpisah juga menyimpan jejak audit yang tidak muat di satu kolom.
 
+### 4a. Atribusi dipegang sentuhan terakhir, bukan sentuhan pertama
+
+`CaptureReferralCode` menimpa cookie referral setiap kali pengunjung membuka `?ref=` yang baru, dan masa berlaku cookie dihitung ulang dari klik terakhir itu.
+
+Semula cookie yang sudah ada sengaja tidak ditimpa, supaya afiliator yang pertama memperkenalkan produk tidak kehilangan haknya. Aturan itu dibatalkan 22 Oktober 2026 atas permintaan pemilik produk: yang dihargai adalah afiliator yang ajakannya benar-benar membuat orang mendaftar, dan itu hampir selalu tautan terakhir yang dibuka.
+
+Konsekuensi yang disadari dan diterima: afiliator bisa kehilangan atribusi yang tadinya sudah "miliknya" hanya karena calon pendaftar membuka tautan orang lain belakangan. Risiko sebaliknya juga terbuka — menyebarkan tautan tepat sebelum orang mendaftar jadi strategi yang menguntungkan. Tidak ada pencatatan klik, jadi perpindahan semacam itu tidak meninggalkan jejak yang bisa diperiksa; kalau nanti perlu disengketakan, pencatatan klik harus ditambahkan lebih dulu.
+
+Yang tidak berubah: begitu orang mendaftar, baris `affiliate_referrals` terkunci dan tidak bisa dipindahkan. Kode yang diketik manual di formulir pendaftaran tetap mengalahkan cookie.
+
 ### 5. Tarif ada di config, nilainya di-snapshot per baris
 
 `config/affiliate.php` memegang tarif berjalan dalam basis poin. Setiap baris komisi menyimpan `base_amount` dan `rate_bps` saat kejadian.

@@ -7,7 +7,7 @@ import { Head, Link } from '@inertiajs/react';
 const CONTOH_HARGA = 48000;
 const CONTOH_TIER1 = 9600;
 const CONTOH_TIER2 = 1920;
-const BERLAKU = '13 Oktober 2026';
+const BERLAKU = '22 Oktober 2026';
 
 function Pasal({ nomor, judul, children }) {
     return (
@@ -104,8 +104,14 @@ export default function SyaratKetentuan({ min_payout, hold_days, cookie_days, ti
                                 </p>
                                 <p>
                                     Bila seseorang membuka beberapa link referral berbeda, yang berlaku adalah link yang{' '}
-                                    <strong>pertama</strong> ia buka. Satu pendaftar selamanya tercatat pada satu afiliator
-                                    dan tidak dapat dipindahkan.
+                                    <strong>terakhir</strong> ia buka, dan masa simpannya dihitung ulang sejak klik terakhir
+                                    itu. Setelah ia mendaftar, pencatatannya terkunci: satu pendaftar selamanya tercatat
+                                    pada satu afiliator dan tidak dapat dipindahkan.
+                                </p>
+                                <p>
+                                    Pendaftar berhak menolak ajakan yang terdeteksi dengan menekan &quot;Daftar tanpa
+                                    kode ini&quot; di halaman pendaftaran. Pendaftaran semacam itu tidak menghasilkan
+                                    komisi bagi siapa pun.
                                 </p>
                             </Pasal>
 

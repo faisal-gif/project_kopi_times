@@ -47,7 +47,7 @@ return [
      */
     'site_type' => (int) env('AFFILIATE_SITE_TYPE', 4),
 
-    // Cookie atribusi: sentuhan pertama yang menang.
+    // Cookie atribusi: sentuhan terakhir yang menang.
     'cookie_name' => 'kt_ref',
     'cookie_days' => 30,
 

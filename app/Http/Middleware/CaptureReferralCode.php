@@ -10,8 +10,9 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Menyimpan kode referral dari ?ref= ke cookie.
  *
- * Sentuhan pertama yang menang: cookie yang sudah ada tidak ditimpa, supaya
- * afiliator yang pertama memperkenalkan Kopi TIMES tidak kehilangan haknya.
+ * Sentuhan terakhir yang menang: link yang baru dibuka menimpa cookie lama, dan
+ * masa berlakunya ikut dihitung ulang dari klik terakhir. Afiliator yang paling
+ * dekat dengan keputusan mendaftar itulah yang dicatat.
  * Tidak ada tulisan ke database di sini — atribusi baru dikunci saat pendaftaran.
  */
 class CaptureReferralCode
@@ -21,7 +22,7 @@ class CaptureReferralCode
         $code = strtoupper(trim((string) $request->query('ref')));
         $cookie = config('affiliate.cookie_name');
 
-        if ($code !== '' && preg_match('/^[A-Z0-9]{3,32}$/', $code) && ! $request->cookie($cookie)) {
+        if ($code !== '' && preg_match('/^[A-Z0-9]{3,32}$/', $code)) {
             // cookie_domain diisi '.times.co.id' bila atribusi harus berlaku lintas subdomain.
             Cookie::queue(
                 $cookie,

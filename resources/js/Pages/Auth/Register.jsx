@@ -32,6 +32,10 @@ export default function Register({ newsPackages, kategoriKt, referral = null }) 
         referral_code: '',
     });
 
+    // Ajakan boleh dilepas: begitu data.ref dikosongkan, kolom kode manual muncul lagi
+    // dan server menerima ref kosong sebagai "tanpa kode".
+    const pakaiAjakan = Boolean(referral) && data.ref !== '';
+
     const handlePlanSelect = (planId) => {
         setSelectedPlan(planId);
         setData('plan_id', planId);
@@ -135,8 +139,17 @@ export default function Register({ newsPackages, kategoriKt, referral = null }) 
                                 Paket: <span className="kt-mark font-bold text-ink">{plan.name}</span> &middot; {formatRupiah(plan.price)} / {formatDuration(plan.period)}
                             </p>
                         )}
-                        {referral && (
-                            <Notice>Anda mendaftar atas ajakan <strong>{referral.name}</strong>.</Notice>
+                        {pakaiAjakan && (
+                            <Notice>
+                                Anda mendaftar atas ajakan <strong>{referral.name}</strong>.{' '}
+                                <button
+                                    type="button"
+                                    onClick={() => setData('ref', '')}
+                                    className="font-semibold underline underline-offset-2 hover:no-underline"
+                                >
+                                    Daftar tanpa kode ini
+                                </button>
+                            </Notice>
                         )}
                     </div>
 
@@ -204,7 +217,7 @@ export default function Register({ newsPackages, kategoriKt, referral = null }) 
                             </Field>
                         </div>
 
-                        {!referral && (
+                        {!pakaiAjakan && (
                             <Field id="referral_code" label="Kode referral (jika ada)" error={errors.referral_code}>
                                 <TextInput
                                     id="referral_code"
