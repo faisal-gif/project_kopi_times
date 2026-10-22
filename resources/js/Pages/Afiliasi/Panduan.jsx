@@ -136,6 +136,7 @@ export default function Panduan({ min_payout, hold_days, cookie_days, tier1_bps,
                                     Karena berupa persentase, nominalnya mengikuti harga yang benar-benar dibayarkan.
                                 </p>
                                 {tier2_bps > 0 && (
+                                    <>
                                     <p>
                                         Sebagian afiliator juga ditunjuk untuk menerima{' '}
                                         <strong>komisi jaringan {TIER2_PERSEN}</strong> dari pendaftar yang dibawa orang
@@ -143,6 +144,12 @@ export default function Panduan({ min_payout, hold_days, cookie_days, tier1_bps,
                                         Penunjukan itu dilakukan tim kami, jadi{' '}
                                         <em>tidak berlaku otomatis untuk setiap afiliator</em>.
                                     </p>
+                                    <p>
+                                        Afiliator yang ditunjuk itu juga mendapat tautan undangan di halaman
+                                        afiliasinya untuk mengajak member lain jadi afiliator — merekalah yang
+                                        nantinya menjadi jaringannya.
+                                    </p>
+                                    </>
                                 )}
                             </Langkah>
 

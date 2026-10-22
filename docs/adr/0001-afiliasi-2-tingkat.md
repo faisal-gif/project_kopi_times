@@ -191,6 +191,22 @@ Status `unassigned` dan layar **Baris Tertahan** di CMS tetap ada — dipakai ba
 
 Kalau suatu saat ingin dilacak lagi, hidupkan kembali di `AffiliateCommissionService::accrue()`; tempat itu satu-satunya yang memutuskan hal ini.
 
+### 9e. Undangan jadi afiliator adalah sumber upline yang kedua (melengkapi 9c)
+
+Afiliator yang dicentang `tier2_eligible` mendapat tautan **`/undang-afiliator/{kode}`**. Siapa pun yang mengajukan diri jadi afiliator lewat tautan itu memakai si pengundang sebagai upline.
+
+Alasan: keputusan 9c hanya bisa membentuk rantai bila si pemohon dulu mendaftar jadi **member** lewat link referral pengundangnya. Member yang sudah lama bergabung — atau yang masuk tanpa kode sama sekali — tidak akan pernah bisa jadi downline siapa pun, padahal justru merekalah yang paling mungkin diajak jadi afiliator.
+
+Urutannya: **undangan menang atas rantai referral.** Undangan adalah perbuatan sengaja hari ini; rantai referral hanya diturunkan dari riwayat pendaftaran yang mungkin terjadi setahun lalu. Bila pengundangnya ternyata tidak berhak, sistem jatuh kembali ke rantai referral, bukan mengosongkan upline.
+
+Syarat pengundang tidak berubah sedikit pun dari 9c — dicentang `tier2_eligible`, berstatus `active`, dan satu situs. Jadi undangan memperluas *siapa* yang bisa masuk rantai, bukan *siapa* yang berhak menerima 5%; yang terakhir tetap sepenuhnya keputusan admin.
+
+Rutenya publik dan sengaja bodoh: ia hanya menitipkan kode ke cookie `kt_undangan` lalu melempar ke formulir. Keabsahan diperiksa saat pengajuan dikirim, karena status pengundang bisa berubah di antara klik dan pengajuan. Cookie-nya perlu karena formulir ada di balik `auth` — tamu akan dilempar ke login, bahkan ke pendaftaran member dulu, dan query string hilang di tengah jalan. Cookie dihapus begitu pengajuan terkirim.
+
+Konsekuensi yang disadari: **upline kini bisa tidak cocok dengan data referral.** Di CMS akan muncul afiliator yang uplinenya bukan perekrut membernya, dan tidak ada kolom yang menjelaskan asalnya — `affiliates.upline_id` hanya menyimpan hasilnya, bukan jalannya. Kalau nanti perlu dibedakan, tambahkan kolom sumber; untuk sekarang perbedaan itu tidak dipakai di layar mana pun.
+
+Di AJP tautan ini **tidak ditampilkan** selama `AFFILIATE_TIER2_BPS` masih 0: uplinenya tetap terisi, tapi pos tier2 tidak pernah terbit, jadi mengundang di sana belum menghasilkan apa pun.
+
 ### 10. Komisi ditahan 7 hari, pencairan manual
 
 Komisi baru bisa masuk batch pencairan setelah `available_at` (lunas + 7 hari) terlewati. Pencairan dilakukan admin lewat transfer manual, lalu ditandai lunas dengan bukti.

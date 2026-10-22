@@ -8,6 +8,19 @@ Bangun layar **admin program afiliasi**: kelola afiliator, tinjau komisi, dan ca
 
 **Sudah memegang versi sebelumnya? Baca bagian ini dulu, sisanya hanya penajaman.**
 
+### 2026-10-22 (2) — undangan jadi afiliator: upline bisa tidak cocok dengan data referral
+
+Afiliator yang dicentang `tier2_eligible` kini punya tautan undangan **`/undang-afiliator/{kode}`** di halaman afiliasinya. Member mana pun yang mengajukan diri jadi afiliator lewat tautan itu langsung memakai si pengundang sebagai `upline_id`.
+
+**Yang berubah untuk CMS: tidak ada layar baru, tapi satu asumsi lama batal.** Sebelumnya upline seorang afiliator selalu bisa ditelusuri ke baris `affiliate_referrals` — yaitu afiliator yang dulu merekrutnya jadi member. Sekarang upline bisa datang dari undangan, dan orang itu belum tentu perekrut membernya. Jadi:
+
+- jangan menampilkan upline sebagai "perekrut" atau menurunkannya ulang dari `affiliate_referrals` di layar mana pun — pakai `affiliates.upline_id` apa adanya;
+- `affiliates.upline_id` hanya menyimpan hasilnya, bukan asalnya. Tidak ada kolom yang membedakan "dari undangan" dan "dari rantai referral". Kalau pembedaan itu nanti diperlukan di layar, mintalah kolom baru — jangan menebak dari data referral.
+
+Aturan siapa yang berhak **tidak berubah**: pengundang hanya jadi upline bila ia dicentang `tier2_eligible`, berstatus `active`, dan satu situs dengan pemohon. Centang itu tetap sepenuhnya keputusan admin di CMS.
+
+Urutannya bila keduanya ada: undangan menang atas rantai referral; bila pengundangnya tidak berhak, sistem jatuh kembali ke rantai referral.
+
 ### 2026-10-22 — komponen tetap Staff IT naik jadi Rp 5.000, dan label tarif dicabut dari layar
 
 **Komponen tetap Staff IT naik dari Rp 1.000 jadi Rp 5.000 di kedua situs** (`AFFILIATE_INTERNAL_FLAT` di masing-masing aplikasi publik). Persentasenya tetap 10%.
