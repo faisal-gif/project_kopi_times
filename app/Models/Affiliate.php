@@ -92,6 +92,12 @@ class Affiliate extends Model
         return rtrim(url('/'), '/') . '/?ref=' . $this->code;
     }
 
+    /** Tautan undangan jadi afiliator; penerimanya jadi downline akun ini. */
+    public function getInviteUrlAttribute(): string
+    {
+        return rtrim(url('/'), '/') . '/undang-afiliator/' . $this->code;
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active');

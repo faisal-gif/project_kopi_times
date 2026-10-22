@@ -76,6 +76,11 @@ Route::get('/panduan-afiliasi', function () {
     ]);
 })->name('afiliasi.panduan');
 
+// Undangan jadi afiliator. Publik karena penerimanya belum tentu sudah login —
+// rutenya hanya menitipkan kode ke cookie lalu melempar ke formulir pengajuan.
+Route::get('/undang-afiliator/{code}', [AffiliateApplicationController::class, 'undangan'])
+    ->name('afiliasi.undangan');
+
 
 
 

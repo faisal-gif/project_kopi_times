@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Nilainya sama dengan config('affiliate.cookie_name').
         $middleware->encryptCookies(except: [
             'kt_ref',
+            'kt_undangan',
         ]);
         $middleware->alias([
             'active' => \App\Http\Middleware\EnsureUserIsActive::class,

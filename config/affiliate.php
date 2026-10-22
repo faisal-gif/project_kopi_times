@@ -52,6 +52,14 @@ return [
     'cookie_days' => 30,
 
     /*
+     * Cookie undangan jadi afiliator — dipakai tautan /undang-afiliator/{kode}.
+     * Dipisah dari cookie referral karena artinya berbeda: yang satu "siapa yang
+     * mengajak saya jadi member", yang ini "siapa yang mengajak saya jadi afiliator".
+     * Umurnya ikut cookie_days.
+     */
+    'invite_cookie_name' => 'kt_undangan',
+
+    /*
      * Kosong = cookie hanya berlaku di domain situs ini (atribusi terpisah per situs).
      * Diisi '.times.co.id' = satu klik berlaku di seluruh subdomain TIMES.
      * Nama cookie sengaja sama di semua situs supaya opsi ini bisa dinyalakan kapan saja.

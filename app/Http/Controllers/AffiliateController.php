@@ -62,6 +62,11 @@ class AffiliateController extends Controller
                 'name' => $affiliate->name,
                 'code' => $affiliate->code,
                 'referral_url' => $affiliate->referral_url,
+                // Hanya akun yang memang berhak atas komisi tingkat 2 yang boleh mengundang —
+                // tautan undangan dari akun lain tidak akan menghasilkan apa pun baginya.
+                'invite_url' => ($affiliate->tier2_eligible && config('affiliate.tier2_bps') > 0)
+                    ? $affiliate->invite_url
+                    : null,
                 'status' => $affiliate->status,
                 'status_label' => $affiliate->status_label,
             ],

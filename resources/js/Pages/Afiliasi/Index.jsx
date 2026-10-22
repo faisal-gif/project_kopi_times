@@ -4,7 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatDate, formatRupiah } from '@/Utils/formatter';
 import { Head, Link } from '@inertiajs/react';
 import {
-    AlertTriangle, Banknote, Check, Clock, Copy, Share2, Users, Wallet, XCircle,
+    AlertTriangle, Banknote, Check, Clock, Copy, Share2, UserPlus, Users, Wallet, XCircle,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -130,6 +130,19 @@ export default function Index({ affiliate, summary, commissions, payouts = [], m
                         <Link href="/panduan-afiliasi" className="link link-primary">Baca panduan afiliasi</Link>.
                     </p>
                 </Card>
+
+                {affiliate.invite_url && (
+                    <Card className="border-base-200 shadow-sm">
+                        <h3 className="mb-1 flex items-center gap-2 text-lg font-bold">
+                            <UserPlus className="h-5 w-5 text-primary" /> Undang Jadi Afiliator
+                        </h3>
+                        <p className="mb-4 text-sm text-muted-foreground">
+                            Bagikan tautan ini ke member yang ingin jadi afiliator. Begitu pengajuannya disetujui,
+                            Anda menerima komisi tingkat 2 dari setiap pendaftar yang ia bawa dengan kodenya sendiri.
+                        </p>
+                        <ReferralLink url={affiliate.invite_url} />
+                    </Card>
+                )}
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <StatCard icon={Users} label="Member Direkrut" value={summary.referrals} tone="bg-primary/10 text-primary" />

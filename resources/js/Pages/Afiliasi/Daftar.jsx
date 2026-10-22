@@ -20,7 +20,7 @@ function Field({ id, label, error, hint, children }) {
     );
 }
 
-export default function Daftar({ profile, terms_url, min_payout }) {
+export default function Daftar({ profile, pengundang = null, terms_url, min_payout }) {
     const { data, setData, post, processing, errors } = useForm({
         name: profile.name ?? '',
         email: profile.email ?? '',
@@ -43,6 +43,14 @@ export default function Daftar({ profile, terms_url, min_payout }) {
             <Head title="Ajukan Jadi Afiliator" />
 
             <div className="space-y-6">
+                {pengundang && (
+                    <div className="alert alert-info">
+                        <span>
+                            Anda diundang oleh <strong>{pengundang.name}</strong> untuk jadi afiliator.
+                        </span>
+                    </div>
+                )}
+
                 <Card className="border-base-200 shadow-sm">
                     <h3 className="flex items-center gap-2 text-lg font-bold">
                         <Share2 className="h-5 w-5 text-primary" /> Jadi Afiliator Kopi TIMES
